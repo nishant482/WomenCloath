@@ -44,4 +44,19 @@ npm run preview
 
 Deploy the generated `dist` directory to any static host.
 
+## Admin dashboard and Vercel
+
+The admin dashboard is at `/admin/`. Demo login: `cloath@gmail.com` / `cloath`.
+See [admin/README.md](admin/README.md) for pages and demo functionality.
+
+The production build includes both `dist/index.html` and `dist/admin/index.html`.
+The root `vercel.json` sets the Vite build and `dist` output directory, with admin
+fallbacks before the storefront fallback. Existing assets are served normally.
+Import this repository into Vercel with the repository root as the Root Directory.
+
+Navigation uses refresh-safe hash URLs, for example `/#/product/1`,
+`/#/collections/sarees`, `/admin/#products`, and `/admin/#orders`. Preserve the
+hash when sharing page links. Direct requests to `/admin` and `/admin/` both
+load the admin entry point. Deploy a new build after pulling these changes.
+
 Reference sites: https://odhni.com/ and https://meenabazaar.com/collections/readytoship. Product photographs are downloaded from Odhni for this reference-based demonstration. Replace these with owned or licensed images before public commercial use. Google Fonts supplies DM Sans and Playfair Display; system fonts serve as fallbacks.

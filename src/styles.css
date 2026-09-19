@@ -18,3 +18,7 @@ input,select,textarea{color:var(--blue)}
 .product .dispatch>span{background:var(--card-blue)}
 .product .price,.product-information .detail-price,.related .related-card p,
 .bag-item p,.drawer.detail>h3,.total h3{color:var(--card-blue)}
+
+/* Product card titles and current prices. */
+.product .product-name,.product .price,
+.related-card h3,.related .related-card p{color:#B94A2D}
