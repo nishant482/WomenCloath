@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SlidersHorizontal, X } from 'lucide-react';
 import './product-filters.css';
 
@@ -19,13 +19,16 @@ export function matchesFilters(p, filters) {
     && (!range || (p.price >= range.min && p.price <= range.max));
 }
 export function ProductFilters({products,filters,setFilters,count,category,search,clearAll,clearCategory,clearSearch}) {
+  const [expanded, setExpanded] = useState(false);
+  const activeCount = Object.values(filters).filter(Boolean).length;
   const colours = [...new Set(products.map(colourOf))].sort();
   const fabrics = [...new Set(products.map(fabricOf))].sort();
   const chips = Object.entries(filters).filter(([,v])=>v).map(([key,value])=>({key,label:key==='price'?priceRanges.find(r=>r.value===value)?.label:value,remove:()=>setFilters(f=>({...f,[key]:''}))}));
   if(category!=='All styles') chips.unshift({key:'category',label:category,remove:clearCategory});
   if(search) chips.push({key:'search',label:`Search: ${search}`,remove:clearSearch});
   return <div className="product-filters">
-    <div className="filter-controls"><span className="filter-heading"><SlidersHorizontal size={17}/> Refine your favourites</span>
+    <button type="button" className="mobile-filter-toggle" aria-expanded={expanded} aria-controls="collection-filter-controls" onClick={() => setExpanded(value => !value)}><SlidersHorizontal size={16}/><span>{expanded ? 'Hide filters' : 'Filter your favourites'}{activeCount > 0 ? ` (${activeCount})` : ''}</span><span aria-hidden="true">{expanded ? '−' : '+'}</span></button>
+    <div id="collection-filter-controls" className={`filter-controls${expanded ? ' filters-expanded' : ''}`}><span className="filter-heading"><SlidersHorizontal size={17}/> Refine your favourites</span>
       <label>Colour<select aria-label="Colour" value={filters.colour} onChange={e=>setFilters(f=>({...f,colour:e.target.value}))}><option value="">All colours</option>{colours.map(c=><option key={c}>{c}</option>)}</select></label>
       <label>Fabric<select aria-label="Fabric" value={filters.fabric} onChange={e=>setFilters(f=>({...f,fabric:e.target.value}))}><option value="">All fabrics</option>{fabrics.map(f=><option key={f}>{f}</option>)}</select></label>
       <label>Price range<select aria-label="Price range" value={filters.price} onChange={e=>setFilters(f=>({...f,price:e.target.value}))}><option value="">All prices</option>{priceRanges.map(p=><option value={p.value} key={p.value}>{p.label}</option>)}</select></label>

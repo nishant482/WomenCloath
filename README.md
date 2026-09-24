@@ -1,6 +1,12 @@
-# WomenCloath — Rang static React storefront
+# WomenCloath — RAJO Threads storefront
 
-A responsive Indian ethnic-wear concept inspired by Odhni and Meena Bazaar, using blue, yellow, white and orange. Features 12 local product photographs, an expanded homepage, category and occasion sections, category filtering, search, price sorting, individual product pages, size selection, wishlist, shopping bag with quantity controls, and local form confirmations. No backend, checkout or real form submission is connected. State resets on reload.
+RAJO Threads branding, the founder story preview on the homepage, and the complete
+Our Story page (`/#/about`) are in `src/brand-story.jsx` and `src/brand-story.css`.
+The story page includes the brand's beginnings, Pinki Yadav's vision, five mission
+statements, and the tribute to her Dadi, Rajo. The supplied founder portrait is
+stored at `public/images/pinki-yadav.jpeg`.
+
+A responsive Indian ethnic-wear concept inspired by Odhni and Meena Bazaar, using blue, yellow, white and orange. Features 12 local product photographs, an expanded homepage, category and occasion sections, category filtering, search, price sorting, individual product pages, size selection, wishlist, shopping bag with quantity controls, and local form confirmations. No backend, checkout or real form submission is connected. Wishlist favourites are saved in this browser; other shopping state resets on reload.
 
 ## Pages and source files
 
@@ -9,6 +15,7 @@ A responsive Indian ethnic-wear concept inspired by Odhni and Meena Bazaar, usin
 - `/#/collections/sarees`, `/#/collections/lehengas`, `/#/collections/kurta-sets`, `/#/collections/new-arrivals` — Category collections
 - `/#/product/1` through `/#/product/12` — Individual product details
 - `/#/about` — Our story
+- `/#/rajo-family` — Customer photo gallery, with all nine photos and a full-size viewer; linked from the footer
 - `/#/contact` — Contact form preview and FAQs
 - `/#/shipping` — Shipping information
 
@@ -60,3 +67,9 @@ hash when sharing page links. Direct requests to `/admin` and `/admin/` both
 load the admin entry point. Deploy a new build after pulling these changes.
 
 Reference sites: https://odhni.com/ and https://meenabazaar.com/collections/readytoship. Product photographs are downloaded from Odhni for this reference-based demonstration. Replace these with owned or licensed images before public commercial use. Google Fonts supplies DM Sans and Playfair Display; system fonts serve as fallbacks.
+
+## Navigation polish
+
+The header stays visible while scrolling, with a RAJO Family link and an accessible
+mobile menu. Mobile filters can be expanded, and a back-to-top control appears on
+long pages. Wishlist product IDs are stored locally in the visitor's browser.
