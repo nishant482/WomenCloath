@@ -445,12 +445,8 @@ export function ProductReviews({ productId }) {
           <h3>{r.title}</h3>
           <p>{r.body}</p>
           <small>
-            {r.name} ·{" "}
-            {r.isDemo
-              ? "Demo review — sample content"
-              : r.verifiedPurchase
-                ? "Verified purchase"
-                : "Customer review"}
+            {r.name}
+            {!r.isDemo && <> · {r.verifiedPurchase ? "Verified purchase" : "Customer review"}</>}
           </small>
         </article>
       ))}
