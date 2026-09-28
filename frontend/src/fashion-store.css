@@ -1,0 +1,1265 @@
+/* Fashion retail layout inspired by the supplied references, in RAJO's palette. */
+.store-brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+}
+.store-brand > span {
+  font-family: var(--serif);
+  font-size: 31px;
+  letter-spacing: 5px;
+  line-height: 1;
+  color: var(--blue);
+}
+.store-brand > span small {
+  display: block;
+  font-family: var(--sans);
+  font-size: 8px;
+  letter-spacing: 4.8px;
+  margin-top: 10px;
+  text-align: center;
+}
+.header-assistance {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  font-size: 11px;
+}
+.header-assistance a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.header-assistance a:hover {
+  color: var(--orange);
+}
+.header-product-search {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd8ce;
+  background: #faf7f0;
+  height: 37px;
+  width: 210px;
+  margin-right: 12px;
+}
+.header-product-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: none;
+  padding: 9px 11px;
+  font-size: 11px;
+}
+.header-product-search button {
+  height: 35px;
+  width: 36px;
+  display: grid;
+  place-items: center;
+  background: var(--orange);
+  color: #fffdf8;
+  flex-shrink: 0;
+}
+@media (min-width: 1101px) {
+  header.store-header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: 86px 43px;
+    gap: 0 24px;
+    height: 129px;
+    padding-inline: 40px;
+    background: #fffdf8;
+  }
+  .header-assistance {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .store-brand {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+  }
+  .header-actions {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    gap: 1px;
+  }
+  header.store-header #primary-navigation {
+    grid-column: 1/-1;
+    grid-row: 2;
+    justify-content: center;
+    gap: 35px;
+    border-top: 1px solid #ebe5d9;
+    width: 100%;
+    height: 43px;
+  }
+  header.store-header #primary-navigation > a {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 13px 0;
+  }
+  header.store-header #primary-navigation > a:first-child {
+    color: var(--orange);
+  }
+  header.store-header .rajo-logo img {
+    width: 60px;
+    height: 60px;
+  }
+  .header-actions > button[aria-label="Search products"] {
+    display: none;
+  }
+  .header-actions .icon-button {
+    width: 34px;
+    height: 36px;
+  }
+  .header-actions svg {
+    width: 19px;
+    height: 19px;
+  }
+}
+.fashion-home {
+  background: var(--cream);
+}
+.campaign-carousel {
+  position: relative;
+  background: #f0e7d8;
+  overflow: hidden;
+}
+.campaign-stage {
+  display: grid;
+  grid-template-columns: 34% 32% 34%;
+  height: 560px;
+}
+.campaign-photo {
+  height: 100%;
+  width: 100%;
+  min-width: 0;
+  object-fit: cover;
+  object-position: center top;
+}
+.campaign-copy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 35px 24px;
+  background: #f0e7d8;
+  background-image: radial-gradient(
+    ellipse at center,
+    #fff9ed80,
+    transparent 75%
+  );
+  min-width: 0;
+}
+.campaign-copy:before,
+.campaign-copy:after {
+  content: "";
+  position: absolute;
+  top: 20px;
+  bottom: 20px;
+  width: 1px;
+  background: #c7b48b66;
+}
+.campaign-copy:before {
+  left: 13px;
+}
+.campaign-copy:after {
+  right: 13px;
+}
+.campaign-copy .eyebrow {
+  font-size: 9px;
+  letter-spacing: 2.4px;
+  color: #815332;
+}
+.campaign-copy h1 {
+  font-size: clamp(39px, 4.2vw, 64px);
+  line-height: 1.13;
+  letter-spacing: -1.7px;
+  margin: 27px 0 21px;
+  color: var(--blue);
+}
+.campaign-copy h1 em {
+  color: var(--orange);
+  font-weight: 400;
+}
+.campaign-copy p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #625f52;
+  max-width: 260px;
+  margin-bottom: 26px;
+  white-space: pre-line;
+}
+.campaign-shop {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 14px 21px;
+  min-height: 47px;
+  background: var(--blue);
+  color: #fffdf8;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 1px solid var(--blue);
+  transition: background 0.2s;
+}
+.campaign-shop:hover {
+  background: var(--orange);
+  border-color: var(--orange);
+}
+.campaign-signature {
+  font-size: 6px;
+  letter-spacing: 1.7px;
+  margin-top: 35px;
+  color: #776b55;
+}
+.campaign-arrow {
+  position: absolute;
+  top: calc(50% - 20px);
+  width: 39px;
+  height: 43px;
+  background: #fffdf8eb;
+  color: var(--blue);
+  display: grid;
+  place-items: center;
+  border: 1px solid #fffdf8;
+  border-radius: 2px;
+  box-shadow: 0 2px 10px #0001;
+}
+.campaign-arrow.previous {
+  left: 18px;
+}
+.campaign-arrow.next {
+  right: 18px;
+}
+.campaign-pagination {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.campaign-pagination > button {
+  width: 26px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+}
+.campaign-pagination > button > span {
+  height: 5px;
+  width: 5px;
+  border-radius: 50%;
+  background: #8e826b;
+}
+.campaign-pagination > button[aria-pressed="true"] > span {
+  width: 18px;
+  border-radius: 10px;
+  background: var(--orange);
+}
+.campaign-count {
+  font-size: 8px;
+  margin-left: 8px;
+  color: #645c4b;
+  letter-spacing: 1px;
+}
+.campaign-navy .campaign-copy {
+  background: #173b69;
+}
+.campaign-navy .campaign-copy h1 {
+  color: #fff9ed;
+}
+.campaign-navy .campaign-copy h1 em,
+.campaign-navy .campaign-copy .eyebrow {
+  color: #efce78;
+}
+.campaign-navy .campaign-copy p,
+.campaign-navy .campaign-signature,
+.campaign-navy .campaign-count {
+  color: #e0e6e6;
+}
+.campaign-navy .campaign-shop {
+  background: #fff8e8;
+  color: #173b69;
+  border-color: #fff8e8;
+}
+.campaign-navy .campaign-pagination > button > span {
+  background: #d9d9bf;
+}
+.campaign-navy .campaign-pagination > button[aria-pressed="true"] > span {
+  background: #efce78;
+}
+.campaign-rose .campaign-copy {
+  background: #eee1d8;
+}
+.campaign-custom .campaign-stage {
+  display: block;
+  position: relative;
+}
+.campaign-custom-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.campaign-custom .campaign-copy {
+  position: relative;
+  margin: 0 auto 0 6%;
+  width: 37%;
+  height: 100%;
+  background: #f9f2e8ef;
+}
+.campaign-custom .campaign-pagination {
+  left: auto;
+  right: 4%;
+  transform: none;
+  background: #fffdf8d9;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+.campaign-custom .campaign-copy h1 {
+  font-size: clamp(32px, 3.5vw, 52px);
+}
+.campaign-custom .campaign-copy p {
+  max-height: 150px;
+  overflow: auto;
+  white-space: pre-line;
+}
+.store-assurances {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 25px max(30px, 5vw);
+  border-bottom: 1px solid #e7dfd2;
+  background: #f6f1e7;
+  gap: 20px;
+}
+.store-assurances > a {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+}
+.store-assurances > a + a {
+  border-left: 1px solid #dfd7c8;
+}
+.store-assurances svg {
+  color: var(--orange);
+}
+.store-assurances strong {
+  font-size: 12px;
+  font-weight: 500;
+  display: block;
+}
+.store-assurances small {
+  font-size: 10px;
+  color: #65685e;
+  margin-top: 6px;
+  display: block;
+}
+.fashion-heading {
+  position: relative;
+  text-align: center;
+  margin-bottom: 32px;
+  padding-inline: 80px;
+}
+.fashion-heading > .eyebrow {
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: var(--orange);
+}
+.fashion-heading h2 {
+  font-size: 36px;
+  line-height: 1.25;
+  letter-spacing: -0.6px;
+  margin: 13px 0 0;
+  color: var(--blue);
+}
+.fashion-heading p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: #60675e;
+  margin: 12px 0 0;
+}
+.fashion-heading > a {
+  position: absolute;
+  bottom: 7px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  color: var(--orange);
+  border-bottom: 1px solid #b8826a;
+  padding-bottom: 6px;
+}
+.fashion-categories,
+.fashion-collection {
+  padding-block: 58px 0;
+}
+.fashion-category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 23px;
+}
+.fashion-category-grid > a {
+  text-align: center;
+  min-width: 0;
+}
+.fashion-category-grid > a > div {
+  position: relative;
+  aspect-ratio: 3/3.65;
+  overflow: hidden;
+  background: #eee5d8;
+}
+.fashion-category-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 0.65s;
+}
+.fashion-category-grid > a:hover img {
+  transform: scale(1.035);
+}
+.fashion-category-grid > a > div > span {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fffdf8e8;
+  padding: 9px 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 10px;
+  color: var(--blue);
+  white-space: nowrap;
+}
+.fashion-category-grid h3 {
+  font-size: 24px;
+  margin: 18px 0 6px;
+  color: var(--orange);
+}
+.fashion-category-grid p {
+  font-size: 11px;
+  color: #62675d;
+  margin: 0;
+}
+.fashion-collection {
+  padding-bottom: 54px;
+}
+.fashion-collection + .fashion-collection {
+  padding-top: 0;
+}
+.fashion-product-grid {
+  grid-template-columns: repeat(var(--desktop-columns, 4), minmax(0, 1fr));
+  gap: 25px;
+}
+.fashion-product-grid .product-photo {
+  aspect-ratio: 3/4;
+  border-radius: 0;
+}
+.fashion-product-grid .product-photo img {
+  object-position: center top;
+}
+.fashion-product-grid .product-name {
+  font-size: 15px;
+  line-height: 1.6;
+}
+.fashion-product-grid .fabric {
+  font-size: 11px;
+}
+.fashion-product-grid .product-meta {
+  margin-top: 13px;
+}
+.fashion-product-grid .badge {
+  border-radius: 0;
+  background: #fff9edea;
+  color: var(--blue);
+  font-size: 7px;
+}
+.collection-controls {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  margin-top: 29px;
+}
+.fashion-outline {
+  border: 1px solid var(--blue);
+  padding: 13px 23px;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 23px;
+  min-height: 44px;
+}
+.fashion-outline:hover {
+  background: var(--blue);
+  color: var(--cream);
+}
+.collection-controls > div {
+  position: absolute;
+  right: 0;
+  display: flex;
+  gap: 8px;
+}
+.collection-controls > div > button {
+  width: 38px;
+  height: 38px;
+  border: 1px solid #dcd6ca;
+  display: grid;
+  place-items: center;
+}
+.occasion-shopping {
+  padding: 49px max(var(--gutter), calc((100vw - 1440px) / 2));
+  background: #f3ede2;
+}
+.occasion-shopping-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 23px;
+}
+.occasion-shopping-grid > a {
+  position: relative;
+  aspect-ratio: 3/3.8;
+  overflow: hidden;
+  background: #c1ae92;
+}
+.occasion-shopping-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+.occasion-shopping-grid > a:after {
+  content: "";
+  position: absolute;
+  inset: 40% 0 0;
+  background: linear-gradient(transparent, #112b47d9);
+}
+.occasion-shopping-grid > a > div {
+  position: absolute;
+  z-index: 1;
+  bottom: 24px;
+  left: 25px;
+  right: 25px;
+  color: #fffdf8;
+}
+.occasion-shopping-grid h3 {
+  font-size: 29px;
+  margin: 0 0 9px;
+  line-height: 1.2;
+}
+.occasion-shopping-grid p {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #fff4df;
+  margin-bottom: 14px;
+}
+.occasion-shopping-grid span {
+  font-size: 10px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.fashion-wide-banner {
+  display: grid;
+  grid-template-columns: 30% 40% 30%;
+  height: 460px;
+  background: var(--blue);
+  color: #fffdf8;
+}
+.fashion-wide-banner > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+.fashion-wide-banner > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 30px;
+}
+.fashion-wide-banner .eyebrow {
+  color: #efce78;
+  font-size: 8px;
+  letter-spacing: 2px;
+}
+.fashion-wide-banner h2 {
+  font-size: 47px;
+  line-height: 1.2;
+  margin: 23px 0 18px;
+  letter-spacing: -1.3px;
+}
+.fashion-wide-banner h2 em {
+  color: #efce78;
+}
+.fashion-wide-banner p {
+  font-size: 12px;
+  line-height: 1.8;
+  max-width: 280px;
+  color: #e6eae8;
+}
+.fashion-wide-banner .campaign-shop {
+  background: #fff7e5;
+  color: var(--blue);
+  border-color: #fff7e5;
+  margin-top: 9px;
+}
+.fashion-colours {
+  padding-block: 5px 57px;
+}
+.fashion-colours > div:last-child {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 24px;
+  max-width: 800px;
+  margin: auto;
+}
+.fashion-colours button {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 12px;
+}
+.fashion-colours i {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  outline: 1px solid #dcd6c9;
+  outline-offset: 5px;
+  transition: transform 0.2s;
+}
+.fashion-colours button:hover i {
+  transform: scale(1.06);
+}
+.fashion-story {
+  border-top: 1px solid #e7dfd2;
+  padding-top: 56px;
+}
+.fashion-story .founder-preview {
+  margin-bottom: 55px;
+}
+.fashion-home .family-preview > .section-heading {
+  text-align: center;
+  justify-content: center;
+  position: relative;
+  display: block;
+}
+.fashion-home .family-preview > .section-heading .text-link {
+  display: inline-flex;
+  margin-top: 18px;
+  font-size: 11px;
+}
+.fashion-home .family-preview h2 {
+  font-size: 35px;
+}
+.fashion-home .family-preview .eyebrow {
+  font-size: 8px;
+}
+.fashion-home .family-preview-grid {
+  gap: 22px;
+}
+.fashion-home .family-preview-grid > a > div {
+  border-radius: 0;
+}
+.fashion-home .family-preview {
+  padding-bottom: 45px;
+}
+@media (min-width: 1700px) {
+  .campaign-stage {
+    height: 650px;
+  }
+  .fashion-wide-banner {
+    height: 530px;
+  }
+}
+@media (max-width: 1250px) and (min-width: 1101px) {
+  .header-product-search {
+    width: 155px;
+    margin-right: 5px;
+  }
+  .header-assistance {
+    gap: 13px;
+    font-size: 10px;
+  }
+  .header-actions .icon-button {
+    width: 29px;
+  }
+  .store-brand > span {
+    font-size: 27px;
+  }
+  .store-brand {
+    gap: 10px;
+  }
+}
+@media (max-width: 1100px) {
+  .header-assistance,
+  .header-product-search {
+    display: none;
+  }
+  .store-brand {
+    margin-right: auto;
+  }
+  .store-brand > span {
+    font-size: 26px;
+    letter-spacing: 3px;
+  }
+  .store-brand small {
+    font-size: 7px !important;
+    letter-spacing: 3px !important;
+    margin-top: 6px !important;
+  }
+  header.store-header {
+    gap: 18px;
+  }
+  .campaign-stage {
+    height: 450px;
+    grid-template-columns: 32% 36% 32%;
+  }
+  .campaign-copy {
+    padding: 28px 17px;
+  }
+  .campaign-copy h1 {
+    font-size: 40px;
+    letter-spacing: -1.1px;
+  }
+  .campaign-copy .eyebrow {
+    font-size: 7px;
+  }
+  .campaign-copy p {
+    font-size: 11px;
+    max-width: 215px;
+  }
+  .campaign-shop {
+    font-size: 9px;
+    padding: 12px 14px;
+    gap: 12px;
+    min-height: 43px;
+  }
+  .campaign-signature {
+    font-size: 5px;
+    letter-spacing: 1px;
+    margin-top: 25px;
+  }
+  .campaign-copy:before {
+    left: 8px;
+  }
+  .campaign-copy:after {
+    right: 8px;
+  }
+  .campaign-arrow {
+    width: 30px;
+    height: 35px;
+  }
+  .campaign-arrow.previous {
+    left: 10px;
+  }
+  .campaign-arrow.next {
+    right: 10px;
+  }
+  .store-assurances {
+    padding: 21px 25px;
+    gap: 12px;
+  }
+  .store-assurances > a {
+    gap: 10px;
+  }
+  .store-assurances strong {
+    font-size: 10px;
+  }
+  .store-assurances small {
+    font-size: 8px;
+  }
+  .store-assurances svg {
+    width: 21px;
+  }
+  .fashion-heading h2 {
+    font-size: 32px;
+  }
+  .fashion-category-grid,
+  .fashion-product-grid {
+    gap: 18px;
+  }
+  .fashion-categories,
+  .fashion-collection {
+    padding-top: 44px;
+  }
+  .fashion-category-grid h3 {
+    font-size: 22px;
+  }
+  .fashion-category-grid p {
+    font-size: 10px;
+  }
+  .occasion-shopping-grid {
+    gap: 17px;
+  }
+  .occasion-shopping-grid > a > div {
+    left: 18px;
+    right: 18px;
+    bottom: 19px;
+  }
+  .occasion-shopping-grid h3 {
+    font-size: 25px;
+  }
+  .occasion-shopping-grid p {
+    font-size: 10px;
+  }
+  .fashion-wide-banner {
+    height: 375px;
+  }
+  .fashion-wide-banner h2 {
+    font-size: 37px;
+  }
+  .fashion-wide-banner > div {
+    padding: 20px;
+  }
+  .fashion-wide-banner p {
+    font-size: 11px;
+  }
+  .fashion-product-grid .product-name {
+    font-size: 13px;
+  }
+}
+@media (max-width: 600px) {
+  header.store-header {
+    gap: 10px;
+    padding-inline: 15px;
+    height: 74px;
+  }
+  .store-brand {
+    gap: 8px;
+  }
+  .store-brand > span {
+    font-size: 21px;
+    letter-spacing: 2px;
+  }
+  .store-brand > span small {
+    font-size: 6px !important;
+    letter-spacing: 2px !important;
+  }
+  header.store-header .rajo-logo img {
+    width: 43px;
+    height: 43px;
+  }
+  .header-actions {
+    gap: 0;
+  }
+  .header-actions .icon-button {
+    width: 28px;
+    height: 37px;
+  }
+  .header-actions svg {
+    width: 18px;
+    height: 18px;
+  }
+  .store-header .mobile-menu {
+    width: 26px;
+    padding: 0;
+  }
+  .campaign-stage {
+    height: auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 310px auto;
+  }
+  .campaign-left {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .campaign-right {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .campaign-photo {
+    object-position: center top;
+  }
+  .campaign-copy {
+    grid-column: 1/-1;
+    grid-row: 2;
+    padding: 27px 24px 42px;
+    min-height: 245px;
+  }
+  .campaign-copy:before,
+  .campaign-copy:after {
+    display: none;
+  }
+  .campaign-copy h1 {
+    font-size: 37px;
+    line-height: 1.13;
+    letter-spacing: -1px;
+    margin: 15px 0 12px;
+  }
+  .campaign-copy h1 br {
+    display: none;
+  }
+  .campaign-copy h1 em:before {
+    content: " ";
+  }
+  .campaign-copy p {
+    font-size: 11px;
+    max-width: 280px;
+    margin-bottom: 19px;
+    line-height: 1.7;
+  }
+  .campaign-copy .eyebrow {
+    font-size: 7px;
+    letter-spacing: 1.8px;
+  }
+  .campaign-shop {
+    font-size: 9px;
+    padding: 11px 16px;
+    gap: 17px;
+    min-height: 40px;
+  }
+  .campaign-signature {
+    display: none;
+  }
+  .campaign-arrow {
+    top: 145px;
+    width: 29px;
+    height: 35px;
+    background: #fffdf8e5;
+  }
+  .campaign-arrow.previous {
+    left: 10px;
+  }
+  .campaign-arrow.next {
+    right: 10px;
+  }
+  .campaign-pagination {
+    bottom: 9px;
+  }
+  .campaign-count {
+    font-size: 7px;
+  }
+  .campaign-custom .campaign-stage {
+    height: 535px;
+  }
+  .campaign-custom .campaign-copy {
+    margin: 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    min-height: 220px;
+    padding: 23px 24px 44px;
+    background: #fff7e9f2;
+  }
+  .campaign-custom .campaign-custom-photo {
+    height: 335px;
+    object-position: center top;
+  }
+  .campaign-custom .campaign-copy h1 {
+    font-size: 30px;
+  }
+  .campaign-custom .campaign-copy p {
+    max-height: 90px;
+  }
+  .campaign-custom .campaign-pagination {
+    bottom: 8px;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    background: none;
+  }
+  .store-assurances {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    padding: 8px 19px;
+  }
+  .store-assurances > a {
+    padding: 13px 8px;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+  .store-assurances > a + a {
+    border-left: 0;
+  }
+  .store-assurances > a:nth-child(2n) {
+    border-left: 1px solid #e1d7c6;
+  }
+  .store-assurances > a:nth-child(n + 3) {
+    border-top: 1px solid #e1d7c6;
+  }
+  .store-assurances svg {
+    width: 20px;
+    height: 20px;
+  }
+  .store-assurances strong {
+    font-size: 9px;
+  }
+  .store-assurances small {
+    font-size: 8px;
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+  .fashion-home .page-width {
+    width: calc(100% - 36px);
+  }
+  .fashion-heading {
+    padding: 0;
+    margin-bottom: 23px;
+  }
+  .fashion-heading > .eyebrow {
+    font-size: 6px;
+    letter-spacing: 1.5px;
+  }
+  .fashion-heading h2 {
+    font-size: 29px;
+    letter-spacing: -0.6px;
+    margin-top: 11px;
+  }
+  .fashion-heading p {
+    font-size: 11px;
+    line-height: 1.7;
+    max-width: 300px;
+    margin: 10px auto 0;
+  }
+  .fashion-heading > a {
+    position: static;
+    width: fit-content;
+    margin: 13px auto 0;
+    font-size: 9px;
+    padding-bottom: 5px;
+  }
+  .fashion-categories,
+  .fashion-collection {
+    padding-top: 36px;
+  }
+  .fashion-category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 23px 14px;
+  }
+  .fashion-category-grid > a > div {
+    aspect-ratio: 3/3.8;
+  }
+  .fashion-category-grid > a > div > span {
+    font-size: 8px;
+    padding: 7px 10px;
+    gap: 10px;
+    bottom: 10px;
+  }
+  .fashion-category-grid h3 {
+    font-size: 22px;
+    margin: 12px 0 5px;
+  }
+  .fashion-category-grid p {
+    font-size: 9px;
+    line-height: 1.5;
+  }
+  .fashion-collection {
+    padding-bottom: 36px;
+  }
+  .fashion-product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 26px 13px;
+  }
+  .fashion-product-grid .product-name {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .fashion-product-grid .fabric {
+    font-size: 10px;
+  }
+  .fashion-product-grid .badge {
+    font-size: 6px;
+  }
+  .fashion-product-grid .product-photo {
+    aspect-ratio: 3/4.2;
+  }
+  .fashion-product-grid .product-meta {
+    margin-top: 12px;
+  }
+  .collection-controls {
+    margin-top: 25px;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  .fashion-outline {
+    font-size: 8px;
+    padding: 11px 14px;
+    gap: 15px;
+    min-height: 40px;
+  }
+  .collection-controls > div {
+    gap: 6px;
+  }
+  .collection-controls > div > button {
+    width: 32px;
+    height: 34px;
+  }
+  .occasion-shopping {
+    padding: 34px 18px;
+  }
+  .occasion-shopping-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px;
+  }
+  .occasion-shopping-grid > a {
+    aspect-ratio: 3/4.8;
+  }
+  .occasion-shopping-grid > a:last-child {
+    grid-column: 1/-1;
+    aspect-ratio: 1.7/1;
+  }
+  .occasion-shopping-grid > a:last-child img {
+    object-position: center 25%;
+  }
+  .occasion-shopping-grid > a > div {
+    left: 13px;
+    right: 13px;
+    bottom: 15px;
+  }
+  .occasion-shopping-grid h3 {
+    font-size: 22px;
+    line-height: 1.18;
+  }
+  .occasion-shopping-grid p {
+    font-size: 9px;
+    line-height: 1.6;
+    margin: 8px 0 10px;
+  }
+  .occasion-shopping-grid span {
+    font-size: 8px;
+    gap: 9px;
+    letter-spacing: 0.7px;
+  }
+  .occasion-shopping-grid > a:after {
+    inset: 25% 0 0;
+  }
+  .fashion-wide-banner {
+    height: auto;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 255px auto;
+  }
+  .fashion-wide-banner > img:first-child {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .fashion-wide-banner > img:last-child {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .fashion-wide-banner > div {
+    grid-column: 1/-1;
+    grid-row: 2;
+    padding: 30px 23px;
+  }
+  .fashion-wide-banner .eyebrow {
+    font-size: 7px;
+  }
+  .fashion-wide-banner h2 {
+    font-size: 34px;
+    line-height: 1.18;
+    margin: 18px 0 13px;
+  }
+  .fashion-wide-banner p {
+    font-size: 11px;
+  }
+  .fashion-wide-banner .campaign-shop {
+    margin-top: 3px;
+  }
+  .fashion-colours {
+    padding-block: 0 37px;
+  }
+  .fashion-colours > div:last-child {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px 20px;
+    max-width: 300px;
+    margin-top: 29px;
+  }
+  .fashion-colours i {
+    width: 47px;
+    height: 47px;
+    outline-offset: 4px;
+  }
+  .fashion-colours button {
+    font-size: 10px;
+    gap: 12px;
+  }
+  .fashion-story {
+    padding-top: 35px;
+  }
+  .fashion-story .founder-preview {
+    margin-bottom: 35px;
+  }
+  .fashion-home .family-preview h2 {
+    font-size: 29px;
+  }
+  .fashion-home .family-preview .eyebrow {
+    font-size: 6px;
+  }
+  .fashion-home .family-preview-grid {
+    gap: 12px;
+  }
+  .fashion-home .family-preview {
+    padding-bottom: 32px;
+  }
+  .fashion-home .family-preview > .section-heading .text-link {
+    font-size: 10px;
+    margin-top: 14px;
+  }
+}
+@media (max-width: 370px) {
+  .store-brand > span {
+    display: none;
+  }
+  .store-brand {
+    margin-right: auto;
+  }
+  .campaign-stage {
+    grid-template-rows: 270px auto;
+  }
+  .campaign-arrow {
+    top: 125px;
+  }
+  .campaign-copy h1 {
+    font-size: 32px;
+  }
+  .campaign-copy {
+    min-height: 230px;
+  }
+  .store-assurances {
+    padding-inline: 13px;
+  }
+  .store-assurances > a {
+    padding-inline: 5px;
+    gap: 7px;
+  }
+  .store-assurances strong {
+    font-size: 8px;
+  }
+  .store-assurances small {
+    font-size: 7px;
+  }
+  .fashion-heading h2 {
+    font-size: 27px;
+  }
+  .occasion-shopping-grid h3 {
+    font-size: 20px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fashion-category-grid img,
+  .fashion-colours i {
+    transition: none;
+  }
+}

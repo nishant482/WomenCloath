@@ -1,0 +1,13 @@
+import { Router } from "express";
+import { authenticate } from "../middleware/auth.js";
+import * as controller from "../controllers/auth.controller.js";
+const router = Router();
+router.post("/auth/signup", controller.postAuthSignup);
+router.post("/auth/resend", controller.postAuthResend);
+router.post("/auth/verify", controller.postAuthVerify);
+router.post("/auth/login", controller.postAuthLogin);
+router.post("/auth/forgot", controller.postAuthForgot);
+router.post("/auth/reset", controller.postAuthReset);
+router.get("/auth/me", authenticate, controller.getAuthMe);
+router.post("/auth/logout", controller.postAuthLogout);
+export default router;

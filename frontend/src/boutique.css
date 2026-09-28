@@ -1,0 +1,214 @@
+/* Boutique refinement: original identity, warm product accents, framed photography. */
+.product .product-name,
+.product .price,
+.product .price strong,
+.related-card h3,
+.related-card p,
+.bag-item h3,
+.bag-item p,
+.product-information h1,
+.detail-price {
+  color: var(--orange);
+}
+.editorial-hero {
+  background: #f5f0e5;
+  background-image: radial-gradient(
+    ellipse at 5% 100%,
+    #efe2c955,
+    transparent 60%
+  );
+}
+.editorial-hero .hero-copy {
+  padding-top: 44px;
+  padding-bottom: 32px;
+}
+.hero-visual {
+  margin: 28px 32px 28px 0;
+  border-radius: 180px 180px 5px 5px;
+  box-shadow: 0 12px 36px #634a2512;
+}
+.hero-main-image {
+  border-radius: inherit;
+}
+.hero-visual:after {
+  border-radius: 0 0 5px 5px;
+}
+.hero-seal {
+  top: 52%;
+  left: -43px;
+}
+.hero-image-label {
+  top: 155px;
+}
+.hero-product-label {
+  bottom: 24px;
+  left: 30px;
+  right: 30px;
+}
+.hero-footnote {
+  margin-top: 32px;
+}
+.category-stories > .section-heading {
+  align-items: center;
+}
+.category-card {
+  border-radius: 120px 120px 4px 4px;
+}
+.category-card h3 {
+  font-size: clamp(26px, 2.4vw, 36px);
+}
+.home-collection .section-heading {
+  align-items: center;
+}
+.home-collection .filter-bar {
+  border: 0;
+  justify-content: center;
+  margin-top: 26px;
+}
+.home-collection .tabs button {
+  border-radius: 24px;
+  padding-inline: 23px;
+}
+.collection-end {
+  margin-top: 38px;
+}
+.occasion-grid > a {
+  border-radius: 4px;
+}
+.founder-preview {
+  border: 1px solid #dde1df;
+}
+.family-preview-grid > a > div {
+  border-radius: 4px;
+}
+@media (min-width: 1101px) {
+  header.store-header {
+    height: 100px;
+  }
+  header.store-header #primary-navigation > a {
+    font-size: 13px;
+  }
+}
+@media (min-width: 601px) and (max-width: 1100px) {
+  .store-header .rajo-logo img {
+    width: 70px;
+    height: 70px;
+  }
+  .hero-visual {
+    margin: 24px 22px 24px 0;
+    border-radius: 120px 120px 4px 4px;
+  }
+  .hero-seal {
+    top: 55%;
+    width: 78px;
+    height: 78px;
+    left: -34px;
+  }
+  .hero-product-label {
+    left: 22px;
+    right: 22px;
+  }
+  .hero-product-label strong {
+    font-size: 23px;
+  }
+  .hero-product-label .circle-arrow {
+    width: 38px;
+    height: 38px;
+  }
+  .category-card {
+    border-radius: 90px 90px 3px 3px;
+  }
+}
+@media (max-width: 600px) {
+  .store-header .rajo-logo img {
+    width: 62px;
+    height: 62px;
+  }
+  header.store-header {
+    height: 78px;
+  }
+  .editorial-hero .hero-copy {
+    padding: 29px 24px 26px;
+  }
+  .editorial-hero h1 {
+    font-size: clamp(35px, 10.3vw, 58px);
+    line-height: 1.15;
+    margin: 18px 0;
+    letter-spacing: -1.4px;
+  }
+  .editorial-hero h1 br:nth-of-type(2) {
+    display: none;
+  }
+  .editorial-hero h1 em {
+    margin-left: 8px;
+  }
+  .hero-bloom {
+    right: 5px;
+    bottom: 58px;
+    width: 45px;
+    height: 45px;
+  }
+  .hero-copy > p {
+    font-size: 12px;
+    margin-bottom: 18px;
+  }
+  .hero-ctas {
+    gap: 18px;
+  }
+  .hero-ctas .primary {
+    min-height: 46px;
+    font-size: 11px;
+    padding-inline: 17px;
+  }
+  .hero-visual {
+    height: 440px;
+    margin: 0 22px 22px;
+    border-radius: 140px 140px 4px 4px;
+  }
+  .hero-main-image {
+    object-position: center top;
+  }
+  .hero-seal {
+    top: 38px;
+    right: -9px;
+    left: auto;
+    width: 76px;
+    height: 76px;
+  }
+  .hero-image-label {
+    top: 135px;
+    right: 12px;
+  }
+  .hero-product-label {
+    left: 22px;
+    right: 22px;
+    bottom: 22px;
+  }
+  .hero-product-label strong {
+    font-size: 25px;
+  }
+  .brand-values {
+    padding-block: 20px;
+  }
+  .category-stories {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+  .category-card {
+    border-radius: 0;
+  }
+  .category-card img {
+    border-radius: 60px 60px 3px 3px;
+    aspect-ratio: 3/4.5;
+  }
+  .category-card h3 {
+    font-size: 18px;
+    text-align: center;
+  }
+  .home-collection .tabs button {
+    padding-inline: 16px;
+  }
+  .home-collection .filter-bar {
+    margin-top: 20px;
+  }
+}

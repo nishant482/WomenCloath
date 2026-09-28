@@ -1,0 +1,388 @@
+.commerce-status {
+  padding: 15vh 24px;
+  text-align: center;
+}
+.commerce-status h1 {
+  font-size: 44px;
+}
+.commerce-form {
+  display: grid;
+  gap: 19px;
+}
+.auth-password-field {
+  position: relative;
+  display: block;
+}
+.commerce-form .auth-password-field input {
+  padding-right: 48px;
+}
+.auth-password-field button {
+  position: absolute;
+  inset: 0 3px 0 auto;
+  width: 42px;
+  display: grid;
+  place-items: center;
+  color: #786b56;
+}
+.commerce-form label {
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+}
+.commerce-form input,
+.commerce-form select,
+.commerce-form textarea,
+.coupon-form input {
+  width: 100%;
+  min-width: 0;
+  padding: 13px 15px;
+  border: 1px solid #d3d1c8;
+  background: #fffdf8;
+  border-radius: 3px;
+  font-size: 16px;
+  color: #173b69;
+}
+.commerce-form textarea {
+  min-height: 115px;
+  resize: vertical;
+}
+.commerce-form small {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #596473;
+}
+.commerce-form .primary {
+  justify-self: start;
+}
+.commerce-error {
+  padding: 13px 16px;
+  background: #fff0eb;
+  border: 1px solid #e4bcac;
+  color: #922e1d;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.commerce-success {
+  padding: 13px 16px;
+  background: #eaf3e9;
+  border: 1px solid #c0d8bd;
+  color: #31582c;
+  font-size: 13px;
+  line-height: 1.7;
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+.account-auth {
+  width: calc(100% - 40px);
+  max-width: 480px;
+  margin: 65px auto 85px;
+}
+.account-auth h1 {
+  font-size: 43px;
+  margin: 19px 0;
+}
+.account-auth > p {
+  font-size: 14px;
+  margin-bottom: 27px;
+}
+.auth-links {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  font-size: 12px;
+}
+.auth-links button:not(.secondary) {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  min-height: 35px;
+}
+.account-page {
+  padding-block: 55px 80px;
+}
+.account-page h1 {
+  font-size: 43px;
+}
+.account-page .commerce-form {
+  max-width: 540px;
+  margin-top: 24px;
+}
+.orders-title {
+  margin-top: 45px;
+}
+.customer-order {
+  padding: 25px;
+  border: 1px solid #e3dfd5;
+  margin-block: 20px;
+  background: #f8f5ee;
+}
+.order-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  margin-bottom: 22px;
+}
+.status-pill {
+  font-size: 11px;
+  text-transform: capitalize;
+  background: #e6edf4;
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: #173b69;
+}
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 17px 0;
+  font-size: 14px;
+}
+.order-item img {
+  width: 65px;
+  height: 85px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.order-item p {
+  font-size: 12px;
+  margin: 8px 0 0;
+}
+.customer-order > p {
+  font-size: 13px;
+}
+.checkout-page {
+  padding-block: 55px 80px;
+}
+.checkout-page h1 {
+  font-size: 48px;
+  margin-block: 15px 35px;
+}
+.checkout-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 70px;
+}
+.checkout-layout h2 {
+  font-size: 28px;
+}
+.checkout-summary {
+  background: #f5f0e5;
+  padding: 30px;
+  align-self: start;
+}
+.checkout-summary dl > div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid #d8d4c8;
+}
+.checkout-summary dl > div:last-child {
+  font-weight: 600;
+  font-size: 18px;
+}
+.coupon-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px;
+}
+.coupon-form .secondary {
+  padding-inline: 17px;
+}
+.checkout-success {
+  padding-block: 90px;
+  text-align: center;
+}
+.checkout-success > svg {
+  color: #577347;
+  margin-bottom: 25px;
+}
+.checkout-success h1 {
+  font-size: 42px;
+}
+.checkout-login-note {
+  padding-top: 30px;
+  text-align: center;
+  font-size: 14px;
+}
+.checkout-button {
+  width: 100%;
+  margin-block: 15px;
+}
+.product-reviews {
+  padding-block: 10px 65px;
+}
+.product-reviews > p {
+  font-size: 14px;
+}
+.review-card {
+  padding: 25px 0;
+  border-bottom: 1px solid #e3dfd5;
+}
+.review-card h3 {
+  font-size: 24px;
+  margin: 12px 0;
+}
+.review-card p {
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+.review-card small {
+  font-size: 12px;
+  color: #596473;
+}
+.review-stars {
+  color: #9f4128;
+  font-size: 19px;
+  letter-spacing: 3px;
+}
+.product-reviews .commerce-form {
+  max-width: 550px;
+  margin-top: 24px;
+}
+.cms-banners {
+  margin-block: 50px;
+}
+.cms-banners article {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+  background: #f5f0e5;
+  margin-block: 20px;
+}
+.cms-banners img {
+  width: 45%;
+  max-height: 440px;
+  object-fit: cover;
+}
+.cms-banners article > div {
+  padding: 30px;
+}
+.cms-banners p {
+  white-space: pre-wrap;
+}
+.blog-page,
+.blog-article {
+  padding-block: 55px 80px;
+}
+.blog-page h1,
+.blog-article h1 {
+  font-size: clamp(35px, 5vw, 65px);
+  margin: 24px 0;
+}
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+.blog-grid img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+}
+.blog-grid h2 {
+  font-size: 26px;
+  margin-top: 22px;
+}
+.blog-grid p {
+  font-size: 13px;
+}
+.blog-article {
+  max-width: 850px;
+}
+.blog-article > .eyebrow {
+  margin-top: 32px;
+}
+.blog-article > img {
+  width: 100%;
+  max-height: 600px;
+  object-fit: cover;
+  margin-block: 30px;
+}
+.blog-body p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.header-actions {
+  flex-shrink: 0;
+}
+.product-information .field-error {
+  color: #922e1d;
+}
+@media (max-width: 800px) {
+  .checkout-layout {
+    grid-template-columns: 1fr;
+    gap: 35px;
+  }
+  .checkout-summary {
+    grid-row: 1;
+  }
+  .blog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cms-banners article {
+    display: block;
+  }
+  .cms-banners img {
+    width: 100%;
+    max-height: 350px;
+  }
+  .cms-banners article > div {
+    padding: 25px;
+  }
+}
+@media (max-width: 600px) {
+  .account-auth {
+    margin-block: 38px 55px;
+  }
+  .account-auth h1,
+  .account-page h1 {
+    font-size: 35px;
+  }
+  .account-page,
+  .checkout-page,
+  .blog-page,
+  .blog-article {
+    padding-block: 36px 50px;
+  }
+  .checkout-page h1 {
+    font-size: 38px;
+  }
+  .customer-order {
+    padding: 18px;
+  }
+  .checkout-summary {
+    padding: 22px;
+  }
+  .order-heading {
+    font-size: 12px;
+  }
+  .order-item {
+    font-size: 13px;
+  }
+  .blog-grid {
+    grid-template-columns: 1fr;
+  }
+  .product-reviews {
+    padding-bottom: 45px;
+  }
+  .checkout-layout h2 {
+    font-size: 26px;
+  }
+  .commerce-form .primary {
+    width: 100%;
+  }
+  .header-actions .icon-button {
+    width: 33px;
+  }
+  .store-header > .rajo-logo {
+    margin-right: auto;
+  }
+}
