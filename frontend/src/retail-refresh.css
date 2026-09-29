@@ -1,5 +1,5 @@
 /* Clean category navigation and product review presentation. */
-header.store-header { background: #fff; border-bottom: 1px solid #e5e5e5; }
+header.store-header { background: #fff; border-bottom: 1px solid #eee4dc; box-shadow: 0 3px 16px #44211b05; }
 .header-currency { white-space: nowrap; padding-right: 18px; border-right: 1px solid #ddd; color: #333; }
 .header-product-search { background: #fff; border-color: #ddd; }
 .header-product-search button { background: transparent; color: #333; }
@@ -22,14 +22,21 @@ header.store-header { background: #fff; border-bottom: 1px solid #e5e5e5; }
 .reviews-list .review-card p { line-height: 1.8; color: #515b66; max-width: 780px; }
 .reviews-list .review-card small { display: block; margin-top: 15px; }
 @media (min-width: 1101px) {
-  header.store-header { grid-template-rows: 92px 48px; height: 140px; }
+  header.store-header { grid-template-rows: 82px 48px; height: 130px; position: sticky; }
   header.store-header #primary-navigation { height: 48px; gap: clamp(22px, 3vw, 46px); border-top-color: #e8e8e8; }
-  header.store-header #primary-navigation > a { color: #333; font-size: 11px; letter-spacing: 1.1px; padding: 16px 0; border-bottom: 2px solid transparent; }
+  header.store-header #primary-navigation > a { color: #493c36; font-size: 11px; letter-spacing: 1px; padding: 16px 0; border-bottom: 2px solid transparent; transition: color .2s, border-color .2s; }
+  header.store-header #primary-navigation > a:first-child { color: #493c36; }
   header.store-header #primary-navigation > a:hover,
-  header.store-header #primary-navigation > a[aria-current="page"] { color: var(--orange); border-bottom-color: var(--orange); }
-  .header-assistance { gap: 15px; }
-  .header-assistance > a:last-child { display: none; }
-  .header-product-search { width: clamp(170px, 17vw, 270px); height: 38px; }
+  header.store-header #primary-navigation > a[aria-current="page"] { color: #891c20; border-bottom-color: #891c20; }
+  .header-assistance { display: none; }
+  .header-product-search { position: absolute; left: 40px; top: 20px; width: clamp(230px, 26vw, 380px); height: 42px; border: 1px solid #e9e0d8; border-radius: 24px; background: #faf8f5; padding-inline: 8px; }
+  .header-product-search:focus-within { border-color: #891c20; box-shadow: 0 0 0 2px #891c2010; }
+  .header-product-search input:focus { outline: none; }
+  .header-product-search button { color: #891c20; }
+  .header-actions { gap: 12px; }
+  .header-actions .icon-button { width: 42px; height: 42px; border-radius: 50%; color: #583b32; }
+  .header-actions .icon-button:hover { color: #891c20; background: #f8eeea; }
+  .store-brand > span { color: #891c20; }
 }
 @media (max-width: 700px) {
   .reviews-layout { grid-template-columns: 1fr; gap: 26px; }

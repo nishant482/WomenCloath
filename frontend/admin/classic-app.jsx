@@ -4,12 +4,18 @@ import { api, productImage } from '../src/api.js';
 import { RecordEditor, OrderDetails } from './admin-editors.jsx';
 import { ClassicLogin, ClassicDashboard, RecordDialog, ProductDetail, Pagination, Status, money, dateText, CustomerShopping } from './classic-components.jsx';
 const navigation = [
- ['overview', 'Overview', LayoutDashboard, 'WORKSPACE'], ['reports', 'Reports', BarChart3],
+ ['overview', 'Overview', LayoutDashboard, 'WORKSPACE'],
+ // Temporarily hidden: ['reports', 'Reports', BarChart3],
  ['products', 'Products & inventory', Package, 'CATALOGUE'], ['inventory', 'Inventory', Boxes], ['categories', 'Categories', Layers],
- ['orders', 'Orders & returns', ShoppingBag, 'SALES'], ['returns', 'Returns', RotateCcw], ['payments', 'Payments', Wallet], ['users', 'Users', Users],
+ ['orders', 'Orders', ShoppingBag, 'SALES'],
+ // Temporarily hidden: ['returns', 'Returns', RotateCcw],
+ ['payments', 'Payments', Wallet], ['users', 'Users', Users],
  ['carts', 'Customer carts', ShoppingBag], ['wishlists', 'Customer wishlists', Star],
  ['reviews', 'Reviews', Star, 'CONTENT'], ['banners', 'Banners', Image], ['family', 'RAJO family', Image], ['blogs', 'Blog posts', FileText],
- ['coupons', 'Discount codes', TicketPercent, 'MANAGEMENT'], ['enquiries', 'Customer enquiries', Mail], ['settings', 'Store & shipping', Settings],
+ // Temporarily hidden: ['coupons', 'Discount codes', TicketPercent, 'MANAGEMENT'],
+ ['enquiries', 'Customer enquiries', Mail, 'MANAGEMENT'],
+ // Shipping and return policy are managed together in this tab; retained for later.
+ // ['settings', 'Store & shipping', Settings],
 ];
 const kinds = { banners: 'banner', family: 'family', blogs: 'blog' };
 const resourceFor = page => ({ inventory: 'products', categories: 'products', returns: 'orders', payments: 'orders', carts: 'users', wishlists: 'users' }[page] || (kinds[page] ? 'content' : page));

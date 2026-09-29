@@ -281,11 +281,15 @@ try {
     await page.locator('.studio-sidebar a[href="#products"]').click();
     await page.getByRole('button', { name: 'View UI linen saree', exact: true }).waitFor();
   }
-  for (const tab of ['inventory', 'categories', 'returns', 'payments', 'reports']) {
+  for (const tab of ['returns', 'reports', 'coupons', 'settings']) {
+    assert.equal(await page.locator(`.studio-sidebar a[href="#${tab}"]`).count(), 0);
+  }
+  for (const tab of ['inventory', 'categories', 'payments']) {
     await page.locator(`.studio-sidebar a[href="#${tab}"]`).click();
-    await page.locator(tab === 'reports' ? '.sales-chart' : '.table-pagination').waitFor();
+    await page.locator('.table-pagination').waitFor();
     assert.equal(await page.locator('.commerce-error').count(), 0);
   }
+  await page.locator('.studio-sidebar nav a[href="#overview"]').click();
   await page.getByLabel('Chart period').selectOption('30');
   await page.getByLabel('Chart metric').selectOption('orders');
   assert.match(await page.locator('.sales-chart').getAttribute('aria-label'), /30 days/);

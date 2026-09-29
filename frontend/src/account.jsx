@@ -389,7 +389,7 @@ export function CheckoutPage() {
     </section>
   );
 }
-const sampleReviews = [
+export const sampleReviews = [
   { _id: "sample-4", name: "Kavya M.", rating: 4, title: "Simple styling works best", body: "Styled this with small jhumkas and flats for a family lunch. The outfit has enough detail on its own. A little steaming before wearing helped the drape.", isDemo: true },
   { _id: "sample-5", name: "Nidhi R.", rating: 5, title: "Loved the overall look", body: "The colour combination was my favourite part. It looks dressed up without needing too many accessories, which is exactly the style I enjoy.", isDemo: true },
   { _id: "sample-6", name: "Simran A.", rating: 4, title: "A lovely festive option", body: "Pretty detailing and an elegant silhouette. I would recommend checking the size chart carefully for your preferred fit. Looks especially nice with neutral sandals.", isDemo: true },

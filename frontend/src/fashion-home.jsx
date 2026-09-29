@@ -12,6 +12,7 @@ import {
 import { useStore } from "./store-context.jsx";
 import { ProductCard } from "./product-card.jsx";
 import { HomeExtras } from "./home-extras.jsx";
+import { HomeReviews } from './home-reviews.jsx';
 import { FounderStoryPreview } from "./brand-story.jsx";
 
 const edits = [
@@ -417,6 +418,7 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
         <FounderStoryPreview />
       </div>
       <HomeExtras />
+      <HomeReviews />
     </div>
   );
 }
