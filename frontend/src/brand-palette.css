@@ -1,0 +1,280 @@
+/* Client palette: sand #FFECD1, cream, and cherry red. */
+:root {
+  --sand: #ffecd1;
+  --cream: #fffaf2;
+  --cherry: #c32643;
+  --ink: #765344;
+  --blue: var(--cherry); /* Compatibility with existing component tokens. */
+  --orange: var(--cherry);
+  --paper: #fff3e3;
+  --muted: #826453;
+  --line: #ead7c2;
+  --yellow: var(--sand);
+}
+body {
+  background: var(--cream);
+  color: var(--ink);
+}
+::selection {
+  background: var(--sand);
+  color: var(--cherry);
+}
+:focus-visible {
+  outline-color: var(--cherry);
+}
+header.store-header {
+  background: var(--cream);
+  box-shadow: 0 1px 0 var(--line);
+}
+.announcement,
+header.store-header #primary-navigation > a {
+  font-weight: 700;
+}
+.announcement {
+  background: var(--sand);
+  color: var(--cherry);
+  border-bottom: 1px solid var(--line);
+}
+.store-brand > span,
+header.store-header #primary-navigation > a.active {
+  color: var(--cherry);
+}
+.header-product-search {
+  background: #fff3e3;
+  border-color: var(--line);
+}
+.header-actions .icon-button,
+.header-currency {
+  color: var(--ink);
+}
+.rajo-logo img {
+  /* Retain the original artwork; brighten its red and cream presentation. */
+  filter: brightness(1.28) saturate(1.12);
+}
+.campaign-copy,
+.campaign-navy .campaign-copy,
+.campaign-rose .campaign-copy {
+  background: radial-gradient(ellipse at 50% 40%, #fffaf2 0%, #ffecd1 85%);
+}
+.campaign-copy h1,
+.campaign-navy .campaign-copy h1,
+.campaign-navy .campaign-copy h1 em,
+.campaign-navy .campaign-copy .eyebrow,
+.campaign-copy .eyebrow {
+  color: var(--cherry);
+}
+.campaign-copy p,
+.campaign-navy .campaign-copy p,
+.campaign-signature,
+.campaign-count,
+.campaign-navy .campaign-signature,
+.campaign-navy .campaign-count {
+  color: var(--ink);
+}
+.campaign-shop,
+.campaign-navy .campaign-shop,
+.fashion-wide-banner .campaign-shop {
+  background: var(--cherry);
+  border-color: var(--cherry);
+  color: var(--cream);
+  border-radius: 3px;
+  box-shadow: 0 5px 16px #c3264312;
+}
+.campaign-shop:hover {
+  background: #ae213b;
+  border-color: #ae213b;
+}
+.campaign-copy h1 {
+  font-size: clamp(36px, 3.8vw, 60px);
+  line-height: 1.17;
+}
+.campaign-signature {
+  display: none;
+}
+.campaign-pagination > button[aria-pressed="true"] > span,
+.campaign-navy .campaign-pagination > button[aria-pressed="true"] > span {
+  background: var(--cherry);
+}
+.store-assurances {
+  background: var(--cream);
+  border-color: var(--line);
+}
+.fashion-section-heading h2,
+.product-name,
+.product .price strong {
+  color: var(--cherry);
+}
+.fashion-section-heading {
+  margin-bottom: 30px;
+}
+.product .product-photo {
+  background: var(--sand);
+}
+.product .quick-add {
+  background: var(--cream);
+  color: var(--cherry);
+  border-top: 1px solid var(--line);
+}
+.product .quick-add:hover {
+  background: var(--cherry);
+  color: var(--cream);
+}
+.occasion-shopping {
+  background: #fff3e3;
+}
+.occasion-shopping-grid > a:after {
+  background: linear-gradient(transparent, #ffecd1 92%);
+  inset: 35% 0 0;
+}
+.occasion-shopping-grid > a > div,
+.occasion-shopping-grid p {
+  color: var(--cherry);
+}
+.occasion-shopping-grid > a > div {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px;
+  background: linear-gradient(#ffecd100, #ffecd1 30%);
+}
+.fashion-wide-banner {
+  background: var(--sand);
+  color: var(--cherry);
+}
+.fashion-wide-banner .eyebrow,
+.fashion-wide-banner h2 em {
+  color: var(--cherry);
+}
+.fashion-wide-banner p {
+  color: var(--ink);
+}
+.founder-preview,
+.page-banner,
+.brand-story-hero,
+.story-mission,
+.name-keepsake {
+  background: var(--sand);
+}
+.founder-preview-photo > span {
+  background: #ffecd1ed;
+  color: var(--cherry);
+  padding: 17px;
+}
+.story-belief {
+  background: var(--sand);
+  color: var(--cherry);
+}
+.story-belief h2 em,
+.story-belief > p,
+.story-belief > svg {
+  color: var(--ink);
+}
+footer.site-footer.refined-footer {
+  background: var(--sand);
+  color: var(--ink);
+  border-top: 1px solid var(--line);
+}
+.refined-footer .footer-brandline p,
+.refined-footer .footer-brandline > div > span,
+.refined-footer .footer-link-group h2,
+.refined-footer .footer-heartline {
+  color: var(--cherry);
+}
+.refined-footer .footer-description,
+.refined-footer .footer-connect > span,
+.refined-footer .footer-link-group a,
+.refined-footer .footer-lastline {
+  color: var(--ink);
+}
+.refined-footer .footer-lastline,
+.refined-footer .footer-socials a {
+  border-color: #d9bda1;
+}
+.footer-contact {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 24px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.footer-contact a {
+  width: fit-content;
+  overflow-wrap: anywhere;
+}
+.footer-contact a:hover,
+.contact-note a {
+  color: var(--cherry);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.contact-note a {
+  display: inline-block;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+.account-auth {
+  box-shadow: 0 12px 45px #a7683510;
+  border-color: var(--line);
+}
+.community-invitation {
+  background: var(--sand);
+  border-top: 1px solid var(--line);
+}
+.home-reviews {
+  background: #fff3e3;
+}
+.home-review-author > span:last-child,
+.home-review-progress {
+  color: var(--ink);
+}
+.story-belief h2,
+.story-belief h2 em {
+  color: var(--cherry);
+}
+.mission-grid article:nth-last-child(-n + 2),
+.customer-feature {
+  background: var(--sand);
+}
+.customer-note,
+.customer-note p,
+.customer-note h3 {
+  color: var(--ink);
+}
+.auth-page {
+  background: var(--cream);
+}
+.auth-visual {
+  background: var(--sand);
+}
+.auth-visual::after {
+  background: linear-gradient(transparent 25%, #ffecd1 90%);
+}
+.auth-visual-copy,
+.auth-visual-copy > span,
+.auth-visual-copy h2,
+.auth-visual-copy h2 em,
+.auth-visual-copy p {
+  color: var(--cherry);
+}
+.auth-benefits {
+  border-color: var(--line);
+}
+.auth-card .commerce-form .primary {
+  background: var(--cherry);
+  border-color: var(--cherry);
+}
+.auth-card input:focus-visible {
+  outline-color: var(--cherry);
+}
+@media (max-width: 600px) {
+  .campaign-copy h1 {
+    font-size: 35px;
+    letter-spacing: -1px;
+  }
+  .occasion-shopping-grid > a > div {
+    padding: 18px 14px;
+  }
+  .footer-contact {
+    font-size: 12px;
+  }
+}

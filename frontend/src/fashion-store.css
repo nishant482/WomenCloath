@@ -271,7 +271,7 @@
   letter-spacing: 1px;
 }
 .campaign-navy .campaign-copy {
-  background: #173b69;
+  background: #c32643;
 }
 .campaign-navy .campaign-copy h1 {
   color: #fff9ed;
@@ -287,7 +287,7 @@
 }
 .campaign-navy .campaign-shop {
   background: #fff8e8;
-  color: #173b69;
+  color: #c32643;
   border-color: #fff8e8;
 }
 .campaign-navy .campaign-pagination > button > span {
@@ -546,7 +546,7 @@
   content: "";
   position: absolute;
   inset: 40% 0 0;
-  background: linear-gradient(transparent, #112b47d9);
+  background: linear-gradient(transparent, #765344d9);
 }
 .occasion-shopping-grid > a > div {
   position: absolute;

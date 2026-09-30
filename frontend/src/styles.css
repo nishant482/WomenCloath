@@ -1,12 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap");
 
 :root {
-  --blue: #173b69;
-  --orange: #9f4128;
+  --blue: #c32643;
+  --orange: #c32643;
   --yellow: #efce78;
   --cream: #fffdf8;
   --paper: #f5f0e5;
-  --muted: #596473;
+  --muted: #826453;
   --line: #e3dfd5;
   --gutter: clamp(20px, 5vw, 88px);
   --serif: "Playfair Display", Georgia, serif;
@@ -147,8 +147,8 @@ main {
   color: white;
 }
 .primary:hover {
-  background: #244d7e;
-  border-color: #244d7e;
+  background: #826453;
+  border-color: #826453;
   transform: translateY(-2px);
 }
 .secondary {
@@ -163,7 +163,7 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 14px;
-  border-bottom: 1px solid #173b6970;
+  border-bottom: 1px solid #c3264370;
   padding: 8px 0;
   font-size: 13px;
   line-height: 1.6;
@@ -323,7 +323,7 @@ main {
   position: fixed;
   inset: 0;
   z-index: 14;
-  background: #10264166;
+  background: #76534466;
   backdrop-filter: blur(3px);
 }
 
@@ -430,7 +430,7 @@ main {
   content: "";
   position: absolute;
   inset: 50% 0 0;
-  background: linear-gradient(transparent, #16232b99);
+  background: linear-gradient(transparent, #76534499);
   pointer-events: none;
 }
 .hero-image-label {
@@ -488,7 +488,7 @@ main {
   border-radius: 50%;
   background: var(--yellow);
   color: var(--blue);
-  outline: 1px solid #173b6940;
+  outline: 1px solid #c3264340;
   outline-offset: -7px;
   display: flex;
   align-items: center;
@@ -760,7 +760,7 @@ main {
 }
 .community-invitation p {
   font-size: 12px;
-  color: #4d5a69;
+  color: #765344;
   margin: 0;
 }
 .community-invitation .primary {
@@ -771,7 +771,7 @@ main {
   position: fixed;
   inset: 0;
   z-index: 50;
-  background: #10264170;
+  background: #76534470;
   backdrop-filter: blur(5px);
   display: flex;
   justify-content: flex-end;
@@ -783,7 +783,7 @@ main {
   background: var(--cream);
   overflow: auto;
   padding: 30px;
-  box-shadow: -10px 0 50px #10264120;
+  box-shadow: -10px 0 50px #76534420;
   animation: drawer-in 0.25s ease-out;
 }
 .drawer-heading {
@@ -913,7 +913,7 @@ main {
   display: flex;
   align-items: center;
   gap: 13px;
-  box-shadow: 0 8px 35px #173b6930;
+  box-shadow: 0 8px 35px #c3264330;
   max-width: calc(100% - 32px);
   width: max-content;
   font-size: 13px;

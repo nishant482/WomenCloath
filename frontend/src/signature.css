@@ -2,7 +2,7 @@
 header.store-header {
   height: 92px;
   background: #fffdf8;
-  box-shadow: 0 1px 0 #173b6910;
+  box-shadow: 0 1px 0 #c3264310;
 }
 header.store-header .rajo-logo img {
   width: 64px;
@@ -16,13 +16,13 @@ header.store-header .rajo-logo img {
 .editorial-hero {
   min-height: 620px;
   grid-template-columns: 46% 54%;
-  background: #173b69;
+  background: #c32643;
   position: relative;
   overflow: hidden;
 }
 .editorial-hero .hero-copy {
   padding: 65px 9% 35px max(var(--gutter), calc((100vw - 1440px) / 2));
-  background: #173b69;
+  background: #c32643;
   position: relative;
   z-index: 2;
 }
@@ -59,7 +59,7 @@ header.store-header .rajo-logo img {
 }
 .hero-ctas .primary {
   background: #fff7e7;
-  color: #173b69;
+  color: #c32643;
   border: 1px solid #fff7e7;
   padding: 16px 21px;
   font-size: 12px;
@@ -103,8 +103,8 @@ header.store-header .rajo-logo img {
   border-radius: 0;
   inset: 0;
   background:
-    linear-gradient(90deg, #173b6933, transparent 25%),
-    linear-gradient(0deg, #162c45a8, transparent 38%);
+    linear-gradient(90deg, #c3264333, transparent 25%),
+    linear-gradient(0deg, #765344a8, transparent 38%);
 }
 .hero-image-label {
   writing-mode: horizontal-tb;
@@ -187,7 +187,7 @@ header.store-header .rajo-logo img {
 }
 .category-card::after {
   inset: 40% 0 0;
-  background: linear-gradient(transparent, #142c47c9);
+  background: linear-gradient(transparent, #765344c9);
 }
 .category-card h3 {
   font-size: 32px;
@@ -218,8 +218,8 @@ header.store-header .rajo-logo img {
   padding: 10px 18px;
 }
 .home-collection .tabs button.active {
-  background: #173b69;
-  border-color: #173b69;
+  background: #c32643;
+  border-color: #c32643;
   color: #fffdf8;
 }
 .product-grid {
@@ -233,7 +233,7 @@ header.store-header .rajo-logo img {
   line-height: 1.5;
   font-size: 15px;
   font-weight: 500;
-  color: #9f4128;
+  color: #c32643;
 }
 .product-meta {
   margin-top: 17px;
@@ -254,7 +254,7 @@ header.store-header .rajo-logo img {
   gap: 9px;
 }
 .product .price strong {
-  color: #9f4128;
+  color: #c32643;
   font-size: 15px;
 }
 .product .price del {
@@ -433,7 +433,7 @@ header.store-header .rajo-logo img {
     display: block;
     min-height: 635px;
     isolation: isolate;
-    background: #173b69;
+    background: #c32643;
   }
   .hero-visual {
     position: absolute;
@@ -453,10 +453,10 @@ header.store-header .rajo-logo img {
     inset: 0;
     background: linear-gradient(
       0deg,
-      #112d50 1%,
-      #112d50ed 17%,
-      #112d509c 35%,
-      #14283e08 67%
+      #765344 1%,
+      #765344ed 17%,
+      #7653449c 35%,
+      #76534408 67%
     );
   }
   .hero-product-label {
@@ -742,7 +742,7 @@ header.store-header .rajo-logo img {
     position: relative;
     min-width: 0;
     overflow: hidden;
-    background: #173b69;
+    background: #c32643;
     border-radius: 3px;
   }
   .category-card img {

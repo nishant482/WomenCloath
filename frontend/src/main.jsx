@@ -42,6 +42,8 @@ import "./whatsapp.css";
 import "./retail-refresh.css";
 import { ProductCard } from "./product-card.jsx";
 import { FashionHome } from "./fashion-home.jsx";
+import "./brand-palette.css";
+import "./inner-pages.css";
 
 const money = (n) => `₹${n.toLocaleString("en-IN")}`;
 const categoryPath = (c) =>
@@ -93,7 +95,11 @@ function App() {
     toastTimer.current = setTimeout(() => setToast(""), 2800);
   };
   const toggleWish = (id) => {
-    if (!user) { navigate('/account'); notify('Sign in to save your favourites.'); return; }
+    if (!user) {
+      navigate("/account");
+      notify("Sign in to save your favourites.");
+      return;
+    }
     return setWish((w) =>
       w.includes(id) ? w.filter((x) => x !== id) : [...w, id],
     ).catch((e) => notify(e.message));
@@ -366,7 +372,11 @@ function App() {
             aria-label="Open wishlist"
             className="icon-button"
             onClick={() => {
-              if (!user) { navigate('/account'); notify('Sign in to see your wishlist.'); return; }
+              if (!user) {
+                navigate("/account");
+                notify("Sign in to see your wishlist.");
+                return;
+              }
               setPanel("wishlist");
               setMenu(false);
             }}
@@ -432,7 +442,11 @@ function App() {
           </button>
         </form>
       )}
-      <main id="main-content" tabIndex={-1}>
+      <main
+        id="main-content"
+        className={isHome ? "" : "storefront-inner"}
+        tabIndex={-1}
+      >
         {isHome && (
           <FashionHome
             products={products}
@@ -449,6 +463,15 @@ function App() {
         {isCollection && (
           <PageBanner
             eyebrow="FIND A LITTLE MORE YOU"
+            image={
+              category === "Lehengas"
+                ? "/images/floral.jpg"
+                : category === "Kurta sets"
+                  ? "/images/kurta.jpg"
+                  : category === "New arrivals"
+                    ? "/images/magenta.jpg"
+                    : "/images/ivory.jpg"
+            }
             title={
               category === "All styles"
                 ? "The RAJO wardrobe."
@@ -512,6 +535,7 @@ function App() {
               clearCategory={() => navigate("/collections/all")}
               clearSearch={() => setSearch("")}
             />
+
             <div className="product-grid">
               {visible.map((p) => (
                 <ProductCard

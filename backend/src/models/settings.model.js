@@ -17,7 +17,7 @@ export const defaultSettings = {
   shippingFee: 0,
   freeShippingAbove: 2999,
   codEnabled: true,
-  contactEmail: "",
+  contactEmail: "Info.rajothreads@gmail.com",
   shippingPolicy: "Delivery timelines will be confirmed with your order.",
   returnPolicy:
     "Contact the store about return eligibility before placing an order.",

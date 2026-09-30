@@ -30,7 +30,7 @@ export function HomeReviews() {
       </div>
       <div className="home-review-track" id="home-review-track" ref={track} tabIndex={0} aria-label="Customer reviews; use left and right arrows to browse" onKeyDown={e => { if (['ArrowLeft', 'ArrowRight'].includes(e.key)) { e.preventDefault(); move(e.key === 'ArrowRight' ? 1 : -1); } }}>
         {sampleReviews.map((review, index) => <article className="home-review-card" key={review._id} aria-label={`Review ${index + 1} of ${sampleReviews.length}`}>
-          <div className="home-review-rating"><span aria-label={`${review.rating} out of 5 stars`}>{Array.from({ length: 5 }, (_, i) => <Star key={i} size={14} fill={i < review.rating ? 'currentColor' : 'none'} aria-hidden="true" />)}</span><Quote size={25} aria-hidden="true" /></div>
+          <div className="home-review-rating"><span role="img" aria-label={`${review.rating} out of 5 stars`}>{Array.from({ length: 5 }, (_, i) => <Star key={i} size={14} fill={i < review.rating ? 'currentColor' : 'none'} aria-hidden="true" />)}</span><Quote size={25} aria-hidden="true" /></div>
           <h3>{review.title}</h3><p>{review.body}</p><div className="home-review-author"><span aria-hidden="true">{review.name[0]}</span><strong>{review.name}</strong><span>RAJO community</span></div>
         </article>)}
       </div>

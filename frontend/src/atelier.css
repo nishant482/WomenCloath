@@ -8,7 +8,7 @@
 body > #root > header {
   top: 0;
   z-index: 30;
-  box-shadow: 0 3px 20px #173b6905;
+  box-shadow: 0 3px 20px #c3264305;
 }
 .store-header .rajo-logo {
   display: flex;
@@ -81,7 +81,7 @@ header.store-header #primary-navigation > a {
 }
 .category-card:after {
   inset: 50% 0 0;
-  background: linear-gradient(transparent, #102641b8);
+  background: linear-gradient(transparent, #765344b8);
 }
 .category-card > div {
   left: 28px;
@@ -133,7 +133,7 @@ header.store-header #primary-navigation > a {
 }
 .occasion-grid > a:after {
   inset: 35% 0 0;
-  background: linear-gradient(transparent, #102641c9);
+  background: linear-gradient(transparent, #765344c9);
 }
 .occasion-grid > a > div {
   left: 34px;
@@ -203,7 +203,7 @@ header.store-header #primary-navigation > a {
 }
 .founder-preview .text-link {
   color: var(--blue);
-  border-color: #173b6966;
+  border-color: #c3264366;
   font-size: 13px;
 }
 .founder-preview-photo > span {
@@ -614,7 +614,7 @@ header.store-header #primary-navigation > a {
   font-size: 13px;
 }
 .brand-story .primary:hover {
-  background: #244d7e;
+  background: #826453;
 }
 .founder-vision blockquote p {
   color: var(--blue);
@@ -827,7 +827,7 @@ footer.site-footer.refined-footer {
     padding: 25px var(--gutter) 32px;
     max-height: calc(100dvh - 88px);
     overflow: auto;
-    box-shadow: 0 20px 35px #173b6910;
+    box-shadow: 0 20px 35px #c3264310;
     border-top: 1px solid var(--line);
   }
   header.store-header #primary-navigation.open {

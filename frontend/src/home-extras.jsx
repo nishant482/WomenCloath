@@ -1,3 +1,4 @@
+import { CONTACT_EMAIL } from "./brand-config.js";
 import { useStore } from "./store-context.jsx";
 import { CommunityLinks } from "./community.jsx";
 import { BrandLogo } from "./brand-story.jsx";
@@ -83,6 +84,8 @@ const footerGroups = [
 ];
 
 export function SiteFooter() {
+  const { settings } = useStore();
+  const contactEmail = settings.contactEmail || CONTACT_EMAIL;
   return (
     <footer className="site-footer refined-footer">
       <div className="footer-layout">
@@ -103,6 +106,7 @@ export function SiteFooter() {
             <br />
             For every woman and her beautiful moments.
           </p>
+          <div className="footer-contact"><a href={"mailto:" + contactEmail}>{contactEmail}</a><a href="https://wa.me/919716422466" target="_blank" rel="noopener noreferrer">WhatsApp · +91 97164 22466</a></div>
           <div className="footer-connect">
             <span>STAY CLOSE</span>
             <CommunityLinks />

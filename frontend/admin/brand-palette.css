@@ -1,0 +1,115 @@
+/* Sand and cherry admin presentation. Keep entry-specific overrides after base styles. */
+:root {
+  --sand: #ffecd1;
+  --cream: #fffaf2;
+  --cherry: #c32643;
+  --ink: #765344;
+  --blue: var(--cherry); /* Compatibility with existing component tokens. */
+  --orange: var(--cherry);
+  --paper: #fff3e3;
+  --muted: #826453;
+  --line: #ead7c2;
+  --yellow: var(--sand);
+}
+body {
+  background: var(--cream);
+  color: var(--ink);
+}
+:focus-visible {
+  outline-color: var(--cherry);
+}
+.studio-brand img, .classic-login-brand img {
+  /* Retain the original artwork; brighten its red and cream presentation. */
+  filter: brightness(1.28) saturate(1.12);
+}
+.classic-login .account-auth {
+  box-shadow: none;
+}
+.classic-studio,
+.classic-login,
+.studio-dialog {
+  --blue: var(--cherry);
+  --orange: var(--cherry);
+  --cream: #fffaf2;
+  --paper: #fff3e3;
+  --line: #ead7c2;
+  color: var(--ink);
+}
+.classic-studio,
+.classic-login {
+  background: #fff3e3;
+}
+.classic-studio .studio-sidebar {
+  background: var(--cream);
+  border-color: var(--line);
+}
+.classic-studio .studio-sidebar nav a[aria-current="page"] {
+  background: var(--sand);
+  color: var(--cherry);
+  box-shadow: inset 3px 0 var(--cherry);
+}
+.classic-studio .studio-sidebar nav a {
+  min-height: 36px;
+  font-size: 12px;
+}
+.classic-studio .studio-nav-group,
+.classic-studio .studio-header .eyebrow,
+.compact-stats article > div,
+.compact-stats article > small,
+.classic-studio .chart-footnote,
+.classic-studio .compact-table th,
+.classic-studio .table-empty,
+.classic-studio .studio-table-wrap th,
+.classic-studio .studio-table-wrap td small {
+  color: var(--ink);
+}
+.compact-stats article > small,
+.classic-studio .chart-footnote {
+  font-size: 11px;
+}
+.classic-studio .sales-chart text {
+  fill: var(--ink);
+}
+.classic-login .account-auth > p,
+.classic-login .login-store-link,
+.classic-login-brand span {
+  color: var(--ink);
+}
+.classic-studio h1,
+.classic-studio h2,
+.classic-studio h3 {
+  color: var(--ink);
+}
+.classic-studio .studio-header h1,
+.classic-studio .studio-brand > span,
+.classic-login-brand strong,
+.compact-stats article > strong {
+  color: var(--cherry);
+}
+.classic-panel,
+.compact-stats article,
+.records-panel,
+.classic-login-shell {
+  background: var(--cream);
+  border-color: var(--line);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px #aa6e3810;
+}
+.classic-studio .primary,
+.studio-dialog .primary,
+.classic-login .commerce-form .primary {
+  background: var(--cherry);
+  border-color: var(--cherry);
+  color: var(--cream);
+}
+.classic-login-visual::after {
+  background: linear-gradient(transparent 40%, #ffecd1 88%);
+}
+.classic-login-visual > div,
+.classic-login-visual p {
+  color: var(--cherry);
+  opacity: 1;
+}
+.classic-login {
+  border-top-color: var(--cherry);
+}

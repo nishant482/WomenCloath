@@ -30,8 +30,8 @@ const edits = [
     title: "Wedding & festive\nlehengas.",
     eyebrow: "THE OCCASION EDIT",
     text: "Lehengas that make every entrance a little more memorable.",
-    left: "/images/blue.jpg",
-    right: "/images/charcoal.jpg",
+    left: "/images/floral.jpg",
+    right: "/images/pink.jpg",
     link: "#/collections/lehengas",
     action: "Explore lehengas",
     tone: "navy",
@@ -238,7 +238,7 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
   const shared = { wish, toggleWish, add };
   const categories = [
     ["Sarees", "sarees", "pink", "Six yards of elegance"],
-    ["Lehengas", "lehengas", "blue", "Made for the moment"],
+    ["Lehengas", "lehengas", "floral", "Made for the moment"],
     ["Kurta sets", "kurta-sets", "emerald", "Everyday, elevated"],
     ["New arrivals", "new-arrivals", "magenta", "A fresh point of view"],
   ];
@@ -323,7 +323,7 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
             [
               "Wedding celebrations",
               "For the moments you’ll remember.",
-              "charcoal",
+              "floral",
               "lehengas",
             ],
             [
@@ -380,8 +380,8 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
           </a>
         </div>
         <img
-          src="/images/blue.jpg"
-          alt="Teal embroidered lehenga"
+          src="/images/floral.jpg"
+          alt="Floral details from the celebration collection"
           loading="lazy"
         />
       </section>

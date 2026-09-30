@@ -50,7 +50,7 @@
 }
 .studio-sidebar nav a[aria-current="page"] {
   background: #f4e9df;
-  color: #9f4128;
+  color: #c32643;
 }
 .studio-sidebar nav a:hover {
   background: #f5f0e5;
@@ -101,7 +101,7 @@
 }
 .studio-stats span {
   font-size: 12px;
-  color: #596473;
+  color: #826453;
 }
 .studio-stats strong {
   display: block;
@@ -182,7 +182,7 @@
   font-size: 11px;
   line-height: 1.7;
   margin-top: 6px;
-  color: #596473;
+  color: #826453;
 }
 .studio-table-wrap td p {
   font-size: 12px;
@@ -223,10 +223,10 @@
   padding: 30px;
   border: 1px solid #d6d1c5;
   background: #fffdf8;
-  color: #173b69;
+  color: #c32643;
 }
 .studio-dialog::backdrop {
-  background: #173b6977;
+  background: #c3264377;
   backdrop-filter: blur(4px);
 }
 .studio-dialog-heading {
@@ -274,7 +274,7 @@
 }
 .studio-note {
   font-size: 12px;
-  color: #596473;
+  color: #826453;
   line-height: 1.8;
 }
 .studio-order {
@@ -307,7 +307,7 @@
 .studio-shade {
   position: fixed;
   inset: 0;
-  background: #173b6966;
+  background: #c3264366;
   z-index: 25;
 }
 @media (max-width: 1000px) {

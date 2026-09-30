@@ -1,17 +1,17 @@
-.skip-link { position: fixed; top: -60px; left: 16px; z-index: 50; padding: 12px 18px; background: #173b69; color: white; font-size: 13px; }
+.skip-link { position: fixed; top: -60px; left: 16px; z-index: 50; padding: 12px 18px; background: #c32643; color: white; font-size: 13px; }
 .skip-link:focus { top: 10px; }
-body > #root > header { position: sticky; top: 0; z-index: 15; box-shadow: 0 3px 15px #173b6909; }
+body > #root > header { position: sticky; top: 0; z-index: 15; box-shadow: 0 3px 15px #c3264309; }
 html { scroll-padding-top: 125px; }
 header #primary-navigation { gap: clamp(13px, 1.6vw, 27px); }
 header #primary-navigation a { font-size: 11px; }
-.back-to-top { position: fixed; right: 22px; bottom: 22px; z-index: 16; display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid #d7c9a7; border-radius: 50%; background: #fffdf5; color: #173b69; box-shadow: 0 4px 18px #173b691c; }
+.back-to-top { position: fixed; right: 22px; bottom: 22px; z-index: 16; display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid #d7c9a7; border-radius: 50%; background: #fffdf5; color: #c32643; box-shadow: 0 4px 18px #c326431c; }
 .back-to-top:hover { background: #f6e9c4; }
 .mobile-filter-toggle { display: none; }
 .product-photo .wish-button { transition: background .2s, color .2s; }
 .product-photo .wish-button.saved { background: #fff0e4; }
 @media (max-width: 960px) {
   header .mobile-menu { display: grid; }
-  header #primary-navigation { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fffefa; padding: 18px 5%; box-shadow: 0 12px 22px #173b691a; border-bottom: 1px solid #e4ddce; }
+  header #primary-navigation { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fffefa; padding: 18px 5%; box-shadow: 0 12px 22px #c326431a; border-bottom: 1px solid #e4ddce; }
   header #primary-navigation.open { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 20px; }
   header #primary-navigation a { font-size: 13px; padding: 12px 8px; }
   header #primary-navigation a[aria-current=page] { background: #f4efdf; border: 0; }

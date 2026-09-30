@@ -1,3 +1,4 @@
+import { CONTACT_EMAIL } from "./brand-config.js";
 import { api, productImage } from "./api.js";
 import { ProductReviews } from "./account.jsx";
 import { useStore } from "./store-context.jsx";
@@ -17,7 +18,12 @@ import {
   MessageCircle,
 } from "lucide-react";
 const money = (n) => `₹${n.toLocaleString("en-IN")}`;
-export function PageBanner({ eyebrow, title, text }) {
+export function PageBanner({
+  eyebrow,
+  title,
+  text,
+  image = "/images/ivory.jpg",
+}) {
   return (
     <section className="page-banner">
       <div className="breadcrumb">
@@ -25,12 +31,17 @@ export function PageBanner({ eyebrow, title, text }) {
         <span>/</span>
         <span>{title}</span>
       </div>
-      <div className="eyebrow">{eyebrow}</div>
-      <h1>{title}</h1>
-      <p>{text}</p>
-      <span className="banner-flower" aria-hidden="true">
-        ✳
-      </span>
+      <div className="page-banner-content">
+        <div className="page-banner-copy">
+          <div className="eyebrow">{eyebrow}</div>
+          <h1>{title}</h1>
+          <p>{text}</p>
+        </div>
+        <div className="page-banner-portrait" aria-hidden="true">
+          <img src={image} alt="" />
+          <span>Thoughtfully chosen. Beautifully you.</span>
+        </div>
+      </div>
     </section>
   );
 }
@@ -312,6 +323,8 @@ function ProductPage({
   );
 }
 function ContactPage() {
+  const { settings } = useStore();
+  const contactEmail = settings.contactEmail || CONTACT_EMAIL;
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -338,6 +351,13 @@ function ContactPage() {
             <MessageCircle />
             <div>
               <h3>Style & collection questions</h3>
+              <a
+                href="https://wa.me/919716422466"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                WhatsApp · +91 97164 22466
+              </a>
               <p>Tell us the product name and what you have in mind.</p>
             </div>
           </div>
@@ -345,6 +365,7 @@ function ContactPage() {
             <Mail />
             <div>
               <h3>Collaborations & feedback</h3>
+              <a href={"mailto:" + contactEmail}>{contactEmail}</a>
               <p>We’re always happy to hear a fresh perspective.</p>
             </div>
           </div>

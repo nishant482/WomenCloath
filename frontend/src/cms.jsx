@@ -70,7 +70,29 @@ export function BlogPage({ slug }) {
       <div className="eyebrow">INSPIRATION, WITH LOVE</div>
       <h1>The RAJO journal.</h1>
       <p>Stories, styling ideas and a little everyday inspiration.</p>
-      {!blogs.length && <p>New stories are on their way. Come back soon.</p>}
+      {!blogs.length && (
+        <div className="journal-empty">
+          <img
+            src="/images/ivory.jpg"
+            alt="Ivory saree from the RAJO collection"
+          />
+          <div>
+            <span className="eyebrow">A NEW CHAPTER, COMING SOON</span>
+            <h2>
+              A little inspiration.
+              <br />
+              <em>A lot of possibilities.</em>
+            </h2>
+            <p>
+              Our first stories are on their way. Until then, discover colours
+              and details to make your own.
+            </p>
+            <a className="primary" href="#/collections/all">
+              Explore the collection <ArrowUpRight size={17} />
+            </a>
+          </div>
+        </div>
+      )}
       <div className="blog-grid">
         {blogs.map((b) => (
           <a key={b._id} href={"#/blog/" + b.slug}>
