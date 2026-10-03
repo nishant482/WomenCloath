@@ -4,6 +4,7 @@ import { ProductReviews } from "./account.jsx";
 import { useStore } from "./store-context.jsx";
 import { CustomerGallery } from "./customer-gallery.jsx";
 import { BrandStoryPage } from "./brand-story.jsx";
+import {sizeLabel,categorySlug} from "./catalogue-options.js";
 import React, { useState } from "react";
 import {
   ArrowUpRight,
@@ -150,7 +151,7 @@ function ProductPage({
 }) {
   const [size, setSize] = useState("");
   const [sizeError, setSizeError] = useState(false);
-  const stitched = p.category === "Kurta sets";
+  const stitched = Boolean(p.sizes?.length);
   return (
     <>
       <div className="breadcrumb page-width">
@@ -158,7 +159,7 @@ function ProductPage({
         <span>/</span>
         <a
           href={
-            "/collections/" + p.category.toLowerCase().replaceAll(" ", "-")
+            "/collections/" + categorySlug(p.category)
           }
         >
           {p.category}
@@ -184,7 +185,7 @@ function ProductPage({
               </>
             )}
           </div>
-          <small className="tax-note">Inclusive of all taxes</small>
+          <small className="tax-note">Tax included. Shipping calculated at checkout</small>
           <div className="product-divider" />
           {p.description && (
             <p className="product-description">{p.description}</p>
@@ -196,7 +197,7 @@ function ProductPage({
               ? "saree"
               : p.category === "Lehengas"
                 ? "lehenga"
-                : "kurta set"}{" "}
+                : p.category === "Kurta sets" ? "kurta set" : "style"}{" "}
             brings an effortless sense of occasion to your wardrobe.
           </p>
           <div className="product-choice">
@@ -213,7 +214,7 @@ function ProductPage({
                     }}
                     className={size === v ? "active" : ""}
                   >
-                    {v}
+                    {sizeLabel(v)}
                   </button>
                 ))}
               </div>
@@ -221,7 +222,7 @@ function ProductPage({
               <p>
                 {p.category === "Sarees"
                   ? "Free size · Unstitched blouse piece included"
-                  : "Semi-stitched · Blouse fabric and dupatta included"}
+                  : p.category === "Lehengas" ? "Semi-stitched · Blouse fabric and dupatta included" : "Free size · See the product description for fit details"}
               </p>
             )}
             {sizeError && (
@@ -275,7 +276,7 @@ function ProductPage({
                 ? "Saree length: 5.5 metres. Blouse piece: 0.8 metres."
                 : p.category === "Lehengas"
                   ? "Includes a semi-stitched lehenga, unstitched blouse fabric and a coordinating dupatta."
-                  : "Includes a tunic or kurta with coordinating bottoms. Select your preferred size above."}{" "}
+                  : p.category === "Kurta sets" ? "Includes a tunic or kurta with coordinating bottoms. Select your preferred size above." : "See the product description for fabric, fit and included pieces."}{" "}
               Jewellery and accessories shown are styling suggestions.
             </p>
           </details>

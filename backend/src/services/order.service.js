@@ -7,7 +7,7 @@ import { fail, objectId } from "../services/auth.service.js";
 export const checkoutSchema = z.object({
   address,
   coupon: z.string().trim().toUpperCase().max(30).default(""),
-  items: z.array(z.object({ productId: z.number().int().positive(), size: z.string().max(10).default(""), qty: z.number().int().min(1).max(20) })).min(1).max(50).optional(),
+  items: z.array(z.object({ productId: z.number().int().positive(), size: z.string().max(30).default(""), qty: z.number().int().min(1).max(20) })).min(1).max(50).optional(),
 });
 const cents = (n) => Math.round(n * 100);
 export async function priceCart(db, cart, couponCode = "", session) {
@@ -23,7 +23,7 @@ export async function priceCart(db, cart, couponCode = "", session) {
       .collection("products")
       .findOne({ id: line.productId, status: "active" }, { session });
     if (!p) throw fail(409, "A product in your bag is no longer available.");
-    if (p.category === "Kurta sets" && !p.sizes.includes(line.size))
+    if (p.sizes?.length > 0 && !p.sizes.includes(line.size))
       throw fail(400, "Choose an available size.");
     quantities.set(p.id, (quantities.get(p.id) || 0) + line.qty);
     if (p.stock < quantities.get(p.id))
@@ -33,7 +33,7 @@ export async function priceCart(db, cart, couponCode = "", session) {
       name: p.name,
       sku: p.sku,
       imageUrl: p.imageUrl,
-      size: line.size || "",
+      size: p.sizes?.length ? line.size : "",
       qty: line.qty,
       unitPrice: p.price,
       lineTotal: (cents(p.price) * line.qty) / 100,

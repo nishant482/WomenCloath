@@ -22,6 +22,7 @@ const write = (key, value) => {
   } catch {}
 };
 export function StoreProvider({ children }) {
+  const [categories,setCategories] = useState([]);
   const [products, setProducts] = useState([]),
     [content, setContent] = useState([]),
     [user, setUser] = useState(null),
@@ -74,6 +75,7 @@ export function StoreProvider({ children }) {
       all = all.concat(more.items);
     }
     setProducts(all);
+    setCategories(catalog.categories || []);
     setContent(contents.items);
     setSettings(storeSettings);
     return all;
@@ -129,7 +131,7 @@ export function StoreProvider({ children }) {
     );
     for (const item of guestCart) {
       const p = products.find((p) => p.id === item.productId);
-      if (!p || (p.category === "Kurta sets" && !p.sizes.includes(item.size)))
+      if (!p || (p.sizes?.length > 0 && !p.sizes.includes(item.size)))
         continue;
       const key = item.productId + "-" + item.size;
       const old = merged.get(key);
@@ -224,6 +226,7 @@ export function StoreProvider({ children }) {
     <Context.Provider
       value={{
         products,
+        categories,
         content,
         user,
         loading,

@@ -27,6 +27,25 @@ const { hash } = await import("../src/services/auth.service.js");
 const { config } = await import("../src/config/env.js");
 let repl, client, db, app, owner, customer, other;
 const codes = new Map();
+test('admins add unique categories and custom sizes are enforced in cart and checkout',async()=>{
+ await mutation(customer,'post','/api/admin/categories',{name:'Dresses'}).expect(403);
+ await mutation(owner,'post','/api/admin/categories',{name:'Dresses'}).expect(201);
+ await mutation(owner,'post','/api/admin/categories',{name:'dresses'}).expect(409);
+ await mutation(owner,'post','/api/admin/categories',{name:'All styles'}).expect(409);
+ assert.ok((await owner.get('/api/admin/categories')).body.items.some(c=>c.name==='Dresses'));
+ const p=await product();
+ try{
+  await mutation(owner,'put','/api/admin/products/'+p.id,{...p,category:'Unknown category',sizes:['Small']}).expect(400);
+  await mutation(owner,'put','/api/admin/products/'+p.id,{...p,category:'Dresses',sizes:['Small','Medium'],status:'draft'}).expect(200);
+  await db.collection('products').updateOne({id:p.id},{$set:{status:'active'}});
+  assert.ok((await request(app).get('/api/products')).body.categories.some(c=>c.slug==='dresses'));
+  await mutation(customer,'put','/api/cart',{items:[{productId:p.id,qty:1,size:'Large'}]}).expect(400);
+  await mutation(customer,'put','/api/cart',{items:[{productId:p.id,qty:1,size:'Medium'}]}).expect(200);
+  await mutation(request(app),'post','/api/checkout/guest/quote',{items:[{productId:p.id,qty:1,size:''}]}).expect(400);
+  const quote=await mutation(request(app),'post','/api/checkout/guest/quote',{items:[{productId:p.id,qty:1,size:'Small'}]}).expect(200);
+  assert.equal(quote.body.items[0].size,'Small');
+ }finally{await db.collection('products').deleteOne({id:p.id});await mutation(customer,'put','/api/cart',{items:[]}).expect(200);}
+});
 test('admin notification switch pauses and resumes pending deliveries',async()=>{
  const {processProductEmails}=await import('../src/services/product-email.service.js');
  const p=await product();

@@ -1,3 +1,4 @@
+import {listCategories} from "../services/categories.service.js";
 import { fail } from "../services/auth.service.js";
 import { publicCache } from "../services/public-cache.js";
 
@@ -24,6 +25,7 @@ export const getProducts = async (req, res) => {
   publicCache(res);
   res.json({
     items,
+    categories: await listCategories(req.db),
     total,
     page,
   });

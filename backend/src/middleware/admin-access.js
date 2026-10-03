@@ -4,7 +4,7 @@ export async function requireAdminAccess(req,res,next) {
  try {
   if(isOwner(req.user)) return next();
   const resource=req.path.split('/')[1];
-  let permission=resource==='uploads'?'media':resource;
+  let permission=resource==='uploads'?'media':resource==='categories'?'products':resource;
   if(resource==='content') {
    const kinds={banner:'banners',family:'family',blog:'blogs'};
    if(req.method==='GET') {

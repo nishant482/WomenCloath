@@ -1,4 +1,5 @@
 import express from "express";
+import categoriesRoutes from "./routes/categories.routes.js";
 import { requireAdminAccess } from "./middleware/admin-access.js";
 import { lookupPostalCode } from './services/postal.service.js';
 import { connect } from "./config/database.js";
@@ -86,6 +87,7 @@ export function createApp({
   app.use("/api", authRoutes);
   app.use("/api", accountRoutes);
   app.use("/api", productsRoutes);
+  app.use("/api", categoriesRoutes);
   app.use("/api", contentRoutes);
   app.use("/api", settingsRoutes);
   app.use("/api", cartRoutes);

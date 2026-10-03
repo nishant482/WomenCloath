@@ -46,6 +46,7 @@ import { FashionHome } from "./fashion-home.jsx";
 import "./brand-palette.css";
 import "./inner-pages.css";
 
+import {categorySlug} from "./catalogue-options.js";
 const money = (n) => `₹${n.toLocaleString("en-IN")}`;
 const categoryPath = (c) =>
   "/collections/" +
@@ -53,15 +54,15 @@ const categoryPath = (c) =>
     "All styles": "all",
     "Kurta sets": "kurta-sets",
     "New arrivals": "new-arrivals",
-  }[c] || c.toLowerCase());
-const routeCategory = (route) =>
+  }[c] || categorySlug(c));
+const routeCategory = (route,categories) =>
   ({
     all: "All styles",
     sarees: "Sarees",
     lehengas: "Lehengas",
     "kurta-sets": "Kurta sets",
     "new-arrivals": "New arrivals",
-  })[route.split("/")[2]] || "All styles";
+  })[route.split("/")[2]] || categories.find(c=>c.slug===route.split("/")[2])?.name || "Unknown collection";
 
 function App() {
   const store = useStore();
@@ -77,7 +78,7 @@ function App() {
   const toastTimer = useRef(null);
   const isHome = route === "/";
   const isCollection = route.startsWith("/collections/");
-  const category = isCollection ? routeCategory(route) : "All styles";
+  const category = isCollection ? routeCategory(route,store.categories || []) : "All styles";
   const navigate = (path) => {
     setMenu(false);
     setPanel(null);
@@ -110,7 +111,7 @@ function App() {
       notify("This style is currently out of stock.");
       return;
     }
-    if (p.category === "Kurta sets" && !p.size) {
+    if (p.sizes?.length > 0 && !p.size) {
       navigate("/product/" + p.id);
       notify("Choose your size to add this set");
       return;
@@ -159,7 +160,7 @@ function App() {
     const title = isHome
       ? "Shop Sarees, Lehengas & Kurta Sets for Women"
       : isCollection
-        ? routeCategory(route)
+        ? routeCategory(route,store.categories || [])
         : route.startsWith("/product/")
           ? products.find((p) => p.id === Number(route.split("/")[2]))?.name ||
             "Product"
@@ -495,9 +496,7 @@ function App() {
               <div className="tabs" aria-label="Product categories">
                 {[
                   "All styles",
-                  "Sarees",
-                  "Lehengas",
-                  "Kurta sets",
+                  ...(store.categories?.length ? store.categories.map(c=>c.name) : ["Sarees","Lehengas","Kurta sets"]),
                   "New arrivals",
                 ].map((c) => (
                   <button
@@ -716,7 +715,7 @@ function App() {
                       ) : (
                         <div className="wishlist-actions">
                           <button className="text-link" onClick={() => add(p)}>
-                            {p.category === "Kurta sets"
+                            {p.sizes?.length > 0
                               ? "Choose size"
                               : "Add to bag"}{" "}
                             <Plus size={15} />

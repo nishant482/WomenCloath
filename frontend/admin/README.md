@@ -37,3 +37,7 @@ Admin access: `nishant@gmail.com` is the full-access owner (override only throug
 Email notifications includes an enable/disable switch stored in settings. Disabled delivery preserves pending notifications and publication markers; enabling resumes them. The sender checks the switch before processing and between recipients; an in-flight delivery can finish.
 
 Store & shipping supports free, always-paid and threshold-based shipping. The threshold uses the merchandise subtotal before discounts. COD can be disabled or given an extra fee; the backend computes and stores both fees in every new order. Existing orders retain their original charges. With no online payment gateway, disabling COD pauses checkout.
+
+Categories can be added through Admin > Categories (Products permission). New names are unique by URL slug, selected in the product editor, and exposed in store collection filters. Existing catalogue categories remain available. Sizes accept up to 12 custom names, each up to 30 characters, and apply to every category. Existing S/M/L codes display as Small/Medium/Large without changing stored orders. Cart and checkout reject unavailable sizes.
+
+Shipping remains configured by store rules, not a courier rate API. For a paid rate, use your courier's packed-weight/destination quote plus packaging; keep the COD collection surcharge separate. The settings editor includes an illustrative calculation. Local admin credential reference entries belong only in the ignored backend/.env file; changing those entries alone does not update database password hashes.

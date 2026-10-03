@@ -1,3 +1,4 @@
+import {sizeLabel} from "./catalogue-options.js";
 import React, { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
@@ -235,7 +236,7 @@ export function CheckoutPage() {
   const direct = store.products.find(p => p.id === directId);
   const [size, setSize] = useState('');
   const items = direct ? [{ productId: direct.id, qty: 1, size }] : store.bag.map(p => ({ productId: p.id, qty: p.qty, size: p.size || '' }));
-  const needsSize = direct?.category === 'Kurta sets' && !size;
+  const needsSize = direct?.sizes?.length > 0 && !size;
   const guest = !store.user;
   const [selectedAddress, setSelectedAddress] = useState(0);
   const [quote, setQuote] = useState(null),
@@ -291,7 +292,7 @@ export function CheckoutPage() {
       <div className="eyebrow">ONE STEP CLOSER</div>
       <h1>Make it yours.</h1>
       {guest && <p>Guest checkout · No account needed. Enter your delivery details to place your order.</p>}
-      {direct && <div className="direct-checkout-product"><img src={productImage(direct)} alt={direct.name} /><div><h2>{direct.name}</h2><p>{money(direct.price)}</p>{direct.category === 'Kurta sets' && <label>Choose your size<select value={size} onChange={e => { setSize(e.target.value); key.current = crypto.randomUUID(); }} required><option value="">Select size</option>{direct.sizes.map(s => <option key={s}>{s}</option>)}</select></label>}</div></div>}
+      {direct && <div className="direct-checkout-product"><img src={productImage(direct)} alt={direct.name} /><div><h2>{direct.name}</h2><p>{money(direct.price)}</p>{direct.sizes?.length > 0 && <label>Choose your size<select value={size} onChange={e => { setSize(e.target.value); key.current = crypto.randomUUID(); }} required><option value="">Select size</option>{direct.sizes.map(s => <option key={s} value={s}>{sizeLabel(s)}</option>)}</select></label>}</div></div>}
       {error && (
         <p className="commerce-error" role="alert">
           {error}

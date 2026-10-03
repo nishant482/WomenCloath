@@ -45,7 +45,7 @@ const fields = {
     ["stock", "Available units", "number"],
     ["colour", "Colour name"],
     ["color", "Swatch colour", "color"],
-    ["sizes", "Sizes (comma separated: S,M,L,XL,XXL)"],
+    ["sizes", "Sizes (comma separated: Small, Medium, Large)"],
     ["tag", "Product label (optional)"],
     ["description", "Description", "textarea"],
     ["status", "Status", ["draft", "active", "archived"]],
@@ -159,6 +159,8 @@ function ImageInput({ value, onChange, enabled }) {
   );
 }
 export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) {
+  const [categories,setCategories] = useState([]);
+  useEffect(()=>{if(page === "products") api("/admin/categories").then(r=>setCategories(r.items.map(c=>c.name))).catch(()=>{});},[page]);
   const kind = contentKinds[page];
   const resource = kind ? "content" : page;
   const initial = {
@@ -210,7 +212,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
             ? value
             : String(value)
                 .split(",")
-                .map((s) => s.trim().toUpperCase())
+                .map((s) => s.trim())
                 .filter(Boolean);
         body[key] = value;
       }
@@ -258,7 +260,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
           <X />
         </button>
       </div>
-      {page === "products" && <p className="studio-note editor-help">Add your product details below. Choose Active to show it in the store, or Draft to save it for later. Kurta sets need at least one size.</p>}
+      {page === "products" && <p className="studio-note editor-help">Add your product details below. Choose Active to show it in the store, or Draft to save it for later. Enter Small, Medium or any sizes available for this product. Leave sizes empty for a free-size product; Kurta sets require at least one size.</p>}
       {page === "reviews" && (
         <p className="studio-note">
           Admin-created reviews are always labelled “Demo review” and excluded
@@ -266,7 +268,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
         </p>
       )}
       <form className="commerce-form studio-editor" onSubmit={save}>
-        {page === 'settings' && <p className="span-all">Shipping mode: free charges no shipping fee; paid charges the fee on every order; threshold offers free shipping when the product subtotal reaches the threshold. COD charge is added separately. Turning COD off pauses checkout because online payments are not configured.</p>}
+        {page === 'settings' && <div className="span-all"><p>Shipping mode: free charges no shipping fee; paid charges the fee on every order; threshold offers free shipping when the product subtotal reaches the threshold. COD charge is added separately. Turning COD off pauses checkout because online payments are not configured.</p><p>To choose your fee, check your courier's charge for the packed parcel weight and destination, then add packaging costs. Example only: INR 70 courier + INR 10 packaging = INR 80 shipping. Set any extra COD collection charge separately. These are fixed store rules, not live courier quotes.</p></div>}
         {page === 'banners' && <div className="span-all"><p>Published banners appear in the homepage slider. Lower display order appears first. Draft hides a slide.</p><label>Small heading<input value={values.eyebrow || ''} onChange={e => setValues({...values,eyebrow:e.target.value})} maxLength={80} /></label><label>Button text<input value={values.buttonText || ''} onChange={e => setValues({...values,buttonText:e.target.value})} maxLength={60} /></label><label>Banner layout<select value={values.layout || 'full'} onChange={e => setValues({...values,layout:e.target.value})}><option value="full">Single image</option><option value="split">Two images with centre text</option></select></label><h3>Mobile image (optional)</h3><ImageInput value={values.mobileImageUrl} onChange={url => setValues({...values,mobileImageUrl:url})} enabled={uploadsEnabled} />{values.layout === 'split' && <><h3>Second desktop image</h3><ImageInput value={values.secondaryImageUrl} onChange={url => setValues({...values,secondaryImageUrl:url})} enabled={uploadsEnabled} /></>}</div>}
         {fields[resource].map(([key, label, type]) => (
           <label key={key} className={type === "textarea" ? "span-all" : ""}>
@@ -279,7 +281,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
                   setValues({ ...values, [key]: e.target.value })
                 }
               >
-                {type.map((o) => (
+                {(key === "category" ? [...new Set([...categories,...type,values.category].filter(Boolean))] : type).map((o) => (
                   <option key={o}>{o}</option>
                 ))}
               </select>

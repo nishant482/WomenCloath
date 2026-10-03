@@ -527,3 +527,7 @@
     font-size: 26px;
   }
 }
+
+/* Keep full size names readable on narrow product pages. */
+.size-options { flex-wrap: wrap; }
+.size-options button { width: auto; min-width: 74px; max-width: 100%; padding: 10px 14px; overflow-wrap: anywhere; }

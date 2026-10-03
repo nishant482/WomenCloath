@@ -3,6 +3,7 @@ import { LayoutDashboard, Package, ShoppingBag, Users, Star, Image, FileText, Ti
 import { api, productImage } from '../src/api.js';
 import { RecordEditor, OrderDetails } from './admin-editors.jsx';
 import { MediaLibrary } from './media-library.jsx';
+import { Categories } from './categories.jsx';
 import { AdminAccess } from './admin-access.jsx';
 import { EmailQueue } from './email-queue.jsx';
 import { ClassicLogin, ClassicDashboard, RecordDialog, ProductDetail, Pagination, Status, money, dateText, CustomerShopping } from './classic-components.jsx';
@@ -58,7 +59,7 @@ export default function ClassicAdminApp() {
   setLoading(true); setError('');
   try {
    if(!allowed(page)) {setResult({page,data:[]});return;}
-   const [summary, response] = await Promise.all([allowed('overview') ? api('/admin/overview', { signal: abort.signal }) : Promise.resolve({uploadsEnabled:allowed('media')}), dashboard || ['access','email-queue','media'].includes(page) ? Promise.resolve({items:[]}) : api('/admin/' + resource, { signal: abort.signal })]);
+   const [summary, response] = await Promise.all([allowed('overview') ? api('/admin/overview', { signal: abort.signal }) : Promise.resolve({uploadsEnabled:allowed('media')}), dashboard || ['access','email-queue','media','categories'].includes(page) ? Promise.resolve({items:[]}) : api('/admin/' + resource, { signal: abort.signal })]);
    if (id !== request.current || abort.signal.aborted) return;
    setOverview(summary); setResult({ page, data: page === 'settings' ? response : response.items || [] });
   } catch (e) {
@@ -128,7 +129,7 @@ export default function ClassicAdminApp() {
   {mobile && <button className="studio-shade" aria-label="Close navigation overlay" onClick={() => setMobile(false)} />}
   <main className="studio-main"><header className="studio-header"><button className="studio-menu icon-button" aria-label="Open navigation" onClick={() => setMobile(true)}><Menu size={19} /></button><div><span className="eyebrow">ADMINISTRATION / {label}</span><h1>{label}</h1></div><div className="admin-header-right"><a href="/" target="_blank" rel="noreferrer">View store <ArrowUpRight size={13} /></a><span className="admin-avatar" title={user.email}>{user.name?.[0] || 'A'}</span></div></header>
    {error && <p className="commerce-error" role="alert">{error} <button onClick={load}>Retry</button></p>}{notice && <p className="commerce-success" role="status">{notice}</p>}
-   {!allowed(page) ? <section className="classic-panel settings-panel"><h2>No access assigned</h2><p>Ask Nishant to enable the required admin sections.</p></section> : page === 'access' ? <AdminAccess /> : page === 'email-queue' ? <EmailQueue /> : page === 'media' ? <MediaLibrary /> : dashboard ? ready ? <ClassicDashboard overview={overview} reports={page === 'reports'} /> : <p className="table-empty" role="status">Loading dashboard…</p> : <>
+   {!allowed(page) ? <section className="classic-panel settings-panel"><h2>No access assigned</h2><p>Ask Nishant to enable the required admin sections.</p></section> : page === 'categories' ? <Categories /> : page === 'access' ? <AdminAccess /> : page === 'email-queue' ? <EmailQueue /> : page === 'media' ? <MediaLibrary /> : dashboard ? ready ? <ClassicDashboard overview={overview} reports={page === 'reports'} /> : <p className="table-empty" role="status">Loading dashboard…</p> : <>
     <div className="studio-toolbar">{page !== 'settings' && <><input aria-label="Search records" placeholder={`Search ${label.toLowerCase()}…`} value={query} onChange={e => setQuery(e.target.value)} />{page !== 'categories' && <select aria-label="Filter by status" value={status} onChange={e => setStatus(e.target.value)}><option value="all">All statuses</option>{statuses.map(s => <option key={s}>{s}</option>)}</select>}<select aria-label="Sort records" value={sort} onChange={e => setSort(e.target.value)}><option value="newest">Newest first</option><option value="name">Name A–Z</option>{(isProduct || resource === 'orders') && <option value="price">Amount: low to high</option>}{isProduct && <option value="stock">Stock: low to high</option>}</select></>}
      <button className="secondary" onClick={load} disabled={loading} aria-label="Refresh records"><RefreshCw size={14} /></button>{!['settings', 'categories'].includes(page) && <button className="secondary" disabled={!ready || !rows.length} onClick={() => exportRecords(rows, resource)}><Download size={13} /> Export</button>}
      {canEdit && <button className="primary" disabled={!ready} onClick={() => setEditor(page === 'settings' ? data : {})}><Plus size={14} />{page === 'settings' ? 'Edit settings' : resource === 'products' ? 'Add product' : page === 'reviews' ? 'Add demo review' : 'Add new'}</button>}

@@ -1,3 +1,4 @@
+import {validateCategory} from "../services/categories.service.js";
 import { productSchema } from "../models/products.model.js";
 import { fail } from "../services/auth.service.js";
 
@@ -12,6 +13,7 @@ export const getAdminProducts = async (req, res) =>
 
 export const postAdminProducts = async (req, res) => {
   const data = productSchema.parse(req.body);
+  await validateCategory(req.db,data.category);
   const counter = await req.models.counters.findOneAndUpdate(
     { _id: "products" },
     { $inc: { value: 1 } },
@@ -30,6 +32,7 @@ export const postAdminProducts = async (req, res) => {
 
 export const putAdminProductsById = async (req, res) => {
   const data = productSchema.parse(req.body);
+  await validateCategory(req.db,data.category);
   const result = await req.models.products.updateOne(
     { id: Number(req.params.id), status: { $ne: "deleted" } },
     { $set: { ...data, updatedAt: new Date() } },

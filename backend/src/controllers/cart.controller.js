@@ -11,7 +11,7 @@ export const putCart = async (req, res) => {
         .array(
           z.object({
             productId: z.number().int().positive(),
-            size: z.string().max(10).default(""),
+            size: z.string().max(30).default(""),
             qty: z.number().int().min(1).max(20),
           }),
         )
@@ -25,9 +25,9 @@ export const putCart = async (req, res) => {
       status: "active",
     });
     if (!p) throw fail(400, "A product is unavailable.");
-    if (p.category === "Kurta sets" && !p.sizes.includes(item.size))
+    if (p.sizes?.length > 0 && !p.sizes.includes(item.size))
       throw fail(400, "Choose an available size.");
-    if (p.category !== "Kurta sets") item.size = "";
+    if (!p.sizes?.length) item.size = "";
     const key = item.productId + "-" + item.size;
     if (seen.has(key)) throw fail(400, "Duplicate bag items.");
     seen.add(key);

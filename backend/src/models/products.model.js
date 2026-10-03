@@ -10,7 +10,7 @@ export const productSchema = z
   .object({
     name: text(160).min(3),
     sku: text(60).min(2),
-    category: z.enum(["Sarees", "Lehengas", "Kurta sets"]),
+    category: text(50).min(2),
     fabric: text(160).min(2),
     price: z.number().min(1).max(1000000),
     old: z.number().min(0).max(1000000).default(0),
@@ -22,8 +22,9 @@ export const productSchema = z
       .default("#173b69"),
     description: text(6000).default(""),
     sizes: z
-      .array(z.enum(["S", "M", "L", "XL", "XXL"]))
-      .max(5)
+      .array(text(30).min(1))
+      .max(12)
+      .refine(values => new Set(values.map(v=>v.toLowerCase())).size === values.length, "Sizes must be unique.")
       .default([]),
     stock: z.number().int().min(0).max(100000),
     status: z.enum(["active", "draft", "archived"]).default("draft"),
