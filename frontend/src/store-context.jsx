@@ -89,19 +89,27 @@ export function StoreProvider({ children }) {
     setLoading(true);
     setError("");
     try {
-      await refreshCatalog();
-      try {
-        const result = await api("/auth/me");
-        setUser(result.user);
-        userRef.current = result.user;
-        await restore();
-      } catch (e) {
-        if (e.status !== 401) throw e;
-        if (userRef.current) { cartRef.current = []; setCart([]); }
-        wishRef.current = []; setWishState([]);
-        setUser(null);
-        userRef.current = null;
-      }
+      await Promise.all([
+        refreshCatalog(),
+        (async () => {
+          try {
+            const result = await api("/auth/me");
+            setUser(result.user);
+            userRef.current = result.user;
+            await restore();
+          } catch (e) {
+            if (e.status !== 401) throw e;
+            if (userRef.current) {
+              cartRef.current = [];
+              setCart([]);
+            }
+            wishRef.current = [];
+            setWishState([]);
+            setUser(null);
+            userRef.current = null;
+          }
+        })(),
+      ]);
     } catch (e) {
       setError(e.message);
     } finally {
@@ -195,7 +203,10 @@ export function StoreProvider({ children }) {
     });
   const setWish = (updater) =>
     mutate(async () => {
-      if (!userRef.current) throw Object.assign(new Error('Sign in to save your favourites.'), { status: 401 });
+      if (!userRef.current)
+        throw Object.assign(new Error("Sign in to save your favourites."), {
+          status: 401,
+        });
       let items =
         typeof updater === "function" ? updater(wishRef.current) : updater;
       if (userRef.current)

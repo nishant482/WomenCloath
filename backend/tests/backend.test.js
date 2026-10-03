@@ -25,6 +25,19 @@ const { hash } = await import("../src/services/auth.service.js");
 const { config } = await import("../src/config/env.js");
 let repl, client, db, app, owner, customer, other;
 const codes = new Map();
+test("only successful public catalogue responses are edge-cacheable", async () => {
+  for (const path of ["/api/products", "/api/content"]) {
+    const response = await request(app).get(path).expect(200);
+    assert.match(response.headers["vercel-cdn-cache-control"], /s-maxage=30/);
+    assert.match(response.headers["cache-control"], /max-age=0/);
+  }
+  for (const path of ["/api/auth/me", "/api/cart", "/api/admin/users", "/api/products/999999"]) {
+    const response = await request(app).get(path);
+    assert.ok(response.status >= 400);
+    assert.equal(response.headers["cache-control"], "no-store");
+    assert.equal(response.headers["vercel-cdn-cache-control"], undefined);
+  }
+});
 const pass = "A-test-password-123!";
 const mutation = (agent, method, path, body) =>
   agent[method](path)

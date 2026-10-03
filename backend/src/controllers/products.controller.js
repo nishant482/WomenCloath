@@ -1,4 +1,5 @@
 import { fail } from "../services/auth.service.js";
+import { publicCache } from "../services/public-cache.js";
 
 export const getProducts = async (req, res) => {
   const page = Math.max(1, Math.min(1000, Number(req.query.page) || 1));
@@ -19,9 +20,11 @@ export const getProducts = async (req, res) => {
     .skip((page - 1) * limit)
     .limit(limit)
     .toArray();
+  const total = await req.models.products.countDocuments(filter);
+  publicCache(res);
   res.json({
     items,
-    total: await req.models.products.countDocuments(filter),
+    total,
     page,
   });
 };
@@ -32,5 +35,6 @@ export const getProductsById = async (req, res) => {
     { projection: { _id: 0 } },
   );
   if (!p) throw fail(404, "Product not found.");
+  publicCache(res);
   res.json(p);
 };

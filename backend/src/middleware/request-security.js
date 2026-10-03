@@ -3,6 +3,7 @@ import { fail } from "../services/auth.service.js";
 export function checkOrigin(req, res, next) {
   if (["GET", "HEAD", "OPTIONS"].includes(req.method)) return next();
   const origins = new Set([new URL(config.appUrl).origin]);
+  for (const value of config.allowedOrigins) origins.add(new URL(value).origin);
   if (!config.production) {
     origins.add("http://localhost:5173");
     origins.add("http://127.0.0.1:5173");

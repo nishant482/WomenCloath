@@ -11,6 +11,10 @@ export const config = {
   jwtSecret: process.env.JWT_SECRET || "",
   database: process.env.MONGODB_DB || "rajo_threads",
   appUrl: process.env.APP_URL || "http://localhost:5173",
+  allowedOrigins: (process.env.ADDITIONAL_ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean),
   adminEmail: (process.env.ADMIN_EMAIL || "").trim().toLowerCase(),
   requireEmailVerification: process.env.REQUIRE_EMAIL_VERIFICATION === "true",
   production:
