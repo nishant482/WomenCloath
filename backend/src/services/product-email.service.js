@@ -25,6 +25,8 @@ export async function deliverProductEmail(user, product) {
 
 export async function processProductEmails(db, { send = deliverProductEmail, enabled = productMailReady() } = {}) {
   const jobs = db.collection('productEmailJobs'), products = db.collection('products');
+  const preferences = await db.collection("settings").findOne({_id:"store"});
+  if (preferences?.productEmailsEnabled === false) return {paused:true, reason:"Disabled by administrator",sent:0};
   // Product publication is the durable outbox; interrupted queue creation resumes safely.
   for (const product of await products.find({ notificationRequestedAt:{$exists:true},notificationQueued:{$ne:true},status:'active' }).limit(10).toArray()) {
     const users = db.collection('users').find({role:'customer',status:'active',emailUpdates:{$ne:false},createdAt:{$lte:product.notificationRequestedAt}});
@@ -42,6 +44,7 @@ export async function processProductEmails(db, { send = deliverProductEmail, ena
     // Ambiguous interrupted deliveries need review, never an automatic duplicate send.
     await jobs.updateMany({status:'sending',attemptedAt:{$lt:new Date(Date.now()-120000)}},{$set:{status:'failed',error:'Delivery interrupted; review before retrying.'}});
     for(let i=0;i<4;i++) {
+      if ((await db.collection("settings").findOne({_id:"store"}))?.productEmailsEnabled === false) break;
       if(await jobs.countDocuments({attemptedAt:{$gte:new Date(Date.now()-86400000)}})>=100)break;
       const job=await jobs.findOneAndUpdate({status:'pending'},{$set:{status:'sending',attemptedAt:new Date()},$inc:{attempts:1}},{sort:{createdAt:1},returnDocument:'after'});
       if(!job)break;

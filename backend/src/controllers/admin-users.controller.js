@@ -1,3 +1,4 @@
+import { isOwner, adminModules } from "../services/admin-access.service.js";
 import { z } from "zod";
 import { config } from "../config/env.js";
 import { email, password } from "../validators/schemas.js";
@@ -35,6 +36,7 @@ export const patchAdminUsersById = async (req, res) => {
     .object({
       role: z.enum(["customer", "admin"]),
       status: z.enum(["active", "blocked"]),
+      adminPermissions: z.array(z.enum(adminModules)).optional(),
     })
     .parse(req.body);
   const _id = objectId(req.params.id);
@@ -42,9 +44,11 @@ export const patchAdminUsersById = async (req, res) => {
   if (!target) throw fail(404, "User not found.");
   if (
     String(_id) === String(req.user._id) ||
-    target.email === config.adminEmail
+    isOwner(target)
   )
     throw fail(400, "The owner account cannot be changed here.");
+  if (!isOwner(req.user) && (target.role === "admin" || input.role !== target.role || input.adminPermissions !== undefined)) throw fail(403, "Only the owner can manage administrator access.");
+  if (input.role === "admin" && target.role !== "admin" && !input.adminPermissions) input.adminPermissions = [];
   await req.models.users.updateOne(
     { _id },
     { $set: { ...input, updatedAt: new Date() } },
@@ -57,8 +61,9 @@ export const deleteAdminUsersById = async (req, res) => {
   const _id = objectId(req.params.id);
   const target = await req.models.users.findOne({ _id, status: { $ne: "deleted" } });
   if (!target) throw fail(404, "User not found.");
-  if (String(_id) === String(req.user._id) || target.email === config.adminEmail)
+  if (String(_id) === String(req.user._id) || isOwner(target))
     throw fail(400, "Your account and the owner account cannot be deleted.");
+  if (!isOwner(req.user) && target.role === "admin") throw fail(403, "Only the owner can delete an administrator.");
   await req.models.users.updateOne({ _id }, { $set: { status: "deleted", deletedAt: new Date(), updatedAt: new Date() } });
   await req.models.sessions.deleteMany({ userId: _id });
   res.json({ ok: true });

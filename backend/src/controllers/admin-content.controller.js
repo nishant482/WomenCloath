@@ -4,7 +4,7 @@ import { fail, objectId } from "../services/auth.service.js";
 export const getAdminContent = async (req, res) =>
   res.json({
     items: await req.models.content
-      .find({})
+      .find(req.adminContentKinds ? {kind: {$in: req.adminContentKinds}} : {})
       .sort({ createdAt: -1 })
       .limit(500)
       .toArray(),

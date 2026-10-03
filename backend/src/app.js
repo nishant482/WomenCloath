@@ -1,4 +1,5 @@
 import express from "express";
+import { requireAdminAccess } from "./middleware/admin-access.js";
 import { lookupPostalCode } from './services/postal.service.js';
 import { connect } from "./config/database.js";
 import { sendCode } from "./services/email.service.js";
@@ -79,7 +80,7 @@ export function createApp({
 
   app.use("/api/auth", authLimit);
 
-  app.use("/api/admin", authenticate, requireAdmin);
+  app.use("/api/admin", authenticate, requireAdmin, requireAdminAccess);
 
   app.use("/api", healthRoutes);
   app.use("/api", authRoutes);

@@ -10,6 +10,7 @@ import { MongoMemoryReplSet } from "mongodb-memory-server";
 import { MongoClient } from "mongodb";
 process.env.NODE_ENV = "test";
 process.env.ADMIN_EMAIL = "owner@example.com";
+process.env.OWNER_EMAIL = "owner@example.com";
 process.env.REQUIRE_EMAIL_VERIFICATION = "true";
 process.env.APP_URL = "http://localhost:5173";
 for (const key of ['R2_GATEWAY_URL','R2_GATEWAY_TOKEN','R2_ACCOUNT_ID','R2_BUCKET','R2_ACCESS_KEY_ID','R2_SECRET_ACCESS_KEY','R2_PUBLIC_URL','CLOUDINARY_CLOUD_NAME','CLOUDINARY_API_KEY','CLOUDINARY_API_SECRET','CLOUDFLARE_ACCOUNT_ID','CLOUDFLARE_IMAGES_API_TOKEN','BLOB_READ_WRITE_TOKEN']) process.env[key] = '';
@@ -26,6 +27,57 @@ const { hash } = await import("../src/services/auth.service.js");
 const { config } = await import("../src/config/env.js");
 let repl, client, db, app, owner, customer, other;
 const codes = new Map();
+test('admin notification switch pauses and resumes pending deliveries',async()=>{
+ const {processProductEmails}=await import('../src/services/product-email.service.js');
+ const p=await product();
+ await db.collection('products').updateOne({id:p.id},{$set:{notificationRequestedAt:new Date()}});
+ await mutation(owner,'patch','/api/admin/email-queue',{enabled:false}).expect(200);
+ const result=await processProductEmails(db,{enabled:true,send:async()=>assert.fail('Disabled notifications must not send')});
+ assert.equal(result.paused,true);
+ assert.equal((await owner.get('/api/admin/email-queue')).body.enabled,false);
+ await mutation(owner,'patch','/api/admin/email-queue',{enabled:true}).expect(200);
+ const emails=[];await processProductEmails(db,{enabled:true,send:async u=>emails.push(u.email)});
+ assert.equal(emails.length,2);
+ await mutation(customer,'patch','/api/admin/email-queue',{enabled:false}).expect(403);
+});
+test('restricted administrators cannot bypass modules, change other admins or escalate their own role',async()=>{
+ const agent=request.agent(app).set('X-Session-Scope','admin');
+ const {passwordHash}=await import('../src/services/auth.service.js');
+ const result=await db.collection('users').insertOne({email:'restricted@example.com',name:'Restricted',password:await passwordHash(pass),role:'admin',status:'active',emailVerified:true,adminPermissions:['banners','users']});
+ await mutation(agent,'post','/api/auth/login',{email:'restricted@example.com',password:pass}).expect(200);
+ await agent.get('/api/admin/settings').expect(403);
+ await agent.get('/api/admin/products').expect(403);
+ await agent.get('/api/admin/overview').expect(403);
+ await mutation(agent,'patch','/api/admin/email-queue',{enabled:false}).expect(403);
+ const customerRow=await db.collection('users').findOne({email:'customer@example.com'});
+ await mutation(agent,'patch','/api/admin/users/'+customerRow._id,{role:'admin',status:'active'}).expect(403);
+ await mutation(agent,'patch','/api/admin/users/'+result.insertedId,{role:'admin',status:'active',adminPermissions:['settings']}).expect(400);
+ const blog=await db.collection('content').insertOne({kind:'blog',title:'Private blog',slug:'private-blog'});
+ assert.ok(!(await agent.get('/api/admin/content')).body.items.some(x=>x.kind==='blog'));
+ await mutation(agent,'delete','/api/admin/content/'+blog.insertedId).expect(403);
+ await mutation(agent,'put','/api/admin/content/'+blog.insertedId,{kind:'banner'}).expect(403);
+ await mutation(owner,'patch','/api/admin/users/'+result.insertedId,{role:'admin',status:'active',adminPermissions:['settings']}).expect(200);
+ await agent.get('/api/admin/users').expect(401);
+ await mutation(agent,'post','/api/auth/login',{email:'restricted@example.com',password:pass}).expect(200);
+ await agent.get('/api/admin/settings').expect(200);
+ await agent.get('/api/admin/users').expect(403);
+ await db.collection('users').deleteOne({_id:result.insertedId});
+});
+test('shipping modes and COD surcharge apply server-side to quotes and orders',async()=>{
+ const settings=(await owner.get('/api/admin/settings')).body;
+ const p=await product(10),items=[{productId:p.id,qty:1,size:''}];
+ try {
+  for(const [mode,shippingCost] of [['paid',75],['free',0],['threshold',0]]){
+   await mutation(owner,'put','/api/admin/settings',{...settings,shippingMode:mode,shippingFee:75,freeShippingAbove:500,codFee:39.5}).expect(200);
+   const quote=await mutation(request(app),'post','/api/checkout/guest/quote',{items}).expect(200);
+   assert.equal(quote.body.shipping,shippingCost);assert.equal(quote.body.codFee,39.5);assert.equal(quote.body.total,1000+shippingCost+39.5);
+  }
+  const order=await request(app).post('/api/checkout/guest/orders').set('Origin','http://localhost:5173').set('X-Requested-With','RajoStore').set('Idempotency-Key',randomUUID()).send({items,address:shipping,codFee:0,total:1}).expect(201);
+  assert.equal(order.body.codFee,39.5);assert.equal(order.body.total,1039.5);
+  await mutation(owner,'put','/api/admin/settings',{...settings,codEnabled:false}).expect(200);
+  await request(app).post('/api/checkout/guest/orders').set('Origin','http://localhost:5173').set('X-Requested-With','RajoStore').set('Idempotency-Key',randomUUID()).send({items,address:shipping}).expect(400);
+ } finally {await mutation(owner,'put','/api/admin/settings',settings).expect(200);}
+});
 test('new-product outbox queues once, excludes unsubscribed users, pauses without credentials and sends privately', async () => {
   const {processProductEmails,unsubscribeToken,readUnsubscribeToken}=await import('../src/services/product-email.service.js');
   const p=await product();

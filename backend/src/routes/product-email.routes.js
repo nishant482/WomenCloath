@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { Router } from 'express';
 import { timingSafeEqual } from 'node:crypto';
 import { fail, objectId } from '../services/auth.service.js';
@@ -12,7 +13,13 @@ router.get('/internal/product-emails',async(req,res)=>{
 router.get('/admin/email-queue',async(req,res)=>{
   const counts=await req.db.collection('productEmailJobs').aggregate([{$group:{_id:'$status',count:{$sum:1}}}]).toArray();
   const items=await req.db.collection('productEmailJobs').find({}).sort({createdAt:-1}).limit(100).toArray();
-  res.json({ready:productMailReady(),sender:'info.rajothreads@gmail.com',counts,items});
+  const settings=await req.db.collection('settings').findOne({_id:'store'});
+  res.json({enabled:settings?.productEmailsEnabled!==false,ready:productMailReady(),sender:'info.rajothreads@gmail.com',counts,items});
+});
+router.patch('/admin/email-queue',async(req,res)=>{
+ const {enabled}=z.object({enabled:z.boolean()}).parse(req.body);
+ await req.db.collection('settings').updateOne({_id:'store'},{$set:{productEmailsEnabled:enabled}},{upsert:true});
+ res.json({enabled});
 });
 router.get('/email/unsubscribe',(req,res)=>{
   try{readUnsubscribeToken(req.query.token);}catch{throw fail(400,'Invalid unsubscribe link.');}

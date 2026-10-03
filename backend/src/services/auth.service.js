@@ -9,6 +9,7 @@ import { promisify } from "node:util";
 import { ObjectId } from "mongodb";
 import jwt from "jsonwebtoken";
 import { config } from "../config/env.js";
+import { isOwner, permissionsFor } from "./admin-access.service.js";
 const scrypt = promisify(scryptCallback);
 export const hash = (value) => createHash("sha256").update(value).digest("hex");
 export const fail = (status, message) =>
@@ -33,6 +34,8 @@ export const publicUser = (u) => ({
   name: u.name,
   email: u.email,
   role: u.role,
+  isOwner: isOwner(u),
+  adminPermissions: u.role === "admin" ? permissionsFor(u) : [],
   emailVerified: Boolean(u.emailVerified),
   phone: u.phone || "",
   emailUpdates: u.emailUpdates !== false,

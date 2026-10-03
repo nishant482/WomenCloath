@@ -3,25 +3,28 @@ import { LayoutDashboard, Package, ShoppingBag, Users, Star, Image, FileText, Ti
 import { api, productImage } from '../src/api.js';
 import { RecordEditor, OrderDetails } from './admin-editors.jsx';
 import { MediaLibrary } from './media-library.jsx';
+import { AdminAccess } from './admin-access.jsx';
 import { EmailQueue } from './email-queue.jsx';
 import { ClassicLogin, ClassicDashboard, RecordDialog, ProductDetail, Pagination, Status, money, dateText, CustomerShopping } from './classic-components.jsx';
 const navigation = [
  ['overview', 'Overview', LayoutDashboard, 'WORKSPACE'],
- // Temporarily hidden: ['reports', 'Reports', BarChart3],
+ ['reports', 'Reports', BarChart3],
  ['products', 'Products & inventory', Package, 'CATALOGUE'], ['inventory', 'Inventory', Boxes], ['categories', 'Categories', Layers],
  ['orders', 'Orders', ShoppingBag, 'SALES'],
- // Temporarily hidden: ['returns', 'Returns', RotateCcw],
+ ['returns', 'Returns', RotateCcw],
  ['payments', 'Payments', Wallet], ['users', 'Users', Users],
  ['carts', 'Customer carts', ShoppingBag], ['wishlists', 'Customer wishlists', Star],
  ['reviews', 'Reviews', Star, 'CONTENT'], ['banners', 'Banners', Image], ['family', 'RAJO family', Image], ['media', 'Image library', Image],
- // Temporarily hidden: ['coupons', 'Discount codes', TicketPercent, 'MANAGEMENT'],
+ ['blogs', 'Blog posts', FileText],
+ ['coupons', 'Discount codes', TicketPercent, 'MANAGEMENT'],
  ['enquiries', 'Customer enquiries', Mail, 'MANAGEMENT'],
  ['email-queue', 'Email notifications', Mail],
- // Shipping and return policy are managed together in this tab; retained for later.
- // ['settings', 'Store & shipping', Settings],
+ ['settings', 'Store & shipping', Settings],
+ ['access', 'Admin access', Users],
 ];
 const kinds = { banners: 'banner', family: 'family', blogs: 'blog' };
 const resourceFor = page => ({ inventory: 'products', categories: 'products', returns: 'orders', payments: 'orders', carts: 'users', wishlists: 'users' }[page] || (kinds[page] ? 'content' : page));
+const moduleFor = page => ({reports:'overview',inventory:'products',categories:'products',returns:'orders',payments:'orders',carts:'users',wishlists:'users'}[page] || page);
 const route = () => navigation.some(n => n[0] === location.hash.slice(1)) ? location.hash.slice(1) : 'overview';
 const recordName = r => r.name || r.title || r.number || r.code || r.email || 'Record';
 const exportRecords = (rows, resource) => {
@@ -37,6 +40,8 @@ export default function ClassicAdminApp() {
  const [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
  const [query, setQuery] = useState(''), [status, setStatus] = useState('all'), [sort, setSort] = useState('newest'), [current, setCurrent] = useState(1);
  const [editor, setEditor] = useState(null), [view, setView] = useState(null), [mobile, setMobile] = useState(false);
+ const allowed = key => user?.isOwner || (key !== 'access' && user?.adminPermissions?.includes(moduleFor(key)));
+ const allowedNavigation = navigation.filter(([key])=>allowed(key));
  const request = useRef(0), controller = useRef(null);
  const resource = resourceFor(page), dashboard = ['overview', 'reports'].includes(page);
  useEffect(() => {
@@ -52,15 +57,17 @@ export default function ClassicAdminApp() {
   const abort = new AbortController(); controller.current = abort;
   setLoading(true); setError('');
   try {
-   const [summary, response] = await Promise.all([api('/admin/overview', { signal: abort.signal }), dashboard ? Promise.resolve({ items: [] }) : api('/admin/' + resource, { signal: abort.signal })]);
+   if(!allowed(page)) {setResult({page,data:[]});return;}
+   const [summary, response] = await Promise.all([allowed('overview') ? api('/admin/overview', { signal: abort.signal }) : Promise.resolve({uploadsEnabled:allowed('media')}), dashboard || ['access','email-queue','media'].includes(page) ? Promise.resolve({items:[]}) : api('/admin/' + resource, { signal: abort.signal })]);
    if (id !== request.current || abort.signal.aborted) return;
    setOverview(summary); setResult({ page, data: page === 'settings' ? response : response.items || [] });
   } catch (e) {
    if (id !== request.current || abort.signal.aborted) return;
    setError(e.message); setResult({ page, data: [] });
-   if ([401, 403].includes(e.status)) setUser(null);
+   if (e.status === 401) setUser(null);
   } finally { if (id === request.current && !abort.signal.aborted) setLoading(false); }
  };
+ useEffect(() => { if(user && !allowed(page) && allowedNavigation.length) location.hash=allowedNavigation[0][0]; }, [user,page]);
  useEffect(() => { if (user) load(); return () => controller.current?.abort(); }, [user, page]);
  useEffect(() => { setCurrent(1); }, [query, status, sort]);
  useEffect(() => {
@@ -106,27 +113,27 @@ export default function ClassicAdminApp() {
    <button aria-label={`View ${recordName(r)}`} title="View details" onClick={() => setView(r)}><Eye size={14} /> View</button>
    {canEdit && resource !== 'reviews' && <button aria-label={`Edit ${recordName(r)}`} onClick={() => setEditor(r)}><Pencil size={13} /> Edit</button>}
    {resource === 'users' && <>
-    <select aria-label={'Role for ' + r.email} value={r.role} disabled={busy || r.email === user.email} onChange={e => mutate('users/' + r._id, 'PATCH', { role: e.target.value, status: r.status })}><option>customer</option><option>admin</option></select>
-    <button disabled={busy || r.email === user.email} onClick={() => mutate('users/' + r._id, 'PATCH', { role: r.role, status: r.status === 'active' ? 'blocked' : 'active' })}>{r.status === 'active' ? 'Block' : 'Unblock'}</button>
+    {user.isOwner && <select aria-label={'Role for ' + r.email} value={r.role} disabled={busy || r.email === user.email || r.email === 'nishant@gmail.com' || (!user.isOwner && r.role === 'admin')} onChange={e => mutate('users/' + r._id, 'PATCH', { role: e.target.value, status: r.status })}><option>customer</option><option>admin</option></select>}
+    <button disabled={busy || r.email === user.email || r.email === 'nishant@gmail.com' || (!user.isOwner && r.role === 'admin')} onClick={() => mutate('users/' + r._id, 'PATCH', { role: r.role, status: r.status === 'active' ? 'blocked' : 'active' })}>{r.status === 'active' ? 'Block' : 'Unblock'}</button>
    </>}
    {resource === 'reviews' && <select aria-label={'Review status: ' + r.title} disabled={busy} value={r.status} onChange={e => mutate('reviews/' + r._id, 'PATCH', { status: e.target.value })}>{['pending', 'draft', 'published', 'rejected'].map(s => <option key={s}>{s}</option>)}</select>}
    {resource === 'enquiries' && <button disabled={busy} onClick={() => mutate('enquiries/' + r._id, 'PATCH', { status: r.status === 'new' ? 'resolved' : 'new' })}>{r.status === 'new' ? 'Mark resolved' : 'Reopen'}</button>}
-   {['products', 'users', 'content', 'coupons', 'reviews'].includes(resource) && page !== 'categories' && <button className="delete-action" aria-label={`Delete ${recordName(r)}`} disabled={busy || (resource === 'users' && r.email === user.email)} onClick={() => remove(r)}><Trash2 size={13} /> Delete</button>}
+   {['products', 'users', 'content', 'coupons', 'reviews'].includes(resource) && page !== 'categories' && <button className="delete-action" aria-label={`Delete ${recordName(r)}`} disabled={busy || (resource === 'users' && (r.email === user.email || r.email === 'nishant@gmail.com' || (!user.isOwner && r.role === 'admin')))} onClick={() => remove(r)}><Trash2 size={13} /> Delete</button>}
  </div>;
  return <div className="studio classic-studio">
   <aside className={'studio-sidebar ' + (mobile ? 'open' : '')}><a href="#overview" className="studio-brand"><img src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/0060c684-5752-4474-88b4-99a974a0d976.jpg" alt="RAJO Threads" /><span>RAJO Threads<small>ADMIN PANEL</small></span></a><button className="studio-close icon-button" aria-label="Close navigation" onClick={() => setMobile(false)}><X size={18} /></button>
-   <nav aria-label="Studio navigation">{navigation.map(([key, title, Icon, group]) => <React.Fragment key={key}>{group && <span className="studio-nav-group">{group}</span>}<a href={'#' + key} aria-current={page === key ? 'page' : undefined}><Icon size={16} />{title}</a></React.Fragment>)}</nav>
+   <nav aria-label="Studio navigation">{allowedNavigation.map(([key, title, Icon, group]) => <React.Fragment key={key}>{group && <span className="studio-nav-group">{group}</span>}<a href={'#' + key} aria-current={page === key ? 'page' : undefined}><Icon size={16} />{title}</a></React.Fragment>)}</nav>
    <button className="studio-logout" onClick={() => api('/auth/logout', { method: 'POST' }).then(() => setUser(null)).catch(e => setError(e.message))}><LogOut size={15} /> Sign out</button>
   </aside>
   {mobile && <button className="studio-shade" aria-label="Close navigation overlay" onClick={() => setMobile(false)} />}
   <main className="studio-main"><header className="studio-header"><button className="studio-menu icon-button" aria-label="Open navigation" onClick={() => setMobile(true)}><Menu size={19} /></button><div><span className="eyebrow">ADMINISTRATION / {label}</span><h1>{label}</h1></div><div className="admin-header-right"><a href="/" target="_blank" rel="noreferrer">View store <ArrowUpRight size={13} /></a><span className="admin-avatar" title={user.email}>{user.name?.[0] || 'A'}</span></div></header>
    {error && <p className="commerce-error" role="alert">{error} <button onClick={load}>Retry</button></p>}{notice && <p className="commerce-success" role="status">{notice}</p>}
-   {page === 'email-queue' ? <EmailQueue /> : page === 'media' ? <MediaLibrary /> : dashboard ? ready ? <ClassicDashboard overview={overview} reports={page === 'reports'} /> : <p className="table-empty" role="status">Loading dashboard…</p> : <>
+   {!allowed(page) ? <section className="classic-panel settings-panel"><h2>No access assigned</h2><p>Ask Nishant to enable the required admin sections.</p></section> : page === 'access' ? <AdminAccess /> : page === 'email-queue' ? <EmailQueue /> : page === 'media' ? <MediaLibrary /> : dashboard ? ready ? <ClassicDashboard overview={overview} reports={page === 'reports'} /> : <p className="table-empty" role="status">Loading dashboard…</p> : <>
     <div className="studio-toolbar">{page !== 'settings' && <><input aria-label="Search records" placeholder={`Search ${label.toLowerCase()}…`} value={query} onChange={e => setQuery(e.target.value)} />{page !== 'categories' && <select aria-label="Filter by status" value={status} onChange={e => setStatus(e.target.value)}><option value="all">All statuses</option>{statuses.map(s => <option key={s}>{s}</option>)}</select>}<select aria-label="Sort records" value={sort} onChange={e => setSort(e.target.value)}><option value="newest">Newest first</option><option value="name">Name A–Z</option>{(isProduct || resource === 'orders') && <option value="price">Amount: low to high</option>}{isProduct && <option value="stock">Stock: low to high</option>}</select></>}
      <button className="secondary" onClick={load} disabled={loading} aria-label="Refresh records"><RefreshCw size={14} /></button>{!['settings', 'categories'].includes(page) && <button className="secondary" disabled={!ready || !rows.length} onClick={() => exportRecords(rows, resource)}><Download size={13} /> Export</button>}
      {canEdit && <button className="primary" disabled={!ready} onClick={() => setEditor(page === 'settings' ? data : {})}><Plus size={14} />{page === 'settings' ? 'Edit settings' : resource === 'products' ? 'Add product' : page === 'reviews' ? 'Add demo review' : 'Add new'}</button>}
     </div>
-    {!ready ? <p className="table-empty" role="status">Loading records…</p> : page === 'settings' ? <section className="classic-panel settings-panel"><h2>{data.storeName}</h2><dl className="detail-grid">{[['Contact email', data.contactEmail || '—'], ['Shipping fee', money(data.shippingFee)], ['Free shipping above', money(data.freeShippingAbove)], ['Cash on delivery', data.codEnabled ? 'Enabled' : 'Disabled']].map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl><h3>Shipping policy</h3><p className="preserve-lines">{data.shippingPolicy || 'No policy added.'}</p><h3>Return policy</h3><p className="preserve-lines">{data.returnPolicy || 'No policy added.'}</p></section> : <section className="records-panel">
+    {!ready ? <p className="table-empty" role="status">Loading records…</p> : page === 'settings' ? <section className="classic-panel settings-panel"><h2>{data.storeName}</h2><dl className="detail-grid">{[['Contact email', data.contactEmail || '—'], ['Shipping mode', data.shippingMode], ['Shipping fee', money(data.shippingFee)], ['Extra COD charge', money(data.codFee || 0)], ['Free shipping above', money(data.freeShippingAbove)], ['Cash on delivery', data.codEnabled ? 'Enabled' : 'Disabled']].map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl><h3>Shipping policy</h3><p className="preserve-lines">{data.shippingPolicy || 'No policy added.'}</p><h3>Return policy</h3><p className="preserve-lines">{data.returnPolicy || 'No policy added.'}</p></section> : <section className="records-panel">
      <div className="table-summary"><strong>{label}</strong><span>{rows.length} records</span>{page === 'inventory' && <span>{rows.filter(r => r.stock <= 5).length} low in stock</span>}</div>
      <div className="studio-table-wrap"><table><thead><tr>{columns.map(c => <th key={c} scope="col">{c}</th>)}</tr></thead><tbody>{visible.map(r => <tr key={r._id || r.id}>
       <td><div className="table-record">{(r.imageUrl || isProduct) && <img className="studio-thumb" src={productImage(r)} alt="" />}<div><strong>{recordName(r)}</strong><small>{isProduct ? r.sku : resource === 'orders' ? (r.items?.length || 0) + ' item(s)' : r.slug || ''}</small></div></div></td>
@@ -137,7 +144,7 @@ export default function ClassicAdminApp() {
     </section>}
    </>}
   </main>
-  {editor && <RecordEditor key={page + (editor._id || 'new')} page={editPage} record={Object.keys(editor).length ? editor : null} onClose={() => setEditor(null)} onSave={async () => { setNotice('Changes saved.'); await load(); }} uploadsEnabled={overview.uploadsEnabled} />}
+  {editor && <RecordEditor key={page + (editor._id || 'new')} page={editPage} record={Object.keys(editor).length ? editor : null} onClose={() => setEditor(null)} onSave={async () => { setNotice('Changes saved.'); await load(); }} uploadsEnabled={overview.uploadsEnabled && allowed('media')} />}
   {view && <RecordDialog title={recordName(view)} onClose={() => setView(null)}>
     {error && <p className="commerce-error" role="alert">{error}</p>}
     {resource === 'users' && <CustomerShopping userId={view._id} />}

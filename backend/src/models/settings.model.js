@@ -8,6 +8,8 @@ export const settingsSchema = z.object({
   shippingFee: z.number().min(0).max(10000),
   freeShippingAbove: z.number().min(0).max(1000000),
   codEnabled: z.boolean(),
+  codFee: z.number().min(0).max(10000).default(0),
+  shippingMode: z.enum(["free", "paid", "threshold"]).default("threshold"),
   contactEmail: z.union([email, z.literal("")]),
   shippingPolicy: text(6000),
   returnPolicy: text(6000),
@@ -17,6 +19,9 @@ export const defaultSettings = {
   shippingFee: 0,
   freeShippingAbove: 2999,
   codEnabled: true,
+  codFee: 0,
+  shippingMode: "threshold",
+  productEmailsEnabled: true,
   contactEmail: "Info.rajothreads@gmail.com",
   shippingPolicy: "Delivery timelines will be confirmed with your order.",
   returnPolicy:

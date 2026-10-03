@@ -79,6 +79,8 @@ const fields = {
     ["contactEmail", "Contact email", "email"],
     ["shippingFee", "Shipping fee (₹)", "number"],
     ["freeShippingAbove", "Free shipping threshold (₹)", "number"],
+    ["shippingMode", "Shipping mode", ["free", "paid", "threshold"]],
+    ["codFee", "Extra COD charge (INR)", "number"],
     ["codEnabled", "Enable cash-on-delivery orders", "checkbox"],
     ["shippingPolicy", "Shipping policy", "textarea"],
     ["returnPolicy", "Return policy", "textarea"],
@@ -264,6 +266,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
         </p>
       )}
       <form className="commerce-form studio-editor" onSubmit={save}>
+        {page === 'settings' && <p className="span-all">Shipping mode: free charges no shipping fee; paid charges the fee on every order; threshold offers free shipping when the product subtotal reaches the threshold. COD charge is added separately. Turning COD off pauses checkout because online payments are not configured.</p>}
         {page === 'banners' && <div className="span-all"><p>Published banners appear in the homepage slider. Lower display order appears first. Draft hides a slide.</p><label>Small heading<input value={values.eyebrow || ''} onChange={e => setValues({...values,eyebrow:e.target.value})} maxLength={80} /></label><label>Button text<input value={values.buttonText || ''} onChange={e => setValues({...values,buttonText:e.target.value})} maxLength={60} /></label><label>Banner layout<select value={values.layout || 'full'} onChange={e => setValues({...values,layout:e.target.value})}><option value="full">Single image</option><option value="split">Two images with centre text</option></select></label><h3>Mobile image (optional)</h3><ImageInput value={values.mobileImageUrl} onChange={url => setValues({...values,mobileImageUrl:url})} enabled={uploadsEnabled} />{values.layout === 'split' && <><h3>Second desktop image</h3><ImageInput value={values.secondaryImageUrl} onChange={url => setValues({...values,secondaryImageUrl:url})} enabled={uploadsEnabled} /></>}</div>}
         {fields[resource].map(([key, label, type]) => (
           <label key={key} className={type === "textarea" ? "span-all" : ""}>
@@ -322,6 +325,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
                     "value",
                     "minimum",
                     "shippingFee",
+                    "codFee",
                     "freeShippingAbove",
                   ].includes(key)
                     ? ".01"
@@ -400,7 +404,7 @@ export function OrderDetails({ order, onUpdate, busy }) {
         ))}
         <p>
           Subtotal {money(order.subtotal)} · Discount {money(order.discount)} ·
-          Shipping {money(order.shipping)} · Total {money(order.total)}
+          Shipping {money(order.shipping)} · COD {money(order.codFee || 0)} · Total {money(order.total)}
         </p>
         <form
           className="commerce-form"

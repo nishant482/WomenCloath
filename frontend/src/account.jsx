@@ -381,6 +381,7 @@ export function CheckoutPage() {
                 ["Subtotal", quote.subtotal],
                 ["Discount", -quote.discount],
                 ["Shipping", quote.shipping],
+                ["COD charge", quote.codFee || 0],
                 ["Total", quote.total],
               ].map(([label, value]) => (
                 <div key={label}>

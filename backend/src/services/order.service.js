@@ -63,15 +63,17 @@ export async function priceCart(db, cart, couponCode = "", session) {
     coupon = c.code;
   }
   const shipping =
-    subtotal >= cents(settings.freeShippingAbove)
+    settings.shippingMode === "free" || (settings.shippingMode === "threshold" && subtotal >= cents(settings.freeShippingAbove))
       ? 0
       : cents(settings.shippingFee);
+  const codFee = settings.codEnabled ? cents(settings.codFee) : 0;
   return {
     items,
     subtotal: subtotal / 100,
     discount: discount / 100,
     shipping: shipping / 100,
-    total: (subtotal - discount + shipping) / 100,
+    codFee: codFee / 100,
+    total: (subtotal - discount + shipping + codFee) / 100,
     coupon,
     codEnabled: settings.codEnabled,
     currency: "INR",
