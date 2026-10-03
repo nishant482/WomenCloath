@@ -7,6 +7,7 @@ import { fail, objectId } from "../services/auth.service.js";
 export const checkoutSchema = z.object({
   address,
   coupon: z.string().trim().toUpperCase().max(30).default(""),
+  items: z.array(z.object({ productId: z.number().int().positive(), size: z.string().max(10).default(""), qty: z.number().int().min(1).max(20) })).min(1).max(50).optional(),
 });
 const cents = (n) => Math.round(n * 100);
 export async function priceCart(db, cart, couponCode = "", session) {
@@ -16,6 +17,7 @@ export async function priceCart(db, cart, couponCode = "", session) {
     ...(await db.collection("settings").findOne({ _id: "store" }, { session })),
   };
   const items = [];
+  const quantities = new Map();
   for (const line of cart) {
     const p = await db
       .collection("products")
@@ -23,7 +25,8 @@ export async function priceCart(db, cart, couponCode = "", session) {
     if (!p) throw fail(409, "A product in your bag is no longer available.");
     if (p.category === "Kurta sets" && !p.sizes.includes(line.size))
       throw fail(400, "Choose an available size.");
-    if (p.stock < line.qty)
+    quantities.set(p.id, (quantities.get(p.id) || 0) + line.qty);
+    if (p.stock < quantities.get(p.id))
       throw fail(409, `${p.name}: only ${p.stock} available.`);
     items.push({
       productId: p.id,
@@ -84,14 +87,14 @@ export async function createOrder(client, db, user, payload, idempotencyKey) {
         .collection("orders")
         .findOne({ userId: user._id, idempotencyKey }, { session });
       if (existing) return existing;
-      const fresh = await db
+      const fresh = user.guest ? user : await db
         .collection("users")
         .findOne(
           { _id: user._id, status: "active", ...(config.requireEmailVerification ? { emailVerified: true } : {}) },
           { session },
         );
       if (!fresh) throw fail(401, "Please sign in again.");
-      const cart = fresh.cart || [];
+      const cart = payload.items || fresh.cart || [];
       const quote = await priceCart(db, cart, payload.coupon, session);
       if (!quote.codEnabled)
         throw fail(
@@ -114,6 +117,7 @@ export async function createOrder(client, db, user, payload, idempotencyKey) {
         userId: user._id,
         email: user.email,
         customer: user.name,
+        guest: Boolean(user.guest),
         ...quote,
         address: payload.address,
         paymentMethod: "cod",
@@ -128,7 +132,7 @@ export async function createOrder(client, db, user, payload, idempotencyKey) {
       const result = await db
         .collection("orders")
         .insertOne(order, { session });
-      await db
+      if (!user.guest && !payload.items) await db
         .collection("users")
         .updateOne(
           { _id: user._id },

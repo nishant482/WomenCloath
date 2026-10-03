@@ -15,6 +15,7 @@ import { AddressFields } from "./address-fields.jsx";
 const money = (n) => "₹" + Number(n).toLocaleString("en-IN");
 export function AuthForm({ onLogin, admin = false }) {
   const [showPassword, setShowPassword] = useState(false);
+  const [legacyEmail, setLegacyEmail] = useState(false);
   const [mode, setMode] = useState("login"),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
@@ -94,7 +95,8 @@ export function AuthForm({ onLogin, admin = false }) {
             />
           </label>
         )}
-        <label>
+        {!admin && (mode === 'signup' || (mode === 'login' && !legacyEmail)) && <label>Mobile number<input name="phone" type="tel" inputMode="numeric" autoComplete="tel-national" pattern="[6-9][0-9]{9}" maxLength={10} placeholder="10-digit mobile number" required /></label>}
+        {(admin || mode !== 'login' || legacyEmail) && <label>
           Email address
           <input
             name="email"
@@ -105,7 +107,7 @@ export function AuthForm({ onLogin, admin = false }) {
             required
             autoComplete="email"
           />
-        </label>
+        </label>}
         {["verify", "reset"].includes(mode) && (
           <label>
             Verification code
@@ -182,6 +184,7 @@ export function AuthForm({ onLogin, admin = false }) {
         </button>
       </form>
       <div className="auth-links">
+        {!admin && mode === 'login' && <button onClick={() => setLegacyEmail(!legacyEmail)}>{legacyEmail ? 'Sign in with mobile number' : 'Existing account without a mobile? Use email'}</button>}
         {mode !== "login" && (
           <button onClick={() => switchMode("login")}>Back to sign in</button>
         )}
@@ -226,6 +229,12 @@ export function AccountPage() {
 }
 export function CheckoutPage() {
   const store = useStore();
+  const directId = Number(new URLSearchParams(location.search).get('product'));
+  const direct = store.products.find(p => p.id === directId);
+  const [size, setSize] = useState('');
+  const items = direct ? [{ productId: direct.id, qty: 1, size }] : store.bag.map(p => ({ productId: p.id, qty: p.qty, size: p.size || '' }));
+  const needsSize = direct?.category === 'Kurta sets' && !size;
+  const guest = !store.user;
   const [selectedAddress, setSelectedAddress] = useState(0);
   const [quote, setQuote] = useState(null),
     [coupon, setCoupon] = useState(""),
@@ -234,35 +243,32 @@ export function CheckoutPage() {
     [busy, setBusy] = useState(false),
     [order, setOrder] = useState(null);
   const key = useRef(crypto.randomUUID());
+  const quoteRequest = useRef(0);
   const load = async (code = "") => {
+    const requestId = ++quoteRequest.current;
+    if (needsSize) { setQuote(null); setBusy(false); return; }
     setError("");
     setBusy(true);
     try {
-      const q = await api("/checkout/quote", {
+      const q = await api(guest ? "/checkout/guest/quote" : "/checkout/quote", {
         method: "POST",
-        body: { coupon: code },
+        body: { coupon: code, ...((guest || direct) ? { items } : {}) },
       });
+      if (requestId !== quoteRequest.current) return;
       setQuote(q);
       setApplied(code);
     } catch (e) {
+      if (requestId !== quoteRequest.current) return;
       setError(e.message);
       setQuote(null);
     } finally {
-      setBusy(false);
+      if (requestId === quoteRequest.current) setBusy(false);
     }
   };
   useEffect(() => {
-    if (store.user) load();
-  }, [store.user?.id]);
-  if (!store.user)
-    return (
-      <>
-        <div className="checkout-login-note page-width">
-          Please sign in to complete your order. Your bag will be kept.
-        </div>
-        <AuthForm onLogin={store.onLogin} />
-      </>
-    );
+    if (!order) load();
+  }, [store.user?.id, size, directId]);
+  if (directId && !direct) return <section className="checkout-page page-width"><h1>Product unavailable</h1><a className="primary" href="/collections/all">Continue shopping</a></section>;
   if (order)
     return (
       <section className="checkout-success page-width">
@@ -272,8 +278,9 @@ export function CheckoutPage() {
           Your order <strong>{order.number}</strong> has been placed.
         </p>
         <p>Pay {money(order.total)} on delivery.</p>
-        <a className="primary" href="/account">
-          View your orders <ArrowRight size={18} />
+        {guest && <p>Save your order number for updates. Contact us on WhatsApp for help with your order.</p>}
+        <a className="primary" href={guest ? '/collections/all' : '/account'}>
+          {guest ? 'Continue shopping' : 'View your orders'} <ArrowRight size={18} />
         </a>
       </section>
     );
@@ -281,6 +288,8 @@ export function CheckoutPage() {
     <section className="checkout-page page-width">
       <div className="eyebrow">ONE STEP CLOSER</div>
       <h1>Make it yours.</h1>
+      {guest && <p>Guest checkout · No account needed. Enter your delivery details to place your order.</p>}
+      {direct && <div className="direct-checkout-product"><img src={productImage(direct)} alt={direct.name} /><div><h2>{direct.name}</h2><p>{money(direct.price)}</p>{direct.category === 'Kurta sets' && <label>Choose your size<select value={size} onChange={e => { setSize(e.target.value); key.current = crypto.randomUUID(); }} required><option value="">Select size</option>{direct.sizes.map(s => <option key={s}>{s}</option>)}</select></label>}</div></div>}
       {error && (
         <p className="commerce-error" role="alert">
           {error}
@@ -295,12 +304,13 @@ export function CheckoutPage() {
             setError("");
             try {
               const a = Object.fromEntries(new FormData(e.currentTarget));
-              const result = await api("/orders", {
+              const result = await api(guest ? "/checkout/guest/orders" : "/orders", {
                 method: "POST",
                 headers: { "Idempotency-Key": key.current },
-                body: { address: { ...a, country: "India" }, coupon: applied },
+                body: { address: { ...a, country: "India" }, coupon: applied, ...((guest || direct) ? { items } : {}), ...(guest && a.email ? { email: a.email } : {}) },
               });
               setOrder(result);
+              if (guest && !direct) await store.setBag([]);
               await store.refreshBag();
             } catch (e) {
               setError(e.message);
@@ -310,8 +320,9 @@ export function CheckoutPage() {
           }}
         >
           <h2>Delivery details</h2>
-          {store.user.addresses?.length > 0 && <label>Saved address<select aria-label="Saved address" value={selectedAddress} onChange={e => setSelectedAddress(Number(e.target.value))}>{store.user.addresses.map((a, i) => <option key={i} value={i}>{a.line1}, {a.city} – {a.postalCode}</option>)}<option value={-1}>Use a new address</option></select></label>}
-          <AddressFields key={selectedAddress} initial={{ name: store.user.name, phone: store.user.phone, ...store.user.addresses?.[selectedAddress] }} />
+          {store.user?.addresses?.length > 0 && <label>Saved address<select aria-label="Saved address" value={selectedAddress} onChange={e => setSelectedAddress(Number(e.target.value))}>{store.user.addresses.map((a, i) => <option key={i} value={i}>{a.line1}, {a.city} – {a.postalCode}</option>)}<option value={-1}>Use a new address</option></select></label>}
+          <AddressFields key={selectedAddress} initial={{ name: store.user?.name, phone: store.user?.phone, ...store.user?.addresses?.[selectedAddress] }} />
+          {guest && <label>Email address (optional)<input name="email" type="email" autoComplete="email" /></label>}
           <p>
             Payment: <strong>Cash on delivery</strong>. Online payments are not
             enabled.
@@ -319,7 +330,7 @@ export function CheckoutPage() {
           <p>
             <a href="/shipping">Shipping & return policy</a>
           </p>
-          <button className="primary" disabled={busy || !quote?.codEnabled}>
+          <button className="primary" disabled={busy || needsSize || !quote?.codEnabled}>
             {busy ? "Please wait…" : "Place order"}
             <ArrowRight size={18} />
           </button>

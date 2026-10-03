@@ -1,4 +1,5 @@
-import { fail, rateLimit } from "../services/auth.service.js";
+import { fail, rateLimit, objectId } from "../services/auth.service.js";
+import { z } from 'zod';
 import { imageStorageProvider, storeImage } from "../services/image-storage.js";
 
 export const postAdminUploads = async (req, res) => {
@@ -36,8 +37,18 @@ export const postAdminUploads = async (req, res) => {
     url: blob.url,
     pathname: blob.pathname,
     provider: blob.provider,
+    label: String(req.headers['x-file-name'] || 'Uploaded image').slice(0, 150),
+    bytes: b.length,
     uploadedBy: req.user._id,
     createdAt: new Date(),
   });
   res.status(201).json({ url: blob.url });
+};
+
+export const getMedia = async (req, res) => res.json({ items: await req.models.media.find({}).sort({ createdAt: -1 }).limit(2000).toArray() });
+export const patchMedia = async (req, res) => {
+  const data = z.object({ label: z.string().trim().min(1).max(150) }).parse(req.body);
+  const result = await req.models.media.updateOne({ _id: objectId(req.params.id) }, { $set: { ...data, updatedAt: new Date() } });
+  if (!result.matchedCount) throw fail(404, 'Image not found.');
+  res.json({ ok: true });
 };

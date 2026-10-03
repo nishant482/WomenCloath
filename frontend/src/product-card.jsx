@@ -69,6 +69,7 @@ export function ProductCard({ product: p, wish, toggleWish, add }) {
           <small>{Math.round((1 - p.price / p.old) * 100)}% off</small>
         )}
       </div>
+      {p.stock > 0 && <a className="card-shop-now" href={'/checkout?product=' + p.id}>Shop Now <span aria-hidden="true">→</span></a>}
     </article>
   );
 }

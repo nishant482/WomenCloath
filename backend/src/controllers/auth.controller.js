@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { config } from "../config/env.js";
-import { email, password } from "../validators/schemas.js";
+import { email, password, phone } from "../validators/schemas.js";
 
 import {
   fail,
@@ -19,14 +19,17 @@ import {
 
 export const postAuthSignup = async (req, res) => {
   const input = z
-    .object({ name: z.string().trim().min(2).max(100), email, password })
+    .object({ name: z.string().trim().min(2).max(100), email, password, phone })
     .parse(req.body);
   await rateLimit(req.db, "mail:" + input.email, 3, 600);
   const exists = await req.models.users.findOne({ email: input.email });
+  const phoneOwner = await req.models.users.findOne({ loginPhone: input.phone });
+  if (phoneOwner && String(phoneOwner._id) !== String(exists?._id)) throw fail(409, "An account with this mobile number already exists. Please sign in.");
   if (!config.requireEmailVerification) {
     if (exists) throw fail(409, "An account with this email already exists. Please sign in using your password.");
     const user = {
       ...input,
+      loginPhone: input.phone,
       password: await passwordHash(input.password),
       role: "customer",
       emailVerified: false,
@@ -47,6 +50,7 @@ export const postAuthSignup = async (req, res) => {
   if (!exists)
     await req.models.users.insertOne({
       ...input,
+      loginPhone: input.phone,
       password: await passwordHash(input.password),
       role: "customer",
       emailVerified: false,
@@ -112,12 +116,13 @@ export const postAuthVerify = async (req, res) => {
 
 export const postAuthLogin = async (req, res) => {
   const input = z
-    .object({ email, password: z.string().min(1).max(128) })
+    .object({ email: email.optional(), phone: phone.optional(), password: z.string().min(1).max(128) })
+    .refine(v => v.email || v.phone, "Enter your mobile number.")
     .parse(req.body);
-  const user = await req.models.users.findOne({ email: input.email });
+  const user = await req.models.users.findOne(input.phone ? { loginPhone: input.phone } : { email: input.email });
   const valid = await passwordMatches(input.password, user?.password);
   if (!user || !valid || user.status !== "active")
-    throw fail(401, "Email or password is incorrect.");
+    throw fail(401, "Mobile number, email or password is incorrect.");
   if (config.requireEmailVerification && !user.emailVerified)
     throw fail(403, "Please verify your email before signing in.");
   const scope = sessionScope(req);

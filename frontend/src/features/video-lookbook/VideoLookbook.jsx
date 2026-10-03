@@ -35,7 +35,7 @@ export default function VideoLookbook() {
     </section>
     <section className="film-feature page-width" ref={playerRef}>
       <div className="film-screen">
-        <video ref={videoRef} src={`/videos/${active.image}.webm`} poster={`/images/${active.image}.jpg`} controls playsInline preload="none" aria-label={`${active.name} motion film with instrumental music`} onError={() => setFailed(true)} />
+        <video ref={videoRef} src={`/videos/${active.image}.webm`} poster={assetUrl(`/images/${active.image}.jpg`)} controls playsInline preload="none" aria-label={`${active.name} motion film with instrumental music`} onError={() => setFailed(true)} />
         {failed && <p role="alert" className="film-error">This film couldn’t load. Please refresh or choose another look.</p>}
       </div>
       <div className="film-description">
@@ -52,9 +52,10 @@ export default function VideoLookbook() {
       <div className="section-heading"><div><div className="eyebrow">TWELVE SHADES OF BEAUTIFUL</div><h2>Find your next <em>favourite frame.</em></h2></div><span className="section-note">Choose a look. Press play. Stay a while.</span></div>
       <div className="tabs film-tabs">{['All films', 'Sarees', 'Lehengas', 'Kurta sets'].map(c => <button key={c} className={filter === c ? 'active' : ''} onClick={() => setFilter(c)}>{c}</button>)}</div>
       <div className="film-grid">{products.filter(p => filter === 'All films' || p.category === filter).map(p => <button key={p.id} className={`film-card ${active.id === p.id ? 'chosen' : ''}`} onClick={() => select(p)} aria-label={`Select film: ${p.name}`} aria-pressed={active.id === p.id}>
-        <div className="film-poster"><img src={`/images/${p.image}.jpg`} alt={p.name} loading="lazy"/><span className="film-play"><Play size={22}/></span><small>0:07 · WITH MUSIC</small></div>
+        <div className="film-poster"><img src={assetUrl(`/images/${p.image}.jpg`)} alt={p.name} loading="lazy"/><span className="film-play"><Play size={22}/></span><small>0:07 · WITH MUSIC</small></div>
         <span className="eyebrow">{p.category}</span><h3>{p.name}</h3><span className="film-card-link">{active.id === p.id ? 'Selected above' : 'Watch the film'} <ArrowUpRight size={15}/></span>
       </button>)}</div>
     </section>
   </div>;
 }
+import { assetUrl } from '../../media.js';

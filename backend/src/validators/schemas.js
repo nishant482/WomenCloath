@@ -1,5 +1,6 @@
 import { z } from "zod";
 export const email = z.string().trim().toLowerCase().email().max(254);
+export const phone = z.string().trim().transform(v => v.replace(/[\s()-]/g, '').replace(/^(?:\+91|0091)/, '')).pipe(z.string().regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number.'));
 export const password = z
   .string()
   .min(10, "Use at least 10 characters.")

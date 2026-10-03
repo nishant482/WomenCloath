@@ -12,6 +12,7 @@ process.env.NODE_ENV = "test";
 process.env.ADMIN_EMAIL = "owner@example.com";
 process.env.REQUIRE_EMAIL_VERIFICATION = "true";
 process.env.APP_URL = "http://localhost:5173";
+for (const key of ['R2_GATEWAY_URL','R2_GATEWAY_TOKEN','R2_ACCOUNT_ID','R2_BUCKET','R2_ACCESS_KEY_ID','R2_SECRET_ACCESS_KEY','R2_PUBLIC_URL','CLOUDINARY_CLOUD_NAME','CLOUDINARY_API_KEY','CLOUDINARY_API_SECRET','CLOUDFLARE_ACCOUNT_ID','CLOUDFLARE_IMAGES_API_TOKEN','BLOB_READ_WRITE_TOKEN']) process.env[key] = '';
 delete process.env.VERCEL;
 // Keep the upstream download checksum verification, but stream the large Windows archive.
 memoryUtils.md5FromFile = async (file) => {
@@ -25,6 +26,44 @@ const { hash } = await import("../src/services/auth.service.js");
 const { config } = await import("../src/config/env.js");
 let repl, client, db, app, owner, customer, other;
 const codes = new Map();
+test('mobile signup requires a unique number and signs in without verification when disabled', async () => {
+  const previous = config.requireEmailVerification; config.requireEmailVerification = false;
+  try {
+    const agent = request.agent(app);
+    await request(app).post('/api/auth/signup').set('Origin','http://localhost:5173').set('X-Requested-With','RajoStore').send({ name:'Mobile User', email:'mobile-missing@example.com', password:pass }).expect(400);
+    const created = await mutation(agent,'post','/api/auth/signup',{ name:'Mobile User', email:'mobile@example.com', phone:'+91 9988776655', password:pass }).expect(201);
+    assert.equal(created.body.user.phone, '9988776655');
+    assert.equal(created.body.user.emailVerified,false);
+    assert.equal(codes.has('mobile@example.com:verify'),false);
+    await mutation(request(app),'post','/api/auth/login',{ phone:'9988776655', password:pass }).expect(200);
+    await mutation(request(app),'post','/api/auth/login',{ phone:'9988776655', password:'wrong' }).expect(401);
+    await mutation(request(app),'post','/api/auth/signup',{ name:'Duplicate', email:'duplicate-mobile@example.com', phone:'9988776655', password:pass }).expect(409);
+  } finally { config.requireEmailVerification = previous; }
+});
+test('guest checkout prices on server, is idempotent, reduces stock and never exposes orders to another customer', async () => {
+  const p = await product(4), key = randomUUID();
+  const payload = { address: shipping, items:[{ productId:p.id, qty:2, size:'', unitPrice:1 }], total:1 };
+  const quote = await mutation(request(app),'post','/api/checkout/guest/quote',{items:payload.items}).expect(200);
+  assert.equal(quote.body.subtotal,2000);
+  const send = () => request(app).post('/api/checkout/guest/orders').set('Origin','http://localhost:5173').set('X-Requested-With','RajoStore').set('Idempotency-Key',key).send(payload);
+  const first = await send().expect(201), retry = await send().expect(201);
+  assert.equal(first.body._id,retry.body._id);
+  assert.equal(first.body.guest,true);
+  assert.equal(first.body.subtotal,2000);
+  assert.equal((await db.collection('products').findOne({id:p.id})).stock,2);
+  assert.ok(!(await customer.get('/api/orders')).body.items.some(o=>o._id===first.body._id));
+  await mutation(request(app),'post','/api/checkout/guest/quote',{ items:[{productId:p.id,qty:2},{productId:p.id,qty:2}] }).expect(409);
+  await mutation(request(app),'post','/api/checkout/guest/quote',{items:[{productId:p.id,qty:-1}]}).expect(400);
+  await request(app).post('/api/checkout/guest/orders').send(payload).expect(403);
+});
+test('media library requires admin and supports reusable image names', async () => {
+  await request(app).get('/api/admin/media').expect(401);
+  await customer.get('/api/admin/media').expect(403);
+  const media = await db.collection('media').insertOne({url:'https://images.example.com/test.png',label:'Original',provider:'r2',createdAt:new Date()});
+  await mutation(owner,'patch','/api/admin/media/'+media.insertedId,{label:'Catalogue photo'}).expect(200);
+  const result = await owner.get('/api/admin/media').expect(200);
+  assert.ok(result.body.items.some(item=>item.label==='Catalogue photo'));
+});
 test("only successful public catalogue responses are edge-cacheable", async () => {
   for (const path of ["/api/products", "/api/content"]) {
     const response = await request(app).get(path).expect(200);
@@ -43,7 +82,7 @@ const mutation = (agent, method, path, body) =>
   agent[method](path)
     .set("Origin", "http://localhost:5173")
     .set("X-Requested-With", "RajoStore")
-    .send(body);
+    .send(path === '/api/auth/signup' && !body.phone ? { ...body, phone: '9' + (parseInt(createHash('sha256').update(body.email).digest('hex').slice(0,10),16) % 1e9).toString().padStart(9,'0') } : body);
 async function signup(agent, email) {
   await mutation(agent, "post", "/api/auth/signup", {
     name: email.split("@")[0],
@@ -242,6 +281,7 @@ test("account and admin endpoints enforce sessions and roles", async () => {
   assert.ok(r.body.items.every((u) => !u.password));
   await mutation(customer, "patch", "/api/account", {
     name: "Customer",
+    phone: '9123456789',
     role: "admin",
     addresses: [],
   }).expect(200);

@@ -25,11 +25,11 @@ export function ClassicLogin({ error, onLogin }) {
   return <main className="classic-login">
     <div className="classic-login-shell">
     <aside className="classic-login-visual" aria-label="RAJO Threads collection">
-      <img src="/images/terracotta.jpg" alt="An outfit from the RAJO Threads ethnic wear collection" />
+      <img src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/2b388f57-da21-44a7-b222-738ebe9a3534.jpg" alt="An outfit from the RAJO Threads ethnic wear collection" />
       <div><span>RAJO THREADS</span><h2>Every detail,<br />beautifully managed.</h2><p>Your collections. Your customers. Your store.</p></div>
     </aside>
     <section className="classic-login-card">
-      <div className="classic-login-brand"><img src="/images/rajo-threads-logo.jpeg" alt="RAJO Threads" /><div><strong>RAJO Threads</strong><span>ADMINISTRATION</span></div></div>
+      <div className="classic-login-brand"><img src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/0060c684-5752-4474-88b4-99a974a0d976.jpg" alt="RAJO Threads" /><div><strong>RAJO Threads</strong><span>ADMINISTRATION</span></div></div>
       {error && <p className="commerce-error" role="alert">{error}</p>}
       <AuthForm admin onLogin={onLogin} />
       <a className="login-store-link" href="/">Back to storefront <ArrowUpRight size={13} /></a>
@@ -80,12 +80,20 @@ function SalesChart({ rows, metric }) {
   </svg>;
 }
 
+function DonutChart({ title, rows }) {
+  const colors = ['#c32643', '#db7b69', '#c59658', '#e6bba9', '#a56b50', '#e9d6b5', '#d55269'];
+  const total = rows.reduce((sum, row) => sum + row.value, 0);
+  let offset = 0;
+  return <section className="classic-panel"><div className="classic-panel-title"><h2>{title}</h2><span>{total} total</span></div><div className="donut-layout"><svg viewBox="0 0 160 160" role="img" aria-label={`${title}: ${rows.map(r => `${r.label} ${r.value}`).join(', ')}`}><circle cx="80" cy="80" r="56" fill="none" stroke="#f2e5d4" strokeWidth="23" />{rows.map((row, i) => { const amount = total ? row.value / total * 100 : 0; const start = offset; offset += amount; return <circle key={row.label} cx="80" cy="80" r="56" pathLength="100" fill="none" stroke={colors[i % colors.length]} strokeWidth="23" strokeDasharray={`${amount} ${100 - amount}`} strokeDashoffset={-start} transform="rotate(-90 80 80)"><title>{row.label}: {row.value}</title></circle>; })}<text x="80" y="80" textAnchor="middle" dominantBaseline="middle" className="donut-total">{total}</text><text x="80" y="101" textAnchor="middle" className="donut-caption">{total ? 'TOTAL' : 'NO DATA YET'}</text></svg><ul>{rows.map((row,i) => <li key={row.label}><i style={{ background: colors[i % colors.length] }} /><span>{row.label}</span><strong>{row.value}</strong></li>)}</ul></div></section>;
+}
+
 export function ClassicDashboard({ overview, reports = false }) {
   const [days, setDays] = useState(7), [metric, setMetric] = useState('revenue');
   const rows = (overview.dailySales || []).slice(-days);
   const statuses = overview.orderStatuses || [];
   const total = statuses.reduce((n, row) => n + row.count, 0);
   return <div className="classic-dashboard">
+    <div className="dashboard-pies"><DonutChart title="Orders by status" rows={(overview.orderStatuses || []).map(r => ({ label: r._id, value: r.count }))} /><DonutChart title="Products by category" rows={(overview.categories || []).map(r => ({ label: r._id, value: r.products }))} /><DonutChart title="Inventory by category" rows={(overview.categories || []).map(r => ({ label: r._id, value: r.stock }))} /></div>
     <div className="compact-stats">{[
       ['Collected revenue', money(overview.revenue), Wallet, 'All paid orders'],
       ['Orders', overview.orders || 0, ShoppingBag, `${overview.pendingOrders || 0} awaiting fulfilment`],

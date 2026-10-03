@@ -6,4 +6,5 @@ import '../src/commerce.css';
 import './styles.css';
 import './classic-admin.css';
 import './brand-palette.css';
+import './media-library.css';
 createRoot(document.getElementById('root')).render(<ClassicAdminApp />);

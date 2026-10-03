@@ -22,7 +22,7 @@ export function PageBanner({
   eyebrow,
   title,
   text,
-  image = "/images/ivory.jpg",
+  image = "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/891a7c10-6620-4c62-be2b-01b77e7b3f81.jpg",
 }) {
   return (
     <section className="page-banner">
@@ -70,7 +70,7 @@ export function CategoryStories({ shop }) {
             key={name}
             href={"/collections/" + name.toLowerCase().replaceAll(" ", "-")}
           >
-            <img src={`/images/${img}.jpg`} alt={name} loading="lazy" />
+            <img src={assetUrl(`/images/${img}.jpg`)} alt={name} loading="lazy" />
             <div>
               <small>{text}</small>
               <h3>
@@ -109,7 +109,7 @@ export function OccasionEdit({ shop }) {
         <div className="occasion-grid">
           <a href="/collections/lehengas">
             <img
-              src="/images/floral.jpg"
+              src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/14b7f90d-57b4-4eb1-ad32-29392da2be19.jpg"
               alt="Floral lehenga for a wedding celebration"
               loading="lazy"
             />
@@ -123,7 +123,7 @@ export function OccasionEdit({ shop }) {
           </a>
           <a href="/collections/kurta-sets">
             <img
-              src="/images/kurta.jpg"
+              src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/4e440f9a-207b-4460-bef6-71ea20cc7814.jpg"
               alt="Printed kurta for beautiful everyday moments"
               loading="lazy"
             />
@@ -548,3 +548,4 @@ export function InnerPage(props) {
     </>
   );
 }
+import { assetUrl } from './media.js';

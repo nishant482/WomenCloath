@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { LayoutDashboard, Package, ShoppingBag, Users, Star, Image, FileText, TicketPercent, Settings, Mail, LogOut, Plus, Menu, X, ArrowUpRight, RefreshCw, Boxes, Layers, RotateCcw, Wallet, BarChart3, Download, Eye, Pencil, Trash2 } from 'lucide-react';
 import { api, productImage } from '../src/api.js';
 import { RecordEditor, OrderDetails } from './admin-editors.jsx';
+import { MediaLibrary } from './media-library.jsx';
 import { ClassicLogin, ClassicDashboard, RecordDialog, ProductDetail, Pagination, Status, money, dateText, CustomerShopping } from './classic-components.jsx';
 const navigation = [
  ['overview', 'Overview', LayoutDashboard, 'WORKSPACE'],
@@ -11,7 +12,7 @@ const navigation = [
  // Temporarily hidden: ['returns', 'Returns', RotateCcw],
  ['payments', 'Payments', Wallet], ['users', 'Users', Users],
  ['carts', 'Customer carts', ShoppingBag], ['wishlists', 'Customer wishlists', Star],
- ['reviews', 'Reviews', Star, 'CONTENT'], ['banners', 'Banners', Image], ['family', 'RAJO family', Image], ['blogs', 'Blog posts', FileText],
+ ['reviews', 'Reviews', Star, 'CONTENT'], ['banners', 'Banners', Image], ['family', 'RAJO family', Image], ['media', 'Image library', Image],
  // Temporarily hidden: ['coupons', 'Discount codes', TicketPercent, 'MANAGEMENT'],
  ['enquiries', 'Customer enquiries', Mail, 'MANAGEMENT'],
  // Shipping and return policy are managed together in this tab; retained for later.
@@ -111,14 +112,14 @@ export default function ClassicAdminApp() {
    {['products', 'users', 'content', 'coupons', 'reviews'].includes(resource) && page !== 'categories' && <button className="delete-action" aria-label={`Delete ${recordName(r)}`} disabled={busy || (resource === 'users' && r.email === user.email)} onClick={() => remove(r)}><Trash2 size={13} /> Delete</button>}
  </div>;
  return <div className="studio classic-studio">
-  <aside className={'studio-sidebar ' + (mobile ? 'open' : '')}><a href="#overview" className="studio-brand"><img src="/images/rajo-threads-logo.jpeg" alt="RAJO Threads" /><span>RAJO Threads<small>ADMIN PANEL</small></span></a><button className="studio-close icon-button" aria-label="Close navigation" onClick={() => setMobile(false)}><X size={18} /></button>
+  <aside className={'studio-sidebar ' + (mobile ? 'open' : '')}><a href="#overview" className="studio-brand"><img src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/0060c684-5752-4474-88b4-99a974a0d976.jpg" alt="RAJO Threads" /><span>RAJO Threads<small>ADMIN PANEL</small></span></a><button className="studio-close icon-button" aria-label="Close navigation" onClick={() => setMobile(false)}><X size={18} /></button>
    <nav aria-label="Studio navigation">{navigation.map(([key, title, Icon, group]) => <React.Fragment key={key}>{group && <span className="studio-nav-group">{group}</span>}<a href={'#' + key} aria-current={page === key ? 'page' : undefined}><Icon size={16} />{title}</a></React.Fragment>)}</nav>
    <button className="studio-logout" onClick={() => api('/auth/logout', { method: 'POST' }).then(() => setUser(null)).catch(e => setError(e.message))}><LogOut size={15} /> Sign out</button>
   </aside>
   {mobile && <button className="studio-shade" aria-label="Close navigation overlay" onClick={() => setMobile(false)} />}
   <main className="studio-main"><header className="studio-header"><button className="studio-menu icon-button" aria-label="Open navigation" onClick={() => setMobile(true)}><Menu size={19} /></button><div><span className="eyebrow">ADMINISTRATION / {label}</span><h1>{label}</h1></div><div className="admin-header-right"><a href="/" target="_blank" rel="noreferrer">View store <ArrowUpRight size={13} /></a><span className="admin-avatar" title={user.email}>{user.name?.[0] || 'A'}</span></div></header>
    {error && <p className="commerce-error" role="alert">{error} <button onClick={load}>Retry</button></p>}{notice && <p className="commerce-success" role="status">{notice}</p>}
-   {dashboard ? ready ? <ClassicDashboard overview={overview} reports={page === 'reports'} /> : <p className="table-empty" role="status">Loading dashboard…</p> : <>
+   {page === 'media' ? <MediaLibrary /> : dashboard ? ready ? <ClassicDashboard overview={overview} reports={page === 'reports'} /> : <p className="table-empty" role="status">Loading dashboard…</p> : <>
     <div className="studio-toolbar">{page !== 'settings' && <><input aria-label="Search records" placeholder={`Search ${label.toLowerCase()}…`} value={query} onChange={e => setQuery(e.target.value)} />{page !== 'categories' && <select aria-label="Filter by status" value={status} onChange={e => setStatus(e.target.value)}><option value="all">All statuses</option>{statuses.map(s => <option key={s}>{s}</option>)}</select>}<select aria-label="Sort records" value={sort} onChange={e => setSort(e.target.value)}><option value="newest">Newest first</option><option value="name">Name A–Z</option>{(isProduct || resource === 'orders') && <option value="price">Amount: low to high</option>}{isProduct && <option value="stock">Stock: low to high</option>}</select></>}
      <button className="secondary" onClick={load} disabled={loading} aria-label="Refresh records"><RefreshCw size={14} /></button>{!['settings', 'categories'].includes(page) && <button className="secondary" disabled={!ready || !rows.length} onClick={() => exportRecords(rows, resource)}><Download size={13} /> Export</button>}
      {canEdit && <button className="primary" disabled={!ready} onClick={() => setEditor(page === 'settings' ? data : {})}><Plus size={14} />{page === 'settings' ? 'Edit settings' : resource === 'products' ? 'Add product' : page === 'reviews' ? 'Add demo review' : 'Add new'}</button>}

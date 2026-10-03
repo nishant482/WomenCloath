@@ -386,3 +386,4 @@ button:disabled {
     margin-right: auto;
   }
 }
+.card-shop-now{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:12px;padding:10px 14px;border:1px solid #c32643;border-radius:4px;color:#c32643;background:#fffaf2;text-decoration:none;font-size:12px;font-weight:700;letter-spacing:.06em}.card-shop-now:hover{background:#c32643;color:#fffaf2}.direct-checkout-product{display:flex;align-items:center;gap:20px;padding:20px;background:#fffaf2;border:1px solid #ecd4ba;border-radius:12px;margin:20px 0}.direct-checkout-product img{width:100px;height:130px;object-fit:cover;border-radius:6px}.direct-checkout-product h2{font-size:21px}.direct-checkout-product label{display:grid;gap:5px}.direct-checkout-product select{padding:8px;border:1px solid #ddc0a4;border-radius:4px}

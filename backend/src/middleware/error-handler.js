@@ -10,7 +10,7 @@ export const errorHandler = (error, req, res, next) => {
   if (error.code === 11000)
     return res.status(409).json({
       error:
-        "This record already exists. Check the email, SKU, slug, code or existing review.",
+        "This record already exists. Check the mobile number, email, SKU, slug, code or existing review.",
     });
   if (error.type === "entity.too.large")
     return res

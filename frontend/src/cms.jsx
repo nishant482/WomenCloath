@@ -73,7 +73,7 @@ export function BlogPage({ slug }) {
       {!blogs.length && (
         <div className="journal-empty">
           <img
-            src="/images/ivory.jpg"
+            src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/891a7c10-6620-4c62-be2b-01b77e7b3f81.jpg"
             alt="Ivory saree from the RAJO collection"
           />
           <div>

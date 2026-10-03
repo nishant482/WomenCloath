@@ -18,6 +18,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { api, productImage } from "../src/api.js";
+import { MediaLibrary } from './media-library.jsx';
 const navigation = [
   ["overview", "Overview", LayoutDashboard],
   ["products", "Products & inventory", Package],
@@ -84,16 +85,19 @@ const fields = {
   ],
 };
 function ImageInput({ value, onChange, enabled }) {
+  const [library, setLibrary] = useState(false);
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   return (
     <div className="studio-image-field">
+      <button type="button" className="secondary" onClick={() => setLibrary(!library)}>{library ? 'Close image library' : 'Choose from image library'}</button>
+      {library && <MediaLibrary onSelect={url => { onChange(url); setLibrary(false); }} />}
       <label>
         Image URL (optional)
         <input
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="https://… or /images/yellow.jpg"
+          placeholder="https://… or https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/de847675-bab8-49d1-ba7e-38df2ac1fd04.jpg"
         />
       </label>
       <label>

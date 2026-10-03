@@ -464,12 +464,12 @@ function App() {
             eyebrow="FIND A LITTLE MORE YOU"
             image={
               category === "Lehengas"
-                ? "/images/floral.jpg"
+                ? "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/14b7f90d-57b4-4eb1-ad32-29392da2be19.jpg"
                 : category === "Kurta sets"
-                  ? "/images/kurta.jpg"
+                  ? "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/4e440f9a-207b-4460-bef6-71ea20cc7814.jpg"
                   : category === "New arrivals"
-                    ? "/images/magenta.jpg"
-                    : "/images/ivory.jpg"
+                    ? "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/ac00204e-234e-464f-b7b3-507e63e714ec.jpg"
+                    : "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/891a7c10-6620-4c62-be2b-01b77e7b3f81.jpg"
             }
             title={
               category === "All styles"
@@ -745,7 +745,7 @@ function App() {
                     <p>
                       {user
                         ? "Your bag is saved to your account."
-                        : "Sign in at checkout to save your bag and place your order."}
+                        : "Checkout as a guest — no account needed."}
                     </p>
                     <a
                       className="primary checkout-button"

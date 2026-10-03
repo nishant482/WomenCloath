@@ -25,11 +25,11 @@ export function StudioLogin({ onLogin, error }) {
       <section className="entry-art" aria-label="RAJO Threads collection">
         <img
           className="entry-photo"
-          src="/images/terracotta.jpg"
+          src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/2b388f57-da21-44a7-b222-738ebe9a3534.jpg"
           alt="Terracotta floral saree from the RAJO collection"
         />
         <a href="/" className="entry-brand">
-          <img src="/images/rajo-threads-logo.jpeg" alt="RAJO Threads" />
+          <img src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/0060c684-5752-4474-88b4-99a974a0d976.jpg" alt="RAJO Threads" />
           <span>
             RAJO<small>THREADS · STUDIO</small>
           </span>
@@ -116,8 +116,8 @@ export function StudioOverview({ overview, user }) {
         </div>
         <div className="studio-hero-art">
           <span className="studio-art-orbit" />
-          <img src="/images/yellow.jpg" alt="Yellow embroidered saree" />
-          <img src="/images/terracotta.jpg" alt="Terracotta floral saree" />
+          <img src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/de847675-bab8-49d1-ba7e-38df2ac1fd04.jpg" alt="Yellow embroidered saree" />
+          <img src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/2b388f57-da21-44a7-b222-738ebe9a3534.jpg" alt="Terracotta floral saree" />
           <Flower2 className="studio-art-flower" size={58} strokeWidth={0.7} />
           <span className="studio-art-caption">
             THOUGHTFULLY CHOSEN.
