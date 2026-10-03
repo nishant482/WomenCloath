@@ -21,7 +21,7 @@ export function CmsBanners() {
               <h2>{b.title}</h2>
               {b.body && <p>{b.body}</p>}
               {b.link && (
-                <a className="primary" href={b.link}>
+                <a className="primary" href={b.link.replace(/^#\//, "/")}>
                   Explore <ArrowUpRight size={17} />
                 </a>
               )}
@@ -41,12 +41,12 @@ export function BlogPage({ slug }) {
       return (
         <section className="blog-page page-width">
           <h1>Story not found.</h1>
-          <a href="#/blog">Back to the journal</a>
+          <a href="/blog">Back to the journal</a>
         </section>
       );
     return (
       <article className="blog-article page-width">
-        <a className="text-link" href="#/blog">
+        <a className="text-link" href="/blog">
           Back to the journal
         </a>
         <div className="eyebrow">THE RAJO JOURNAL</div>
@@ -87,7 +87,7 @@ export function BlogPage({ slug }) {
               Our first stories are on their way. Until then, discover colours
               and details to make your own.
             </p>
-            <a className="primary" href="#/collections/all">
+            <a className="primary" href="/collections/all">
               Explore the collection <ArrowUpRight size={17} />
             </a>
           </div>
@@ -95,7 +95,7 @@ export function BlogPage({ slug }) {
       )}
       <div className="blog-grid">
         {blogs.map((b) => (
-          <a key={b._id} href={"#/blog/" + b.slug}>
+          <a key={b._id} href={"/blog/" + b.slug}>
             <img src={productImage(b)} alt={b.alt || b.title} loading="lazy" />
             <h2>{b.title}</h2>
             <p>

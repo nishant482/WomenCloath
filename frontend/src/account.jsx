@@ -272,7 +272,7 @@ export function CheckoutPage() {
           Your order <strong>{order.number}</strong> has been placed.
         </p>
         <p>Pay {money(order.total)} on delivery.</p>
-        <a className="primary" href="#/account">
+        <a className="primary" href="/account">
           View your orders <ArrowRight size={18} />
         </a>
       </section>
@@ -317,7 +317,7 @@ export function CheckoutPage() {
             enabled.
           </p>
           <p>
-            <a href="#/shipping">Shipping & return policy</a>
+            <a href="/shipping">Shipping & return policy</a>
           </p>
           <button className="primary" disabled={busy || !quote?.codEnabled}>
             {busy ? "Please wait…" : "Place order"}
@@ -510,7 +510,7 @@ export function ProductReviews({ productId }) {
           </form>
         </details>
       ) : (
-        <a className="text-link" href="#/account">
+        <a className="text-link" href="/account">
           Sign in to write a review <ArrowRight size={16} />
         </a>
       )}

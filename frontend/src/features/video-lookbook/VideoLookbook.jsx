@@ -27,7 +27,7 @@ export default function VideoLookbook() {
 
   return <div className="lookbook-page">
     <section className="lookbook-intro">
-      <div className="breadcrumb"><a href="#/">Home</a><span>/</span><span>Video lookbook</span></div>
+      <div className="breadcrumb"><a href="/">Home</a><span>/</span><span>Video lookbook</span></div>
       <div className="eyebrow"><Film size={15}/> THE RANG MOTION EDIT</div>
       <h1>A little colour.<br/><em>A little rhythm.</em></h1>
       <p>Twelve looks, brought to life with gentle motion and an original instrumental soundtrack. Take a moment. Find your shade.</p>
@@ -44,7 +44,7 @@ export default function VideoLookbook() {
         <h2>{active.name}</h2>
         <p>{active.fabric}. A closer look at the colours and details, with a slow, flowing camera movement.</p>
         <div className="sound-note"><Volume2 size={18}/><span>Press play for picture + music.<br/><small>Original instrumental · No spoken audio</small></span></div>
-        <a className="primary" href={`#/product/${active.id}`}>Explore this look <ArrowUpRight size={18}/></a>
+        <a className="primary" href={`/product/${active.id}`}>Explore this look <ArrowUpRight size={18}/></a>
         <p className="film-caption">A motion study created from the collection photograph.</p>
       </div>
     </section>

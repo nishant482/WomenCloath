@@ -8,7 +8,7 @@ export function ProductCard({ product: p, wish, toggleWish, add }) {
       <div className="product-photo">
         <a
           className="image-button"
-          href={"#/product/" + p.id}
+          href={"/product/" + p.id}
           aria-label={`View ${p.name}`}
         >
           <img
@@ -58,7 +58,7 @@ export function ProductCard({ product: p, wish, toggleWish, add }) {
           style={{ background: p.color }}
         />
       </div>
-      <a className="product-name" href={"#/product/" + p.id}>
+      <a className="product-name" href={"/product/" + p.id}>
         {p.name}
       </a>
       <p className="fabric">{p.fabric}</p>

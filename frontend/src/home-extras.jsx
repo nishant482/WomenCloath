@@ -25,13 +25,13 @@ export function HomeExtras() {
             heart of RAJO.
           </p>
         </div>
-        <a className="text-link" href="#/rajo-family">
+        <a className="text-link" href="/rajo-family">
           Meet the RAJO family <ArrowUpRight size={18} />
         </a>
       </div>
       <div className="family-preview-grid">
         {photos.map(([file, caption, alt]) => (
-          <a key={file} href="#/rajo-family">
+          <a key={file} href="/rajo-family">
             <div>
               <img src={file} alt={alt} loading="lazy" />
             </div>
@@ -116,7 +116,7 @@ export function SiteFooter() {
           <nav className="footer-link-group" aria-label={title} key={title}>
             <h2>{title}</h2>
             {links.map(([label, path]) => (
-              <a key={label} href={"#" + path}>
+              <a key={label} href={path}>
                 {label}
               </a>
             ))}
@@ -131,7 +131,7 @@ export function SiteFooter() {
           A little tradition. A lot of heart.{" "}
           <Heart size={13} aria-hidden="true" />
         </span>
-        <a href="#/contact">
+        <a href="/contact">
           Let’s talk <ArrowUpRight size={14} />
         </a>
       </div>

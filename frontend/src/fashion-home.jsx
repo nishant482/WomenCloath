@@ -22,7 +22,7 @@ const edits = [
     text: "Six yards of colour. A lifetime of beautiful moments.",
     left: "/images/ivory.jpg",
     right: "/images/yellow.jpg",
-    link: "#/collections/sarees",
+    link: "/collections/sarees",
     action: "Explore sarees",
     tone: "gold",
   },
@@ -32,7 +32,7 @@ const edits = [
     text: "Lehengas that make every entrance a little more memorable.",
     left: "/images/floral.jpg",
     right: "/images/pink.jpg",
-    link: "#/collections/lehengas",
+    link: "/collections/lehengas",
     action: "Explore lehengas",
     tone: "navy",
   },
@@ -42,7 +42,7 @@ const edits = [
     text: "Easy silhouettes. Beautiful details. Entirely you.",
     left: "/images/kurta.jpg",
     right: "/images/emerald.jpg",
-    link: "#/collections/kurta-sets",
+    link: "/collections/kurta-sets",
     action: "Explore kurta sets",
     tone: "rose",
   },
@@ -58,7 +58,7 @@ function CampaignCarousel() {
         text: item.body,
         image: item.imageUrl,
         alt: item.alt,
-        link: item.link || "#/collections/all",
+        link: item.link?.replace(/^#\//, "/") || "/collections/all",
         action: "Shop the edit",
         tone: "custom",
       }))
@@ -251,14 +251,14 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
             MessageCircle,
             "Personal assistance",
             "We’re here to help",
-            "#/contact",
+            "/contact",
           ],
-          [Heart, "Chosen with care", "Details worth falling for", "#/about"],
+          [Heart, "Chosen with care", "Details worth falling for", "/about"],
           [
             PackageCheck,
             "Follow your order",
             "Updates in your account",
-            "#/account",
+            "/account",
           ],
           [
             ShoppingBag,
@@ -268,7 +268,7 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
             settings.codEnabled
               ? "Pay when your order arrives"
               : "Save the pieces you love",
-            settings.codEnabled ? "#/shipping" : "#/collections/all",
+            settings.codEnabled ? "/shipping" : "/collections/all",
           ],
         ].map(([Icon, title, detail, link]) => (
           <a href={link} key={title}>
@@ -288,7 +288,7 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
         />
         <div className="fashion-category-grid">
           {categories.map(([name, slug, image, caption]) => (
-            <a href={"#/collections/" + slug} key={slug}>
+            <a href={"/collections/" + slug} key={slug}>
               <div>
                 <img
                   src={"/images/" + image + ".jpg"}
@@ -310,7 +310,7 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
         eyebrow="JUST ADDED TO YOUR WARDROBE"
         text="New colours, new details, a little more you."
         items={products.filter((p) => p.tag === "NEW ARRIVAL")}
-        link="#/collections/new-arrivals"
+        link="/collections/new-arrivals"
         {...shared}
       />
       <section className="occasion-shopping">
@@ -339,7 +339,7 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
               "kurta-sets",
             ],
           ].map(([name, text, img, category]) => (
-            <a key={name} href={"#/collections/" + category}>
+            <a key={name} href={"/collections/" + category}>
               <img src={"/images/" + img + ".jpg"} alt={name} loading="lazy" />
               <div>
                 <h3>{name}</h3>
@@ -357,7 +357,7 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
         eyebrow="TRADITION IN EVERY THREAD"
         text="From quiet elegance to a beautiful celebration."
         items={products.filter((p) => p.category === "Sarees")}
-        link="#/collections/sarees"
+        link="/collections/sarees"
         {...shared}
       />
       <section className="fashion-wide-banner">
@@ -374,7 +374,7 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
             <em>A lot of you.</em>
           </h2>
           <p>Discover lehengas made for your next special moment.</p>
-          <a href="#/collections/lehengas" className="campaign-shop">
+          <a href="/collections/lehengas" className="campaign-shop">
             Discover lehengas
             <ArrowUpRight size={17} />
           </a>
@@ -390,7 +390,7 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
         eyebrow="THE KURTA SET COLLECTION"
         text="Your easy favourites, with a little RAJO detail."
         items={products.filter((p) => p.category === "Kurta sets")}
-        link="#/collections/kurta-sets"
+        link="/collections/kurta-sets"
         {...shared}
       />
       <section className="fashion-colours page-width">

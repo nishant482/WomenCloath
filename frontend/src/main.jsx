@@ -1,3 +1,4 @@
+import { currentPath, goTo, followStoreLink } from "./navigation.js";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
@@ -65,7 +66,7 @@ const routeCategory = (route) =>
 function App() {
   const store = useStore();
   const { products, bag, wish, setBag, setWish, user } = store;
-  const [route, setRoute] = useState(() => location.hash.slice(1) || "/");
+  const [route, setRoute] = useState(currentPath);
   const [filters, setFilters] = useState({ ...emptyFilters });
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -80,9 +81,9 @@ function App() {
   const navigate = (path) => {
     setMenu(false);
     setPanel(null);
-    if (location.hash.slice(1) === path)
+    if (location.pathname === path)
       window.scrollTo({ top: 0, behavior: "instant" });
-    else location.hash = path;
+    else goTo(path);
   };
   const shop = (c = "All styles") => {
     setFilters({ ...emptyFilters });
@@ -139,14 +140,18 @@ function App() {
   };
   useEffect(() => {
     const change = () => {
-      setRoute(location.hash.slice(1) || "/");
+      setRoute(currentPath());
       setMenu(false);
       setPanel(null);
       window.scrollTo({ top: 0, behavior: "instant" });
     };
+    window.addEventListener("popstate", change);
     window.addEventListener("hashchange", change);
+    document.addEventListener("click", followStoreLink);
     return () => {
+      window.removeEventListener("popstate", change);
       window.removeEventListener("hashchange", change);
+      document.removeEventListener("click", followStoreLink);
       clearTimeout(toastTimer.current);
     };
   }, []);
@@ -208,13 +213,6 @@ function App() {
     wide.addEventListener("change", close);
     return () => wide.removeEventListener("change", close);
   }, []);
-  if (store.loading)
-    return (
-      <main className="commerce-status">
-        <h1>RAJO Threads</h1>
-        <p role="status">Opening your wardrobe…</p>
-      </main>
-    );
   if (store.error)
     return (
       <main className="commerce-status">
@@ -256,7 +254,7 @@ function App() {
       </a>
       <div className="announcement">
         <span>INDIAN ROOTS. A BEAUTIFULLY MODERN SOUL.</span>
-        <a href="#/about">
+        <a href="/about">
           A little tradition. A lot of heart. <ArrowUpRight size={13} />
         </a>
       </div>
@@ -275,10 +273,10 @@ function App() {
         </button>
         <div className="header-assistance">
           <span className="header-currency">INR ₹</span>
-          <a href="#/contact">
+          <a href="/contact">
             <MessageCircle size={16} /> Contact us
           </a>
-          <a href="#/about">Our story</a>
+          <a href="/about">Our story</a>
         </div>
         <div className="store-brand">
           <BrandLogo />
@@ -310,7 +308,7 @@ function App() {
           ].map(([label, path]) => (
             <a
               key={path}
-              href={"#" + path}
+              href={path}
               aria-current={route === path ? "page" : undefined}
             >
               {label}
@@ -323,7 +321,7 @@ function App() {
               <br />
               <em>Every beautiful moment.</em>
             </p>
-            <a href="#/contact">
+            <a href="/contact">
               Need a little guidance? <ArrowUpRight size={16} />
             </a>
           </div>
@@ -352,7 +350,7 @@ function App() {
           </form>
           <a
             className="icon-button"
-            href="#/account"
+            href="/account"
             aria-label={user ? "Your account" : "Sign in or create account"}
           >
             <UserRound />
@@ -445,6 +443,7 @@ function App() {
       <main
         id="main-content"
         className={isHome ? "" : "storefront-inner"}
+        aria-busy={store.loading}
         tabIndex={-1}
       >
         {isHome && (
@@ -482,7 +481,7 @@ function App() {
             text="Beautiful colours. Thoughtful details. Pieces for your everyday and your extraordinary."
           />
         )}
-        {isCollection && (
+        {!store.loading && isCollection && (
           <section className="collection" id="collection">
             <div className="section-heading">
               <div>
@@ -563,10 +562,18 @@ function App() {
             )}
           </section>
         )}
-        {route === "/account" && <AccountPage />}
-        {route === "/checkout" && <CheckoutPage />}
-        {route.startsWith("/blog") && <BlogPage slug={route.split("/")[2]} />}
-        {!isHome &&
+        {store.loading && !isHome && (
+          <p className="page-width" role="status">
+            Loading page…
+          </p>
+        )}
+        {!store.loading && route === "/account" && <AccountPage />}
+        {!store.loading && route === "/checkout" && <CheckoutPage />}
+        {!store.loading && route.startsWith("/blog") && (
+          <BlogPage slug={route.split("/")[2]} />
+        )}
+        {!store.loading &&
+          !isHome &&
           !isCollection &&
           !["/account", "/checkout"].includes(route) &&
           !route.startsWith("/blog") && (
@@ -665,16 +672,13 @@ function App() {
                   : products.filter((p) => wish.includes(p.id))
                 ).map((p) => (
                   <div className="bag-item" key={p.key || p.id}>
-                    <a
-                      href={"#/product/" + p.id}
-                      onClick={() => setPanel(null)}
-                    >
+                    <a href={"/product/" + p.id} onClick={() => setPanel(null)}>
                       <img src={productImage(p)} alt={p.name} />
                     </a>
                     <div>
                       <span className="eyebrow">{p.category}</span>
                       <a
-                        href={"#/product/" + p.id}
+                        href={"/product/" + p.id}
                         onClick={() => setPanel(null)}
                       >
                         <h3>{p.name}</h3>
@@ -745,14 +749,14 @@ function App() {
                     </p>
                     <a
                       className="primary checkout-button"
-                      href="#/checkout"
+                      href="/checkout"
                       onClick={() => setPanel(null)}
                     >
                       Proceed to checkout <ArrowRight size={17} />
                     </a>
                     <a
                       className="secondary"
-                      href="#/contact"
+                      href="/contact"
                       onClick={() => setPanel(null)}
                     >
                       Ask about a piece <MessageCircle size={17} />

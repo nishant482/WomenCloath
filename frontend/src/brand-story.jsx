@@ -6,7 +6,7 @@ export function BrandLogo({ footer = false }) {
   return (
     <a
       className={`rajo-logo${footer ? " rajo-logo-footer" : ""}`}
-      href="#/"
+      href="/"
       aria-label="RAJO Threads home"
     >
       <img
@@ -54,7 +54,7 @@ export function FounderStoryPreview() {
         <div className="founder-signature">
           Pinki Yadav<small>FOUNDER, RAJO THREADS</small>
         </div>
-        <a className="text-link" href="#/about">
+        <a className="text-link" href="/about">
           Discover our story <ArrowUpRight size={18} />
         </a>
       </div>
@@ -95,7 +95,7 @@ export function BrandStoryPage() {
     <div className="brand-story">
       <section className="brand-story-hero">
         <div className="breadcrumb">
-          <a href="#/">Home</a>
+          <a href="/">Home</a>
           <span>/</span>
           <span>Our story</span>
         </div>
@@ -111,7 +111,7 @@ export function BrandStoryPage() {
         </p>
         <div className="story-hero-bottom">
           <span>OUR STORY, WOVEN WITH LOVE</span>
-          <a href="#/collections/sarees">
+          <a href="/collections/sarees">
             Explore our sarees <ArrowUpRight size={17} />
           </a>
         </div>
@@ -317,10 +317,10 @@ export function BrandStoryPage() {
           <br />
           <em>something beautiful.</em>
         </h2>
-        <a className="primary" href="#/collections/sarees">
+        <a className="primary" href="/collections/sarees">
           Find your saree <ArrowUpRight size={18} />
         </a>
-        <a className="story-contact-link" href="#/contact">
+        <a className="story-contact-link" href="/contact">
           We’d love to hear from you <ArrowUpRight size={16} />
         </a>
       </section>

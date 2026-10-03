@@ -27,7 +27,7 @@ export function PageBanner({
   return (
     <section className="page-banner">
       <div className="breadcrumb">
-        <a href="#/">Home</a>
+        <a href="/">Home</a>
         <span>/</span>
         <span>{title}</span>
       </div>
@@ -68,7 +68,7 @@ export function CategoryStories({ shop }) {
           <a
             className="category-card"
             key={name}
-            href={"#/collections/" + name.toLowerCase().replaceAll(" ", "-")}
+            href={"/collections/" + name.toLowerCase().replaceAll(" ", "-")}
           >
             <img src={`/images/${img}.jpg`} alt={name} loading="lazy" />
             <div>
@@ -107,7 +107,7 @@ export function OccasionEdit({ shop }) {
           </button>
         </div>
         <div className="occasion-grid">
-          <a href="#/collections/lehengas">
+          <a href="/collections/lehengas">
             <img
               src="/images/floral.jpg"
               alt="Floral lehenga for a wedding celebration"
@@ -121,7 +121,7 @@ export function OccasionEdit({ shop }) {
               </span>
             </div>
           </a>
-          <a href="#/collections/kurta-sets">
+          <a href="/collections/kurta-sets">
             <img
               src="/images/kurta.jpg"
               alt="Printed kurta for beautiful everyday moments"
@@ -154,11 +154,11 @@ function ProductPage({
   return (
     <>
       <div className="breadcrumb page-width">
-        <a href="#/">Home</a>
+        <a href="/">Home</a>
         <span>/</span>
         <a
           href={
-            "#/collections/" + p.category.toLowerCase().replaceAll(" ", "-")
+            "/collections/" + p.category.toLowerCase().replaceAll(" ", "-")
           }
         >
           {p.category}
@@ -290,7 +290,7 @@ function ProductPage({
             <summary>Shipping & returns</summary>
             <p>
               Shipping charges are calculated at checkout. See our{" "}
-              <a href="#/shipping">shipping information</a> for more.
+              <a href="/shipping">shipping information</a> for more.
             </p>
           </details>
         </div>
@@ -311,7 +311,7 @@ function ProductPage({
             )
             .slice(0, 4)
             .map((x) => (
-              <a className="related-card" key={x.id} href={"#/product/" + x.id}>
+              <a className="related-card" key={x.id} href={"/product/" + x.id}>
                 <img src={productImage(x)} alt={x.name} loading="lazy" />
                 <h3>{x.name}</h3>
                 <p>{money(x.price)}</p>
@@ -500,7 +500,7 @@ export function InnerPage(props) {
     return (
       <>
         <div className="breadcrumb page-width">
-          <a href="#/">Home</a>
+          <a href="/">Home</a>
           <span>/</span>
           <span>The RAJO family</span>
         </div>
@@ -527,7 +527,7 @@ export function InnerPage(props) {
           <p>{settings.shippingPolicy}</p>
           <h3>Returns & exchanges</h3>
           <p>{settings.returnPolicy}</p>
-          <a className="primary" href="#/contact">
+          <a className="primary" href="/contact">
             Have a question? <ArrowUpRight size={18} />
           </a>
         </section>
@@ -541,7 +541,7 @@ export function InnerPage(props) {
         text="There’s still plenty of colour waiting for you."
       />
       <div className="page-width not-found">
-        <a className="primary" href="#/">
+        <a className="primary" href="/">
           Back to home <ArrowRight size={18} />
         </a>
       </div>
