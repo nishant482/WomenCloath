@@ -1,0 +1,9 @@
+{
+  "name": "rajo-images",
+  "main": "worker.js",
+  "account_id": "e493e35065f950889e7ac918cfe59048",
+  "compatibility_date": "2026-10-03",
+  "workers_dev": true,
+  "r2_buckets": [{ "binding": "IMAGES", "bucket_name": "rajo" }],
+  "observability": { "enabled": false }
+}

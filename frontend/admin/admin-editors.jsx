@@ -137,7 +137,7 @@ function ImageInput({ value, onChange, enabled }) {
           ? "Uploading…"
           : enabled
             ? "JPEG, PNG or WebP · up to 3 MB"
-            : "Uploads are optional. Add BLOB_READ_WRITE_TOKEN on the server to enable them; image URLs work now."}
+            : "Image uploads are not connected yet. You can paste an image URL above."}
       </small>
       {value && (
         <img

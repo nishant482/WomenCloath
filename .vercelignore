@@ -1,6 +1,7 @@
 .git/
 .tools/
 .vercel/
+**/.wrangler/
 node_modules/
 **/node_modules/
 frontend/dist/

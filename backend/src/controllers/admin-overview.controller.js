@@ -1,3 +1,5 @@
+import { imageStorageProvider } from "../services/image-storage.js";
+
 export const getAdminOverview = async (req, res) => {
   const [
     products,
@@ -93,6 +95,6 @@ export const getAdminOverview = async (req, res) => {
     recentOrders,
     featuredProducts,
     revenue: revenue[0]?.total || 0,
-    uploadsEnabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+    uploadsEnabled: Boolean(imageStorageProvider()),
   });
 };
