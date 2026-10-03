@@ -55,7 +55,7 @@ const fields = {
     ["slug", "URL slug (lowercase, hyphens)"],
     ["body", "Text / article content", "textarea"],
     ["alt", "Image description"],
-    ["link", "Store link (optional, e.g. #/collections/all)"],
+    ["link", "Store link (optional, e.g. /collections/all)"],
     ["sortOrder", "Display order", "number"],
     ["status", "Status", ["draft", "published"]],
   ],
@@ -213,6 +213,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
         body[key] = value;
       }
       if (kind) body.kind = kind;
+      if (page === 'banners') for (const key of ['mobileImageUrl','secondaryImageUrl','eyebrow','buttonText','layout']) body[key] = values[key] || ({ eyebrow:'THE RAJO EDIT',buttonText:'Shop now',layout:'full' }[key] || '');
       if (["products", "content"].includes(resource))
         body.imageUrl = values.imageUrl || "";
       const id =
@@ -263,6 +264,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
         </p>
       )}
       <form className="commerce-form studio-editor" onSubmit={save}>
+        {page === 'banners' && <div className="span-all"><p>Published banners appear in the homepage slider. Lower display order appears first. Draft hides a slide.</p><label>Small heading<input value={values.eyebrow || ''} onChange={e => setValues({...values,eyebrow:e.target.value})} maxLength={80} /></label><label>Button text<input value={values.buttonText || ''} onChange={e => setValues({...values,buttonText:e.target.value})} maxLength={60} /></label><label>Banner layout<select value={values.layout || 'full'} onChange={e => setValues({...values,layout:e.target.value})}><option value="full">Single image</option><option value="split">Two images with centre text</option></select></label><h3>Mobile image (optional)</h3><ImageInput value={values.mobileImageUrl} onChange={url => setValues({...values,mobileImageUrl:url})} enabled={uploadsEnabled} />{values.layout === 'split' && <><h3>Second desktop image</h3><ImageInput value={values.secondaryImageUrl} onChange={url => setValues({...values,secondaryImageUrl:url})} enabled={uploadsEnabled} /></>}</div>}
         {fields[resource].map(([key, label, type]) => (
           <label key={key} className={type === "textarea" ? "span-all" : ""}>
             {label}

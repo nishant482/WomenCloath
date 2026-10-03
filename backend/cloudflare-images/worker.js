@@ -3,6 +3,11 @@ const keyPattern = /^rajo\/[a-f0-9-]{36}\.(jpg|png|webp)$/;
 const reply = (message, status) => new Response(message, { status, headers: { "Cache-Control": "no-store", "X-Content-Type-Options": "nosniff" } });
 
 export default {
+  async scheduled(controller, env) {
+    if (!env.EMAIL_QUEUE_SECRET) return;
+    const response = await fetch('https://rajothreads.com/api/internal/product-emails', { headers: { Authorization:`Bearer ${env.EMAIL_QUEUE_SECRET}` }, signal:AbortSignal.timeout(60000) });
+    if (!response.ok) throw new Error('Email queue processing failed');
+  },
   async fetch(request, env) {
     const key = new URL(request.url).pathname.slice(1);
     if (!keyPattern.test(key)) return reply("Not found", 404);

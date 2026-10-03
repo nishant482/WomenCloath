@@ -35,6 +35,7 @@ export const publicUser = (u) => ({
   role: u.role,
   emailVerified: Boolean(u.emailVerified),
   phone: u.phone || "",
+  emailUpdates: u.emailUpdates !== false,
   addresses: u.addresses || [],
 });
 export const sessionScope = req => req.headers['x-session-scope'] === 'admin' || req.originalUrl?.startsWith('/api/admin') ? 'admin' : 'customer';

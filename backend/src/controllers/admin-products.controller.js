@@ -22,6 +22,7 @@ export const postAdminProducts = async (req, res) => {
     id: counter.value,
     createdAt: new Date(),
     updatedAt: new Date(),
+    ...(data.status === 'active' ? { notificationRequestedAt:new Date() } : {}),
   };
   await req.models.products.insertOne(product);
   res.status(201).json(product);
@@ -34,6 +35,7 @@ export const putAdminProductsById = async (req, res) => {
     { $set: { ...data, updatedAt: new Date() } },
   );
   if (!result.matchedCount) throw fail(404, "Product not found.");
+  if(data.status === 'active') await req.models.products.updateOne({id:Number(req.params.id),notificationRequestedAt:{$exists:false},notificationsLegacy:{$ne:true}},{$set:{notificationRequestedAt:new Date()}});
   res.json({ ok: true });
 };
 

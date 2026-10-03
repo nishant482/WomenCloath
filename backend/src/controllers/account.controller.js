@@ -8,6 +8,7 @@ export const patchAccount = async (req, res) => {
     .object({
       name: z.string().trim().min(2).max(100),
       phone,
+      emailUpdates: z.boolean().optional(),
       addresses: z.array(address).max(5).default([]),
     })
     .parse(req.body);

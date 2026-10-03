@@ -27,6 +27,7 @@ export function AuthForm({ onLogin, admin = false }) {
     setError("");
     setMessage("");
     const body = Object.fromEntries(new FormData(e.currentTarget));
+    if (mode === 'signup') body.emailUpdates = body.emailUpdates === 'on';
     try {
       const result = await api("/auth/" + mode, { method: "POST", body });
       setMessage(result.message || "");
@@ -82,6 +83,7 @@ export function AuthForm({ onLogin, admin = false }) {
               : "Your favourites, your orders, all in one place."}
       </p>
       <form className="commerce-form" onSubmit={submit}>
+        {mode === 'signup' && <label className="email-preference"><input name="emailUpdates" type="checkbox" defaultChecked />Email me new arrivals from RAJO Threads. Unsubscribe anytime.</label>}
         {mode === "signup" && (
           <label>
             Full name

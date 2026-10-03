@@ -13,13 +13,18 @@ export const contentSchema = z.object({
     .max(160),
   body: text(20000).default(""),
   imageUrl,
+  mobileImageUrl: imageUrl,
+  secondaryImageUrl: imageUrl,
+  eyebrow: text(80).default('THE RAJO EDIT'),
+  buttonText: text(60).default('Shop now'),
+  layout: z.enum(['split', 'full']).default('full'),
   alt: text(250).default(""),
   link: z
     .string()
     .max(250)
     .refine(
-      (v) => !v || /^#\/[a-zA-Z0-9/_-]*$/.test(v),
-      "Use a store link such as #/collections/all.",
+      (v) => !v || /^(?:#)?\/(?!\/)[a-zA-Z0-9/_?=&%-]*$/.test(v),
+      "Use a store link such as /collections/all.",
     )
     .default(""),
   status: z.enum(["draft", "published"]).default("draft"),

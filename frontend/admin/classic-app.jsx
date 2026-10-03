@@ -3,6 +3,7 @@ import { LayoutDashboard, Package, ShoppingBag, Users, Star, Image, FileText, Ti
 import { api, productImage } from '../src/api.js';
 import { RecordEditor, OrderDetails } from './admin-editors.jsx';
 import { MediaLibrary } from './media-library.jsx';
+import { EmailQueue } from './email-queue.jsx';
 import { ClassicLogin, ClassicDashboard, RecordDialog, ProductDetail, Pagination, Status, money, dateText, CustomerShopping } from './classic-components.jsx';
 const navigation = [
  ['overview', 'Overview', LayoutDashboard, 'WORKSPACE'],
@@ -15,6 +16,7 @@ const navigation = [
  ['reviews', 'Reviews', Star, 'CONTENT'], ['banners', 'Banners', Image], ['family', 'RAJO family', Image], ['media', 'Image library', Image],
  // Temporarily hidden: ['coupons', 'Discount codes', TicketPercent, 'MANAGEMENT'],
  ['enquiries', 'Customer enquiries', Mail, 'MANAGEMENT'],
+ ['email-queue', 'Email notifications', Mail],
  // Shipping and return policy are managed together in this tab; retained for later.
  // ['settings', 'Store & shipping', Settings],
 ];
@@ -119,7 +121,7 @@ export default function ClassicAdminApp() {
   {mobile && <button className="studio-shade" aria-label="Close navigation overlay" onClick={() => setMobile(false)} />}
   <main className="studio-main"><header className="studio-header"><button className="studio-menu icon-button" aria-label="Open navigation" onClick={() => setMobile(true)}><Menu size={19} /></button><div><span className="eyebrow">ADMINISTRATION / {label}</span><h1>{label}</h1></div><div className="admin-header-right"><a href="/" target="_blank" rel="noreferrer">View store <ArrowUpRight size={13} /></a><span className="admin-avatar" title={user.email}>{user.name?.[0] || 'A'}</span></div></header>
    {error && <p className="commerce-error" role="alert">{error} <button onClick={load}>Retry</button></p>}{notice && <p className="commerce-success" role="status">{notice}</p>}
-   {page === 'media' ? <MediaLibrary /> : dashboard ? ready ? <ClassicDashboard overview={overview} reports={page === 'reports'} /> : <p className="table-empty" role="status">Loading dashboard…</p> : <>
+   {page === 'email-queue' ? <EmailQueue /> : page === 'media' ? <MediaLibrary /> : dashboard ? ready ? <ClassicDashboard overview={overview} reports={page === 'reports'} /> : <p className="table-empty" role="status">Loading dashboard…</p> : <>
     <div className="studio-toolbar">{page !== 'settings' && <><input aria-label="Search records" placeholder={`Search ${label.toLowerCase()}…`} value={query} onChange={e => setQuery(e.target.value)} />{page !== 'categories' && <select aria-label="Filter by status" value={status} onChange={e => setStatus(e.target.value)}><option value="all">All statuses</option>{statuses.map(s => <option key={s}>{s}</option>)}</select>}<select aria-label="Sort records" value={sort} onChange={e => setSort(e.target.value)}><option value="newest">Newest first</option><option value="name">Name A–Z</option>{(isProduct || resource === 'orders') && <option value="price">Amount: low to high</option>}{isProduct && <option value="stock">Stock: low to high</option>}</select></>}
      <button className="secondary" onClick={load} disabled={loading} aria-label="Refresh records"><RefreshCw size={14} /></button>{!['settings', 'categories'].includes(page) && <button className="secondary" disabled={!ready || !rows.length} onClick={() => exportRecords(rows, resource)}><Download size={13} /> Export</button>}
      {canEdit && <button className="primary" disabled={!ready} onClick={() => setEditor(page === 'settings' ? data : {})}><Plus size={14} />{page === 'settings' ? 'Edit settings' : resource === 'products' ? 'Add product' : page === 'reviews' ? 'Add demo review' : 'Add new'}</button>}

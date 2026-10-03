@@ -19,7 +19,7 @@ import {
 
 export const postAuthSignup = async (req, res) => {
   const input = z
-    .object({ name: z.string().trim().min(2).max(100), email, password, phone })
+    .object({ name: z.string().trim().min(2).max(100), email, password, phone, emailUpdates:z.boolean().default(true) })
     .parse(req.body);
   await rateLimit(req.db, "mail:" + input.email, 3, 600);
   const exists = await req.models.users.findOne({ email: input.email });

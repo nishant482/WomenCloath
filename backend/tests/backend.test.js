@@ -26,6 +26,31 @@ const { hash } = await import("../src/services/auth.service.js");
 const { config } = await import("../src/config/env.js");
 let repl, client, db, app, owner, customer, other;
 const codes = new Map();
+test('new-product outbox queues once, excludes unsubscribed users, pauses without credentials and sends privately', async () => {
+  const {processProductEmails,unsubscribeToken,readUnsubscribeToken}=await import('../src/services/product-email.service.js');
+  const p=await product();
+  await db.collection('products').updateOne({id:p.id},{$set:{notificationRequestedAt:new Date()}});
+  const optout=await db.collection('users').insertOne({name:'No updates',email:'no-updates@example.com',role:'customer',status:'active',emailUpdates:false,createdAt:new Date(0)});
+  const paused=await processProductEmails(db,{enabled:false});assert.equal(paused.paused,true);
+  const before=await db.collection('productEmailJobs').countDocuments({productId:p.id});assert.equal(before,2);
+  await processProductEmails(db,{enabled:false});assert.equal(await db.collection('productEmailJobs').countDocuments({productId:p.id}),before);
+  const recipients=[];
+  await processProductEmails(db,{enabled:true,send:async(user,item)=>{recipients.push(user.email);assert.equal(item.id,p.id);}});
+  assert.equal(recipients.length,2);assert.ok(!recipients.includes('no-updates@example.com'));
+  await processProductEmails(db,{enabled:true,send:async()=>assert.fail('Duplicate email')});
+  const token=unsubscribeToken(optout.insertedId);assert.equal(readUnsubscribeToken(token),String(optout.insertedId));
+  await request(app).get('/api/internal/product-emails').expect(401);
+  await request(app).get('/api/admin/email-queue').expect(401);
+  await owner.get('/api/admin/email-queue').expect(200);
+});
+test('banners accept clean links and responsive fields, while drafts and external links stay excluded',async()=>{
+  const data={kind:'banner',title:'Preview banner',slug:'preview-responsive-banner',imageUrl:'https://example.com/desktop.jpg',mobileImageUrl:'https://example.com/mobile.jpg',secondaryImageUrl:'https://example.com/second.jpg',layout:'split',eyebrow:'NEW ARRIVALS',buttonText:'Shop now',link:'/collections/all',status:'draft',sortOrder:4};
+  const saved=await mutation(owner,'post','/api/admin/content',data).expect(201);
+  assert.ok(!(await request(app).get('/api/content')).body.items.some(row=>row.slug===data.slug));
+  await mutation(owner,'put','/api/admin/content/'+saved.body._id,{...data,status:'published'}).expect(200);
+  const row=(await request(app).get('/api/content')).body.items.find(row=>row.slug===data.slug);assert.equal(row.mobileImageUrl,data.mobileImageUrl);assert.equal(row.buttonText,'Shop now');
+  await mutation(owner,'put','/api/admin/content/'+saved.body._id,{...data,link:'//evil.example'}).expect(400);
+});
 test('mobile signup requires a unique number and signs in without verification when disabled', async () => {
   const previous = config.requireEmailVerification; config.requireEmailVerification = false;
   try {

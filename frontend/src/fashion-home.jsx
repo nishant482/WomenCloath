@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -49,32 +49,45 @@ const edits = [
 ];
 
 function CampaignCarousel() {
-  const { content } = useStore();
+  const { content, loading } = useStore();
   const custom = content.filter((item) => item.kind === "banner");
   const slides = custom.length
     ? custom.map((item) => ({
         title: item.title,
-        eyebrow: "THE RAJO EDIT",
+        eyebrow: item.eyebrow || "THE RAJO EDIT",
         text: item.body,
-        image: item.imageUrl,
+        image: item.layout === 'split' ? '' : item.imageUrl,
+        left: item.layout === 'split' ? item.imageUrl : '',
+        right: item.layout === 'split' ? item.secondaryImageUrl : '',
+        mobile: item.mobileImageUrl,
         alt: item.alt,
         link: item.link?.replace(/^#\//, "/") || "/collections/all",
-        action: "Shop the edit",
-        tone: "custom",
+        action: item.buttonText || "Shop the edit",
+        tone: item.layout === 'split' ? 'gold' : 'custom',
       }))
-    : edits;
+    : loading ? edits : [];
   const [index, setIndex] = useState(0);
-  const current = index % slides.length;
+  const [paused, setPaused] = useState(false), [hovered, setHovered] = useState(false);
+  const current = index % Math.max(slides.length, 1);
+  useEffect(() => {
+    if (paused || hovered || slides.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const timer = setInterval(() => { if (!document.hidden) setIndex(i => (i + 1) % slides.length); }, 6500);
+    return () => clearInterval(timer);
+  }, [paused, hovered, slides.length]);
   const slide = slides[current];
   const move = (direction) =>
     setIndex((current + direction + slides.length) % slides.length);
+  if (!slide) return null;
   return (
     <section
-      className={"campaign-carousel campaign-" + slide.tone}
+      className={"campaign-carousel campaign-" + slide.tone + (slide.mobile ? ' has-mobile-banner' : '')}
+      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+      onFocusCapture={() => setHovered(true)} onBlurCapture={e => { if (!e.currentTarget.contains(e.relatedTarget)) setHovered(false); }}
       aria-label="Featured collections"
       aria-roledescription="carousel"
     >
       <div className="campaign-stage" key={current}>
+        {slide.mobile && <img className="campaign-mobile-photo" src={slide.mobile} alt={slide.alt || slide.title} fetchPriority="high" />}
         {slide.left && (
           <img
             className="campaign-photo campaign-left"
@@ -135,6 +148,7 @@ function CampaignCarousel() {
             <ChevronRight size={22} />
           </button>
           <div className="campaign-pagination">
+            <button type="button" className="carousel-pause" onClick={() => setPaused(!paused)} aria-label={paused ? 'Play slideshow' : 'Pause slideshow'}>{paused ? 'Play' : 'Pause'}</button>
             {slides.map((item, i) => (
               <button
                 key={i}

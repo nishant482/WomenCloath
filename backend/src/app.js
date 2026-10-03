@@ -30,6 +30,7 @@ import adminCouponsRoutes from "./routes/admin-coupons.routes.js";
 import adminSettingsRoutes from "./routes/admin-settings.routes.js";
 import adminEnquiriesRoutes from "./routes/admin-enquiries.routes.js";
 import adminUploadsRoutes from "./routes/admin-uploads.routes.js";
+import productEmailRoutes from './routes/product-email.routes.js';
 export function createApp({
   getConnection = connect,
   deliverCode = sendCode,
@@ -102,6 +103,7 @@ export function createApp({
   app.use("/api", adminSettingsRoutes);
   app.use("/api", adminEnquiriesRoutes);
   app.use("/api", adminUploadsRoutes);
+  app.use('/api',productEmailRoutes);
   app.use("/api", (req, res) =>
     res.status(404).json({ error: "API route not found." }),
   );
