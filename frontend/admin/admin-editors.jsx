@@ -217,7 +217,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
         body[key] = value;
       }
       if (kind) body.kind = kind;
-      if (page === 'banners') for (const key of ['mobileImageUrl','secondaryImageUrl','eyebrow','buttonText','layout']) body[key] = values[key] || ({ eyebrow:'THE RAJO EDIT',buttonText:'Shop now',layout:'full' }[key] || '');
+      if (page === 'banners') Object.assign(body,{layout:'full',mobileImageUrl:'',secondaryImageUrl:'',eyebrow:values.eyebrow || 'THE RAJO EDIT',buttonText:values.buttonText || 'Shop now'});
       if (["products", "content"].includes(resource))
         body.imageUrl = values.imageUrl || "";
       const id =
@@ -269,7 +269,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
       )}
       <form className="commerce-form studio-editor" onSubmit={save}>
         {page === 'settings' && <div className="span-all"><p>Shipping mode: free charges no shipping fee; paid charges the fee on every order; threshold offers free shipping when the product subtotal reaches the threshold. COD charge is added separately. Turning COD off pauses checkout because online payments are not configured.</p><p>To choose your fee, check your courier's charge for the packed parcel weight and destination, then add packaging costs. Example only: INR 70 courier + INR 10 packaging = INR 80 shipping. Set any extra COD collection charge separately. These are fixed store rules, not live courier quotes.</p></div>}
-        {page === 'banners' && <div className="span-all"><p>Published banners appear in the homepage slider. Lower display order appears first. Draft hides a slide.</p><label>Small heading<input value={values.eyebrow || ''} onChange={e => setValues({...values,eyebrow:e.target.value})} maxLength={80} /></label><label>Button text<input value={values.buttonText || ''} onChange={e => setValues({...values,buttonText:e.target.value})} maxLength={60} /></label><label>Banner layout<select value={values.layout || 'full'} onChange={e => setValues({...values,layout:e.target.value})}><option value="full">Single image</option><option value="split">Two images with centre text</option></select></label><h3>Mobile image (optional)</h3><ImageInput value={values.mobileImageUrl} onChange={url => setValues({...values,mobileImageUrl:url})} enabled={uploadsEnabled} />{values.layout === 'split' && <><h3>Second desktop image</h3><ImageInput value={values.secondaryImageUrl} onChange={url => setValues({...values,secondaryImageUrl:url})} enabled={uploadsEnabled} /></>}</div>}
+        {page === 'banners' && <div className="span-all"><p>Choose one banner image below. The same image appears on desktop, tablet and mobile. Published banners appear in the homepage slider; Draft hides a slide.</p><label>Small heading<input value={values.eyebrow || ''} onChange={e => setValues({...values,eyebrow:e.target.value})} maxLength={80} /></label><label>Button text<input value={values.buttonText || ''} onChange={e => setValues({...values,buttonText:e.target.value})} maxLength={60} /></label></div>}
         {fields[resource].map(([key, label, type]) => (
           <label key={key} className={type === "textarea" ? "span-all" : ""}>
             {label}
@@ -353,7 +353,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
           <div className="span-all">
             <ImageInput
               value={values.imageUrl}
-              onChange={(url) => setValues({ ...values, imageUrl: url })}
+              onChange={(url) => setValues(current => ({ ...current, imageUrl: url }))}
               enabled={uploadsEnabled}
             />
           </div>

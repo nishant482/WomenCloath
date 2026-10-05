@@ -240,14 +240,12 @@ export function CheckoutPage() {
   const guest = !store.user;
   const [selectedAddress, setSelectedAddress] = useState(0);
   const [quote, setQuote] = useState(null),
-    [coupon, setCoupon] = useState(""),
-    [applied, setApplied] = useState(""),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
     [order, setOrder] = useState(null);
   const key = useRef(crypto.randomUUID());
   const quoteRequest = useRef(0);
-  const load = async (code = "") => {
+  const load = async () => {
     const requestId = ++quoteRequest.current;
     if (needsSize) { setQuote(null); setBusy(false); return; }
     setError("");
@@ -255,11 +253,10 @@ export function CheckoutPage() {
     try {
       const q = await api(guest ? "/checkout/guest/quote" : "/checkout/quote", {
         method: "POST",
-        body: { coupon: code, ...((guest || direct) ? { items } : {}) },
+        body: { ...((guest || direct) ? { items } : {}) },
       });
       if (requestId !== quoteRequest.current) return;
       setQuote(q);
-      setApplied(code);
     } catch (e) {
       if (requestId !== quoteRequest.current) return;
       setError(e.message);
@@ -310,7 +307,7 @@ export function CheckoutPage() {
               const result = await api(guest ? "/checkout/guest/orders" : "/orders", {
                 method: "POST",
                 headers: { "Idempotency-Key": key.current },
-                body: { address: { ...a, country: "India" }, coupon: applied, ...((guest || direct) ? { items } : {}), ...(guest && a.email ? { email: a.email } : {}) },
+                body: { address: { ...a, country: "India" }, ...((guest || direct) ? { items } : {}), ...(guest && a.email ? { email: a.email } : {}) },
               });
               setOrder(result);
               if (guest && !direct) await store.setBag([]);
@@ -355,32 +352,10 @@ export function CheckoutPage() {
               </div>
             </div>
           ))}
-          <form
-            className="coupon-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              load(coupon.trim().toUpperCase());
-            }}
-          >
-            <label className="sr-only" htmlFor="coupon-code">
-              Discount code
-            </label>
-            <input
-              id="coupon-code"
-              value={coupon}
-              onChange={(e) => setCoupon(e.target.value)}
-              placeholder="Discount code"
-              maxLength={30}
-            />
-            <button className="secondary" disabled={busy}>
-              Apply
-            </button>
-          </form>
           {quote && (
             <dl>
               {[
                 ["Subtotal", quote.subtotal],
-                ["Discount", -quote.discount],
                 ["Shipping", quote.shipping],
                 ["COD charge", quote.codFee || 0],
                 ["Total", quote.total],

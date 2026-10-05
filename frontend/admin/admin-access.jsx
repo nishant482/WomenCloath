@@ -1,6 +1,6 @@
 import React, {useEffect,useState} from 'react';
 import {api} from '../src/api.js';
-const modules=[['overview','Overview & reports'],['products','Products, inventory & categories'],['orders','Orders, returns & payments'],['users','Customers, carts & wishlists'],['reviews','Reviews'],['banners','Banners'],['family','RAJO family'],['blogs','Blog posts'],['media','Image library & uploads'],['coupons','Discount codes'],['enquiries','Enquiries'],['email-queue','Email notifications'],['settings','COD, shipping & store settings']];
+const modules=[['overview','Overview'],['products','Products, inventory & categories'],['orders','Orders & payments'],['users','Customers, carts & wishlists'],['reviews','Reviews'],['banners','Banners'],['family','RAJO family'],['blogs','Blog posts'],['media','Image library & uploads'],['coupons','Discount codes'],['enquiries','Enquiries'],['email-queue','Email notifications'],['settings','COD, shipping & store settings']];
 export function AdminAccess(){
  const [admins,setAdmins]=useState([]),[error,setError]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false);
  const load=()=>api('/admin/users').then(r=>setAdmins(r.items.filter(u=>u.role==='admin'))).catch(e=>setError(e.message));

@@ -9,10 +9,8 @@ import { EmailQueue } from './email-queue.jsx';
 import { ClassicLogin, ClassicDashboard, RecordDialog, ProductDetail, Pagination, Status, money, dateText, CustomerShopping } from './classic-components.jsx';
 const navigation = [
  ['overview', 'Overview', LayoutDashboard, 'WORKSPACE'],
- ['reports', 'Reports', BarChart3],
- ['products', 'Products & inventory', Package, 'CATALOGUE'], ['inventory', 'Inventory', Boxes], ['categories', 'Categories', Layers],
+ ['products', 'Products & inventory', Package, 'CATALOGUE'], ['categories', 'Categories', Layers],
  ['orders', 'Orders', ShoppingBag, 'SALES'],
- ['returns', 'Returns', RotateCcw],
  ['payments', 'Payments', Wallet], ['users', 'Users', Users],
  ['carts', 'Customer carts', ShoppingBag], ['wishlists', 'Customer wishlists', Star],
  ['reviews', 'Reviews', Star, 'CONTENT'], ['banners', 'Banners', Image], ['family', 'RAJO family', Image], ['media', 'Image library', Image],
@@ -26,15 +24,8 @@ const navigation = [
 const kinds = { banners: 'banner', family: 'family', blogs: 'blog' };
 const resourceFor = page => ({ inventory: 'products', categories: 'products', returns: 'orders', payments: 'orders', carts: 'users', wishlists: 'users' }[page] || (kinds[page] ? 'content' : page));
 const moduleFor = page => ({reports:'overview',inventory:'products',categories:'products',returns:'orders',payments:'orders',carts:'users',wishlists:'users'}[page] || page);
-const route = () => navigation.some(n => n[0] === location.hash.slice(1)) ? location.hash.slice(1) : 'overview';
+const route = () => location.hash === '#inventory' ? 'products' : navigation.some(n => n[0] === location.hash.slice(1)) ? location.hash.slice(1) : 'overview';
 const recordName = r => r.name || r.title || r.number || r.code || r.email || 'Record';
-const exportRecords = (rows, resource) => {
- const keys = resource === 'products' ? ['id', 'name', 'sku', 'category', 'price', 'stock', 'status'] : resource === 'orders' ? ['number', 'customer', 'email', 'total', 'paymentStatus', 'status', 'createdAt'] : ['name', 'title', 'email', 'code', 'status', 'createdAt'];
- const escape = value => { let v = String(value ?? ''); if (/^[=+@\-\t\r]/.test(v)) v = "'" + v; return '"' + v.replaceAll('"', '""') + '"'; };
- const text = [keys.join(','), ...rows.map(r => keys.map(k => escape(r[k])).join(','))].join('\r\n');
- const url = URL.createObjectURL(new Blob(['\ufeff' + text], { type: 'text/csv;charset=utf-8' }));
- const link = document.createElement('a'); link.href = url; link.download = `rajo-${resource}.csv`; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-};
 export default function ClassicAdminApp() {
  const [user, setUser] = useState(null), [checking, setChecking] = useState(true), [page, setPage] = useState(route);
  const [result, setResult] = useState({ page: '', data: [] }), [overview, setOverview] = useState({}), [loading, setLoading] = useState(true);
@@ -131,11 +122,11 @@ export default function ClassicAdminApp() {
    {error && <p className="commerce-error" role="alert">{error} <button onClick={load}>Retry</button></p>}{notice && <p className="commerce-success" role="status">{notice}</p>}
    {!allowed(page) ? <section className="classic-panel settings-panel"><h2>No access assigned</h2><p>Ask Nishant to enable the required admin sections.</p></section> : page === 'categories' ? <Categories /> : page === 'access' ? <AdminAccess /> : page === 'email-queue' ? <EmailQueue /> : page === 'media' ? <MediaLibrary /> : dashboard ? ready ? <ClassicDashboard overview={overview} reports={page === 'reports'} /> : <p className="table-empty" role="status">Loading dashboard…</p> : <>
     <div className="studio-toolbar">{page !== 'settings' && <><input aria-label="Search records" placeholder={`Search ${label.toLowerCase()}…`} value={query} onChange={e => setQuery(e.target.value)} />{page !== 'categories' && <select aria-label="Filter by status" value={status} onChange={e => setStatus(e.target.value)}><option value="all">All statuses</option>{statuses.map(s => <option key={s}>{s}</option>)}</select>}<select aria-label="Sort records" value={sort} onChange={e => setSort(e.target.value)}><option value="newest">Newest first</option><option value="name">Name A–Z</option>{(isProduct || resource === 'orders') && <option value="price">Amount: low to high</option>}{isProduct && <option value="stock">Stock: low to high</option>}</select></>}
-     <button className="secondary" onClick={load} disabled={loading} aria-label="Refresh records"><RefreshCw size={14} /></button>{!['settings', 'categories'].includes(page) && <button className="secondary" disabled={!ready || !rows.length} onClick={() => exportRecords(rows, resource)}><Download size={13} /> Export</button>}
+     <button className="secondary" onClick={load} disabled={loading} aria-label="Refresh records"><RefreshCw size={14} /></button>
      {canEdit && <button className="primary" disabled={!ready} onClick={() => setEditor(page === 'settings' ? data : {})}><Plus size={14} />{page === 'settings' ? 'Edit settings' : resource === 'products' ? 'Add product' : page === 'reviews' ? 'Add demo review' : 'Add new'}</button>}
     </div>
     {!ready ? <p className="table-empty" role="status">Loading records…</p> : page === 'settings' ? <section className="classic-panel settings-panel"><h2>{data.storeName}</h2><dl className="detail-grid">{[['Contact email', data.contactEmail || '—'], ['Shipping mode', data.shippingMode], ['Shipping fee', money(data.shippingFee)], ['Extra COD charge', money(data.codFee || 0)], ['Free shipping above', money(data.freeShippingAbove)], ['Cash on delivery', data.codEnabled ? 'Enabled' : 'Disabled']].map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl><h3>Shipping policy</h3><p className="preserve-lines">{data.shippingPolicy || 'No policy added.'}</p><h3>Return policy</h3><p className="preserve-lines">{data.returnPolicy || 'No policy added.'}</p></section> : <section className="records-panel">
-     <div className="table-summary"><strong>{label}</strong><span>{rows.length} records</span>{page === 'inventory' && <span>{rows.filter(r => r.stock <= 5).length} low in stock</span>}</div>
+     <div className="table-summary"><strong>{label}</strong><span>{rows.length} records</span>{isProduct && <span>{rows.filter(r => r.stock <= 5).length} low in stock</span>}</div>
      <div className="studio-table-wrap"><table><thead><tr>{columns.map(c => <th key={c} scope="col">{c}</th>)}</tr></thead><tbody>{visible.map(r => <tr key={r._id || r.id}>
       <td><div className="table-record">{(r.imageUrl || isProduct) && <img className="studio-thumb" src={productImage(r)} alt="" />}<div><strong>{recordName(r)}</strong><small>{isProduct ? r.sku : resource === 'orders' ? (r.items?.length || 0) + ' item(s)' : r.slug || ''}</small></div></div></td>
       {page === 'categories' ? <><td>{r.products}</td><td>{r.stock}</td></> : isProduct ? <><td>{r.category}</td><td>{money(r.price)}</td><td><span className={r.stock <= 5 ? 'stock-low' : ''}>{r.stock} units</span><small>{r.sizes?.join(', ') || 'Free size'}</small></td><td><Status value={r.status} /></td></> : resource === 'orders' ? <><td>{r.customer}<small>{r.email}</small></td><td>{money(r.total)}<small>{r.paymentStatus}</small></td><td><Status value={page === 'payments' ? r.paymentStatus : r.status} />{page === 'returns' && <small>{r.returnRequest?.status || 'returned'}</small>}</td><td>{dateText(r.createdAt)}</td></> : resource === 'users' ? <><td>{r.email}<small>{r.phone || 'No phone added'}</small></td><td>{r.cartCount || 0} cart items<small>{r.wishlistCount || 0} wishlist items ? {r.role}</small></td><td><Status value={r.status} /></td><td>{dateText(r.createdAt)}</td></> : <><td className="table-description">{resource === 'reviews' ? <>{'★'.repeat(r.rating || 0)} · Product {r.productId}<small>{r.isDemo ? 'Demo review' : r.verifiedPurchase ? 'Verified purchase' : 'Customer review'}</small></> : resource === 'coupons' ? <>{r.value}{r.type === 'percentage' ? '%' : ' INR'}<small>Min. {money(r.minimum)} · Expires {dateText(r.expiresAt)}</small></> : resource === 'enquiries' ? <>{r.subject}<small>{r.email}</small></> : r.body?.slice(0, 95) || '—'}</td><td><Status value={r.status || (r.active ? 'active' : 'inactive')} /></td><td>{dateText(r.createdAt)}</td></>}
