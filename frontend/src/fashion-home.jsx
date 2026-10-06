@@ -50,10 +50,11 @@ const edits = [
 
 function CampaignCarousel() {
   const { content, loading } = useStore();
-  const custom = content.filter((item) => item.kind === "banner");
+  const custom = content.filter((item) => item.kind === "banner").sort((a,b)=>Number(Boolean(b.isOpeningBanner))-Number(Boolean(a.isOpeningBanner)));
   const slides = custom.length
     ? custom.map((item) => ({
         title: item.title,
+        signature: Boolean(item.isOpeningBanner) && item.layout === 'split',
         eyebrow: item.eyebrow || "THE RAJO EDIT",
         text: item.body,
         image: item.layout === 'split' ? '' : item.imageUrl,
@@ -67,22 +68,21 @@ function CampaignCarousel() {
       }))
     : loading ? edits : [];
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false), [hovered, setHovered] = useState(false);
+  const [paused, setPaused] = useState(()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const current = index % Math.max(slides.length, 1);
   useEffect(() => {
-    if (paused || hovered || slides.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const timer = setInterval(() => { if (!document.hidden) setIndex(i => (i + 1) % slides.length); }, 6500);
+    if (paused || slides.length < 2) return;
+    const timer = setInterval(() => { if (!document.hidden) setIndex(i => (i + 1) % slides.length); }, 5000);
     return () => clearInterval(timer);
-  }, [paused, hovered, slides.length]);
+  }, [paused, slides.length]);
   const slide = slides[current];
   const move = (direction) =>
     setIndex((current + direction + slides.length) % slides.length);
   if (!slide) return null;
   return (
     <section
-      className={"campaign-carousel campaign-" + slide.tone + (slide.mobile ? ' has-mobile-banner' : '')}
-      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      onFocusCapture={() => setHovered(true)} onBlurCapture={e => { if (!e.currentTarget.contains(e.relatedTarget)) setHovered(false); }}
+      className={"campaign-carousel campaign-" + slide.tone + (slide.signature ? ' campaign-signature-design' : '') + (slide.mobile ? ' has-mobile-banner' : '')}
+      onFocusCapture={e => { if(e.target.matches(':focus-visible') && !e.target.classList.contains('carousel-pause')) setPaused(true); }}
       aria-label="Featured collections"
       aria-roledescription="carousel"
     >
@@ -102,6 +102,13 @@ function CampaignCarousel() {
             fetchPriority="high"
           />
         )}
+        {slide.signature && <div className="campaign-copy">
+          <span className="eyebrow">{slide.eyebrow}</span>
+          <h1>Beautiful sarees for<br/><em>every celebration.</em></h1>
+          <p>{slide.text}</p>
+          <a href={slide.link} className="campaign-shop">{slide.action} <ArrowUpRight size={17}/></a>
+          <span className="campaign-signature">RAJO THREADS · TRADITION, REIMAGINED</span>
+        </div>}
         {slide.right && (
           <img
             className="campaign-photo campaign-right"
