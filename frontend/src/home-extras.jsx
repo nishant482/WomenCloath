@@ -107,6 +107,10 @@ export function SiteFooter() {
             For every woman and her beautiful moments.
           </p>
           <div className="footer-contact"><a href={"mailto:" + contactEmail}>{contactEmail}</a><a href="https://wa.me/919716422466" target="_blank" rel="noopener noreferrer">WhatsApp · +91 97164 22466</a></div>
+          <div className="footer-contact" aria-label="Call us">
+            <a href="tel:+919650558290">Call us · +91 96505 58290</a>
+            <a href="tel:+918799781047">Call us · +91 87997 81047</a>
+          </div>
           <div className="footer-connect">
             <span>STAY CLOSE</span>
             <CommunityLinks />
