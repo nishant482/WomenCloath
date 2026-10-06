@@ -205,7 +205,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
       <form className="commerce-form studio-editor" onSubmit={save}>
         {page === 'settings' && <div className="span-all"><p>Shipping mode: free charges no shipping fee; paid charges the fee on every order; threshold offers free shipping when the product subtotal reaches the threshold. COD charge is added separately. Turning COD off pauses checkout because online payments are not configured.</p><p>To choose your fee, check your courier's charge for the packed parcel weight and destination, then add packaging costs. Example only: INR 70 courier + INR 10 packaging = INR 80 shipping. Set any extra COD collection charge separately. These are fixed store rules, not live courier quotes.</p></div>}
         {page === 'banners' && <p className="span-all">Upload your banner, add a title and choose when to show it. The page link is optional.</p>}
-        {['products','content'].includes(resource) && <div className="span-all"><ImageUpload value={values.imageUrl} onChange={url=>setValues(current=>({...current,imageUrl:url}))} enabled={uploadsEnabled && !busy} banner={page === 'banners'} onBusyChange={value=>{uploadPending.current=value;setImageBusy(value);}} /></div>}
+        {['products','content'].includes(resource) && <div className="span-all"><ImageUpload value={values.imageUrl} onChange={url=>setValues(current=>({...current,imageUrl:url}))} enabled={uploadsEnabled && !busy} banner={page === 'banners'} product={page === 'products'} onBusyChange={value=>{uploadPending.current=value;setImageBusy(value);}} /></div>}
         {editorFields.map(([key, label, type]) => (
           <label key={key} className={type === "textarea" ? "span-all" : ""}>
             {label}
