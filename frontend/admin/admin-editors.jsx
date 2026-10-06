@@ -18,7 +18,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { api, productImage } from "../src/api.js";
-import { MediaLibrary } from './media-library.jsx';
+import { ImageUpload } from './image-upload.jsx';
 const navigation = [
   ["overview", "Overview", LayoutDashboard],
   ["products", "Products & inventory", Package],
@@ -86,83 +86,15 @@ const fields = {
     ["returnPolicy", "Return policy", "textarea"],
   ],
 };
-function ImageInput({ value, onChange, enabled }) {
-  const [library, setLibrary] = useState(false);
-  const [busy, setBusy] = useState(false),
-    [error, setError] = useState("");
-  return (
-    <div className="studio-image-field">
-      <button type="button" className="secondary" onClick={() => setLibrary(!library)}>{library ? 'Close image library' : 'Choose from image library'}</button>
-      {library && <MediaLibrary onSelect={url => { onChange(url); setLibrary(false); }} />}
-      <label>
-        Image URL (optional)
-        <input
-          value={value || ""}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="https://… or https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/de847675-bab8-49d1-ba7e-38df2ac1fd04.jpg"
-        />
-      </label>
-      <label>
-        Upload image
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          disabled={!enabled || busy}
-          onChange={async (e) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
-            if (file.size > 3 * 1024 * 1024) {
-              setError("Choose an image smaller than 3 MB.");
-              return;
-            }
-            setBusy(true);
-            setError("");
-            try {
-              const response = await fetch("/api/admin/uploads", {
-                method: "POST",
-                credentials: "same-origin",
-                headers: {
-                  "Content-Type": file.type,
-                  "X-Requested-With": "RajoStore",
-                },
-                body: file,
-              });
-              const data = await response.json();
-              if (!response.ok) throw new Error(data.error);
-              onChange(data.url);
-            } catch (e) {
-              setError(e.message);
-            } finally {
-              setBusy(false);
-            }
-          }}
-        />
-      </label>
-      <small>
-        {busy
-          ? "Uploading…"
-          : enabled
-            ? "JPEG, PNG or WebP · up to 3 MB"
-            : "Image uploads are not connected yet. You can paste an image URL above."}
-      </small>
-      {value && (
-        <img
-          src={value}
-          alt="Selected image preview"
-          onError={(e) => {
-            e.currentTarget.src = "/images/placeholder.svg";
-          }}
-        />
-      )}
-      {error && <p className="commerce-error">{error}</p>}
-    </div>
-  );
-}
 export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) {
   const [categories,setCategories] = useState([]);
   useEffect(()=>{if(page === "products") api("/admin/categories").then(r=>setCategories(r.items.map(c=>c.name))).catch(()=>{});},[page]);
   const kind = contentKinds[page];
   const resource = kind ? "content" : page;
+  const simpleContent = page === 'banners' || page === 'family';
+  const editorFields = page === 'banners' ? [['title','Banner title'],['link','Open page (optional, e.g. /collections/all)'],['status','Visibility',['draft','published']]] : page === 'family' ? [['title','Name'],['body','Caption (optional)','textarea'],['status','Visibility',['draft','published']]] : fields[resource];
+  const [imageBusy,setImageBusy] = useState(false);
+  const uploadPending = useRef(false);
   const initial = {
     ...(page === "products"
       ? {
@@ -176,7 +108,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
           status: "draft",
         }
       : {}),
-    ...(kind ? { kind, status: "draft", sortOrder: 0 } : {}),
+    ...(kind ? { kind, status: "draft", sortOrder: 0, slug: kind + "-" + crypto.randomUUID() } : {}),
     ...(page === "reviews" ? { rating: 5, status: "draft" } : {}),
     ...(page === "coupons"
       ? { active: true, type: "percentage", minimum: 0 }
@@ -197,6 +129,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
   }, []);
   const save = async (e) => {
     e.preventDefault();
+    if (uploadPending.current || busy) return;
     setBusy(true);
     setError("");
     try {
@@ -217,6 +150,8 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
         body[key] = value;
       }
       if (kind) body.kind = kind;
+      if(simpleContent){body.slug=values.slug;body.alt=values.title;}
+      if(page === 'banners' && body.status === 'published' && !values.imageUrl) throw new Error('Choose a banner image before publishing.');
       if (page === 'banners') Object.assign(body,{layout:'full',mobileImageUrl:'',secondaryImageUrl:'',eyebrow:values.eyebrow || 'THE RAJO EDIT',buttonText:values.buttonText || 'Shop now'});
       if (["products", "content"].includes(resource))
         body.imageUrl = values.imageUrl || "";
@@ -244,7 +179,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
       ref={dialog}
       onCancel={(e) => {
         e.preventDefault();
-        onClose();
+        if (!busy && !uploadPending.current) onClose();
       }}
     >
       <div className="studio-dialog-heading">
@@ -255,7 +190,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
         <button
           className="icon-button"
           aria-label="Close editor"
-          onClick={onClose}
+          onClick={() => { if (!busy && !uploadPending.current) onClose(); }}
         >
           <X />
         </button>
@@ -269,8 +204,9 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
       )}
       <form className="commerce-form studio-editor" onSubmit={save}>
         {page === 'settings' && <div className="span-all"><p>Shipping mode: free charges no shipping fee; paid charges the fee on every order; threshold offers free shipping when the product subtotal reaches the threshold. COD charge is added separately. Turning COD off pauses checkout because online payments are not configured.</p><p>To choose your fee, check your courier's charge for the packed parcel weight and destination, then add packaging costs. Example only: INR 70 courier + INR 10 packaging = INR 80 shipping. Set any extra COD collection charge separately. These are fixed store rules, not live courier quotes.</p></div>}
-        {page === 'banners' && <div className="span-all"><p>Choose one banner image below. The same image appears on desktop, tablet and mobile. Published banners appear in the homepage slider; Draft hides a slide.</p><label>Small heading<input value={values.eyebrow || ''} onChange={e => setValues({...values,eyebrow:e.target.value})} maxLength={80} /></label><label>Button text<input value={values.buttonText || ''} onChange={e => setValues({...values,buttonText:e.target.value})} maxLength={60} /></label></div>}
-        {fields[resource].map(([key, label, type]) => (
+        {page === 'banners' && <p className="span-all">Upload your banner, add a title and choose when to show it. The page link is optional.</p>}
+        {['products','content'].includes(resource) && <div className="span-all"><ImageUpload value={values.imageUrl} onChange={url=>setValues(current=>({...current,imageUrl:url}))} enabled={uploadsEnabled && !busy} banner={page === 'banners'} onBusyChange={value=>{uploadPending.current=value;setImageBusy(value);}} /></div>}
+        {editorFields.map(([key, label, type]) => (
           <label key={key} className={type === "textarea" ? "span-all" : ""}>
             {label}
             {Array.isArray(type) ? (
@@ -349,15 +285,6 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
             )}
           </label>
         ))}
-        {["products", "content"].includes(resource) && (
-          <div className="span-all">
-            <ImageInput
-              value={values.imageUrl}
-              onChange={(url) => setValues(current => ({ ...current, imageUrl: url }))}
-              enabled={uploadsEnabled}
-            />
-          </div>
-        )}
         {error && (
           <p role="alert" className="commerce-error span-all">
             {error}
@@ -367,12 +294,12 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
           <button
             type="button"
             className="secondary"
-            onClick={onClose}
-            disabled={busy}
+            onClick={() => { if (!busy && !uploadPending.current) onClose(); }}
+            disabled={busy || imageBusy}
           >
             Cancel
           </button>
-          <button className="primary" disabled={busy}>
+          <button className="primary" disabled={busy || imageBusy}>
             {busy ? "Saving…" : "Save changes"}
           </button>
         </div>
