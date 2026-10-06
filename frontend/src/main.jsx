@@ -166,7 +166,10 @@ function App() {
             "Product"
           : route.slice(1).replaceAll("-", " ");
     document.title = title + " | RAJO Threads";
-  }, [route]);
+    let canonical=document.querySelector('link[rel="canonical"]');
+    if(!canonical){canonical=document.createElement('link');canonical.rel='canonical';document.head.appendChild(canonical);}
+    canonical.href='https://rajothreads.com'+route;
+  }, [route, products, store.categories]);
   useEffect(() => {
     if (!panel && !menu) return;
     const previous = document.activeElement;

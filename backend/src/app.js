@@ -1,4 +1,5 @@
 import express from "express";
+import seoRoutes from './routes/seo.routes.js';
 import categoriesRoutes from "./routes/categories.routes.js";
 import { requireAdminAccess } from "./middleware/admin-access.js";
 import { lookupPostalCode } from './services/postal.service.js';
@@ -84,6 +85,7 @@ export function createApp({
   app.use("/api/admin", authenticate, requireAdmin, requireAdminAccess);
 
   app.use("/api", healthRoutes);
+  app.use('/api', seoRoutes);
   app.use("/api", authRoutes);
   app.use("/api", accountRoutes);
   app.use("/api", productsRoutes);

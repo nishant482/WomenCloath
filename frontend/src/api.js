@@ -3,9 +3,11 @@ export async function api(
   { method = "GET", body, headers = {}, ...options } = {},
 ) {
   let response;
+  const timeout = AbortSignal.timeout(30000);
   try {
     response = await fetch("/api" + path, {
     ...options,
+    signal: options.signal ? AbortSignal.any([options.signal, timeout]) : timeout,
     method,
     credentials: "same-origin",
     headers: {

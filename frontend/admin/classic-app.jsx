@@ -49,7 +49,7 @@ export default function ClassicAdminApp() {
   setLoading(true); setError('');
   try {
    if(!allowed(page)) {setResult({page,data:[]});return;}
-   const [summary, response] = await Promise.all([allowed('overview') ? api('/admin/overview', { signal: abort.signal }) : Promise.resolve({uploadsEnabled:allowed('media')}), dashboard || ['access','email-queue','media','categories'].includes(page) ? Promise.resolve({items:[]}) : api('/admin/' + resource, { signal: abort.signal })]);
+   const [summary, response] = await Promise.all([dashboard && allowed('overview') ? api('/admin/overview', { signal: abort.signal }) : Promise.resolve(overview), dashboard || ['access','email-queue','media','categories'].includes(page) ? Promise.resolve({items:[]}) : api('/admin/' + resource, { signal: abort.signal })]);
    if (id !== request.current || abort.signal.aborted) return;
    setOverview(summary); setResult({ page, data: page === 'settings' ? response : response.items || [] });
   } catch (e) {
@@ -135,7 +135,7 @@ export default function ClassicAdminApp() {
     </section>}
    </>}
   </main>
-  {editor && <RecordEditor key={page + (editor._id || 'new')} page={editPage} record={Object.keys(editor).length ? editor : null} onClose={() => setEditor(null)} onSave={async () => { setNotice('Changes saved.'); await load(); }} uploadsEnabled={overview.uploadsEnabled && allowed('media')} />}
+  {editor && <RecordEditor key={page + (editor._id || 'new')} page={editPage} record={Object.keys(editor).length ? editor : null} onClose={() => setEditor(null)} onSave={async () => { setNotice('Changes saved.'); await load(); }} uploadsEnabled={allowed('media')} />}
   {view && <RecordDialog title={recordName(view)} onClose={() => setView(null)}>
     {error && <p className="commerce-error" role="alert">{error}</p>}
     {resource === 'users' && <CustomerShopping userId={view._id} />}

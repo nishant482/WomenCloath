@@ -266,27 +266,14 @@ export function BrandStoryPage() {
         className="name-story story-container"
         aria-labelledby="name-title"
       >
-        <div
-          className="name-keepsake"
-          aria-label="Rajo, a name held close to the heart"
-        >
-          <span>A NAME. A MEMORY. A LEGACY.</span>
-          <div>
-            Rajo<small>राजो</small>
-          </div>
-          <p>
-            For Dadi.
-            <br />
-            With love, always.
-          </p>
-          <Heart size={23} aria-hidden="true" />
-        </div>
+        <figure className="dadi-portrait">
+          <img src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/23462cc2-b3e0-48fe-945d-c14cda11ad47.jpg" alt="Rajo, Pinki Yadav’s beloved Dadi and the inspiration behind RAJO Threads" width="531" height="768" loading="lazy" />
+          <figcaption><span>Rajo</span><small>For Dadi. With love, always.</small></figcaption>
+        </figure>
         <div className="name-copy">
           <div className="eyebrow">04 / THE STORY BEHIND THE NAME</div>
           <h2 id="name-title">
-            A name from the heart.
-            <br />
-            <em>A love that lives on.</em>
+            The Story Behind the Name — <em>RAJO</em>
           </h2>
           <p className="story-lead">
             Every brand has a story, but RAJO Threads has a story close to the

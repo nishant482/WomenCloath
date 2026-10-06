@@ -370,7 +370,7 @@ export function CheckoutPage() {
           <button
             className="text-link"
             disabled={busy}
-            onClick={() => load(applied)}
+            onClick={() => load()}
           >
             Refresh totals
           </button>
