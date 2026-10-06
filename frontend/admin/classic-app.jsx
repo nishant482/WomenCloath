@@ -49,7 +49,7 @@ export default function ClassicAdminApp() {
   setLoading(true); setError('');
   try {
    if(!allowed(page)) {setResult({page,data:[]});return;}
-   const [summary, response] = await Promise.all([dashboard && allowed('overview') ? api('/admin/overview', { signal: abort.signal }) : Promise.resolve(overview), dashboard || ['access','email-queue','media','categories'].includes(page) ? Promise.resolve({items:[]}) : api('/admin/' + resource, { signal: abort.signal })]);
+   const [summary, response] = await Promise.all([dashboard && allowed('overview') ? api('/admin/overview', { signal: abort.signal }) : Promise.resolve(overview), dashboard || ['access','email-queue','media','categories'].includes(page) ? Promise.resolve({items:[]}) : api('/admin/' + resource + (page === 'payments' ? '?view=payments' : ''), { signal: abort.signal })]);
    if (id !== request.current || abort.signal.aborted) return;
    setOverview(summary); setResult({ page, data: page === 'settings' ? response : response.items || [] });
   } catch (e) {
@@ -70,12 +70,12 @@ export default function ClassicAdminApp() {
  }, [mobile]);
  const mutate = async (path, method, body) => {
   setBusy(true); setError(''); setNotice('');
-  try { await api('/admin/' + path, { method, body }); setView(null); setNotice(method === 'DELETE' ? 'Record deleted. Existing order history is preserved.' : 'Changes saved.'); await load(); }
+  try { await api('/admin/' + path, { method, body }); setView(null); setNotice(method === 'DELETE' ? resource === 'orders' ? 'Order removed from the Orders list. Payment and customer history are preserved.' : 'Record deleted. Existing order history is preserved.' : 'Changes saved.'); await load(); }
   catch (e) { setError(e.message); }
   finally { setBusy(false); }
  };
  const remove = r => {
-  const extra = resource === 'users' ? 'This removes the account from Users and disables login. Existing order records are retained.' : resource === 'products' ? 'This removes the product from the catalogue and storefront. Existing orders are retained.' : 'This cannot be undone.';
+  const extra = resource === 'orders' ? 'This removes the order from the admin Orders list. It does not cancel delivery, restore stock or issue a refund. Payment and customer history are preserved.' : resource === 'users' ? 'This removes the account from Users and disables login. Existing order records are retained.' : resource === 'products' ? 'This removes the product from the catalogue and storefront. Existing orders are retained.' : 'This cannot be undone.';
   if (window.confirm(`Delete “${recordName(r)}”?\n\n${extra}`)) mutate(`${resource}/${resource === 'products' ? r.id : r._id}`, 'DELETE');
  };
  if (checking) return <main className="commerce-status"><p role="status">Opening admin panel…</p></main>;
@@ -109,7 +109,7 @@ export default function ClassicAdminApp() {
    </>}
    {resource === 'reviews' && <select aria-label={'Review status: ' + r.title} disabled={busy} value={r.status} onChange={e => mutate('reviews/' + r._id, 'PATCH', { status: e.target.value })}>{['pending', 'draft', 'published', 'rejected'].map(s => <option key={s}>{s}</option>)}</select>}
    {resource === 'enquiries' && <button disabled={busy} onClick={() => mutate('enquiries/' + r._id, 'PATCH', { status: r.status === 'new' ? 'resolved' : 'new' })}>{r.status === 'new' ? 'Mark resolved' : 'Reopen'}</button>}
-   {['products', 'users', 'content', 'coupons', 'reviews'].includes(resource) && page !== 'categories' && <button className="delete-action" aria-label={`Delete ${recordName(r)}`} disabled={busy || (resource === 'users' && (r.email === user.email || r.email === 'nishant@gmail.com' || (!user.isOwner && r.role === 'admin')))} onClick={() => remove(r)}><Trash2 size={13} /> Delete</button>}
+   {(['products', 'users', 'content', 'coupons', 'reviews'].includes(resource) || page === 'orders') && page !== 'categories' && <button className="delete-action" aria-label={`Delete ${recordName(r)}`} disabled={busy || (resource === 'users' && (r.email === user.email || r.email === 'nishant@gmail.com' || (!user.isOwner && r.role === 'admin')))} onClick={() => remove(r)}><Trash2 size={13} /> Delete</button>}
  </div>;
  return <div className="studio classic-studio">
   <aside className={'studio-sidebar ' + (mobile ? 'open' : '')}><a href="#overview" className="studio-brand"><img src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/0060c684-5752-4474-88b4-99a974a0d976.jpg" alt="RAJO Threads" /><span>RAJO Threads<small>ADMIN PANEL</small></span></a><button className="studio-close icon-button" aria-label="Close navigation" onClick={() => setMobile(false)}><X size={18} /></button>

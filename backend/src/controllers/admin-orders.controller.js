@@ -1,14 +1,26 @@
 import { z } from "zod";
 import { transitionOrder } from "../services/order.service.js";
+import { fail, objectId } from '../services/auth.service.js';
 
 export const getAdminOrders = async (req, res) =>
   res.json({
     items: await req.models.orders
-      .find({})
+      .find(req.query.view === 'payments' ? {} : { deletedAt: { $exists: false } })
       .sort({ createdAt: -1 })
       .limit(500)
       .toArray(),
   });
+
+export const deleteAdminOrderById = async (req, res) => {
+  const id = objectId(req.params.id);
+  const result = await req.models.orders.updateOne(
+    { _id: id, deletedAt: { $exists: false } },
+    { $set: { deletedAt: new Date(), deletedBy: String(req.user._id) } },
+  );
+  if (!result.matchedCount && !(await req.models.orders.findOne({ _id: id }, { projection: { _id: 1 } })))
+    throw fail(404, 'Order not found.');
+  res.json({ ok: true });
+};
 
 export const patchAdminOrdersById = async (req, res) => {
   const input = z

@@ -27,6 +27,27 @@ const { hash } = await import("../src/services/auth.service.js");
 const { config } = await import("../src/config/env.js");
 let repl, client, db, app, owner, customer, other;
 const codes = new Map();
+test('admin order deletion hides orders without losing payments, customer history or stock', async () => {
+ const p=await product(10);
+ const response=await mutation(customer,'post','/api/orders',{items:[{productId:p.id,qty:1,size:''}],address:shipping}).set('Idempotency-Key',randomUUID()).expect(201);
+ const id=response.body._id;
+ await mutation(request(app),'delete','/api/admin/orders/'+id).expect(401);
+ await mutation(customer,'delete','/api/admin/orders/'+id).expect(403);
+ const before=await db.collection('orders').findOne({number:response.body.number});
+ await mutation(owner,'delete','/api/admin/orders/'+id).expect(200);
+ assert.ok(!(await owner.get('/api/admin/orders')).body.items.some(o=>o._id===id));
+ assert.ok((await owner.get('/api/admin/orders?view=payments')).body.items.some(o=>o._id===id));
+ assert.ok((await customer.get('/api/orders')).body.items.some(o=>o._id===id));
+ const deleted=await db.collection('orders').findOne({_id:before._id});
+ assert.ok(deleted.deletedAt);assert.ok(deleted.deletedBy);
+ assert.equal(deleted.status,before.status);assert.equal(deleted.paymentStatus,before.paymentStatus);assert.equal(deleted.total,before.total);
+ assert.equal((await db.collection('products').findOne({id:p.id})).stock,9);
+ await mutation(owner,'delete','/api/admin/orders/'+id).expect(200);
+ assert.equal((await db.collection('orders').findOne({_id:before._id})).deletedAt.getTime(),deleted.deletedAt.getTime());
+ await mutation(owner,'delete','/api/admin/orders/not-an-id').expect(400);
+ await mutation(owner,'delete','/api/admin/orders/000000000000000000000001').expect(404);
+ await db.collection('orders').deleteOne({_id:before._id});await db.collection('products').deleteOne({id:p.id});
+});
 test('admins add unique categories and custom sizes are enforced in cart and checkout',async()=>{
  await mutation(customer,'post','/api/admin/categories',{name:'Dresses'}).expect(403);
  await mutation(owner,'post','/api/admin/categories',{name:'Dresses'}).expect(201);
