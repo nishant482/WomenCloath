@@ -92,7 +92,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
   const kind = contentKinds[page];
   const resource = kind ? "content" : page;
   const simpleContent = page === 'banners' || page === 'family';
-  const editorFields = page === 'banners' ? [['title','Banner title'],['link','Open page (optional, e.g. /collections/all)'],['status','Visibility',['draft','published']]] : page === 'family' ? [['title','Name'],['body','Caption (optional)','textarea'],['status','Visibility',['draft','published']]] : fields[resource];
+  const editorFields = page === 'banners' ? [['status','Status',['draft','published']]] : page === 'family' ? [['title','Name'],['body','Caption (optional)','textarea'],['status','Visibility',['draft','published']]] : fields[resource];
   const [imageBusy,setImageBusy] = useState(false);
   const uploadPending = useRef(false);
   const initial = {
@@ -152,7 +152,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
       if (kind) body.kind = kind;
       if(simpleContent){body.slug=values.slug;body.alt=values.title;}
       if(page === 'banners' && body.status === 'published' && !values.imageUrl) throw new Error('Choose a banner image before publishing.');
-      if (page === 'banners') Object.assign(body,{layout:'full',mobileImageUrl:'',secondaryImageUrl:'',eyebrow:values.eyebrow || 'THE RAJO EDIT',buttonText:values.buttonText || 'Shop now'});
+      if (page === 'banners') Object.assign(body,{title:values.title || 'Homepage banner',alt:'RAJO Threads collection banner',link:'',body:'',layout:'full',mobileImageUrl:'',secondaryImageUrl:'',eyebrow:'',buttonText:''});
       if (["products", "content"].includes(resource))
         body.imageUrl = values.imageUrl || "";
       const id =
@@ -196,7 +196,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
         </button>
       </div>
       {page === "products" && <p className="studio-note editor-help">Add your product details below. Choose Active to show it in the store, or Draft to save it for later. Enter Small, Medium or any sizes available for this product. Leave sizes empty for a free-size product; Kurta sets require at least one size.</p>}
-      {page === 'banners' && <p className="studio-note editor-help">Published banners appear in the homepage slider after saving. Draft banners stay hidden. Your title is used to identify the banner; it will not cover your image.</p>}
+      {page === 'banners' && <p className="studio-note editor-help">Upload your image and save as Published to show it on the homepage. Draft keeps it hidden. Only your image appears on the banner.</p>}
       {page === "reviews" && (
         <p className="studio-note">
           Admin-created reviews are always labelled “Demo review” and excluded

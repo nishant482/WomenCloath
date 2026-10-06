@@ -87,12 +87,12 @@ function CampaignCarousel() {
       aria-roledescription="carousel"
     >
       <div className="campaign-stage" key={current}>
-        {slide.image ? <a className="campaign-image-link" href={slide.link} aria-label={slide.alt || slide.title}>
+        {slide.image ? <div className="campaign-image-link">
           <picture>
             {slide.mobile && <source media="(max-width: 650px)" srcSet={slide.mobile} />}
             <img className="campaign-custom-photo" src={slide.image} alt={slide.alt || slide.title} width="1920" height="800" fetchPriority="high" />
           </picture>
-        </a> : <>
+        </div> : <>
         {slide.mobile && <img className="campaign-mobile-photo" src={slide.mobile} alt={slide.alt || slide.title} fetchPriority="high" />}
         {slide.left && (
           <img
@@ -102,32 +102,6 @@ function CampaignCarousel() {
             fetchPriority="high"
           />
         )}
-        {slide.image && (
-          <img
-            className="campaign-custom-photo"
-            src={slide.image}
-            alt={slide.alt || slide.title}
-            fetchPriority="high"
-          />
-        )}
-        <div className="campaign-copy">
-          <span className="eyebrow">{slide.eyebrow}</span>
-          <h1>
-            {slide.title.split("\n").map((line, i) => (
-              <React.Fragment key={i}>
-                {i > 0 && <br />}
-                {i > 0 ? <em>{line}</em> : line}
-              </React.Fragment>
-            ))}
-          </h1>
-          <p>{slide.text}</p>
-          <a href={slide.link} className="campaign-shop">
-            {slide.action} <ArrowUpRight size={17} />
-          </a>
-          <span className="campaign-signature">
-            RAJO THREADS · TRADITION, REIMAGINED
-          </span>
-        </div>
         {slide.right && (
           <img
             className="campaign-photo campaign-right"
