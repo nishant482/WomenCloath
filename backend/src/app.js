@@ -40,6 +40,11 @@ export function createApp({
   postalLookup = lookupPostalCode,
 } = {}) {
   const app = express();
+  // Vercel forwards the original public URL to the rewritten function.
+  app.use((req, res, next) => {
+    if (req.path === '/sitemap.xml') req.url = '/api' + req.url;
+    next();
+  });
   app.disable("x-powered-by");
   app.use((req, res, next) => {
     res.set({
