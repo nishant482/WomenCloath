@@ -20,7 +20,7 @@ export async function prepareImage(file, banner = false, product = false) {
     const width = bitmap.width * fit, height = bitmap.height * fit;
     ctx.drawImage(bitmap, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
     const type = file.type === 'image/jpeg' ? 'image/jpeg' : 'image/webp';
-    for (const quality of [.88, .75, .6]) {
+    for (const quality of [.95, .90, .85, .75]) {
       const blob = await new Promise(resolve => canvas.toBlob(resolve, type, quality));
       if (blob && blob.size <= 3 * 1024 * 1024) return new File([blob], file.name.replace(/\.[^.]+$/, '') + (type === 'image/jpeg' ? '.jpg' : '.webp'), {type: blob.type});
     }

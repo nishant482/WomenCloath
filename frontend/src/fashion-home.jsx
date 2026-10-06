@@ -87,6 +87,12 @@ function CampaignCarousel() {
       aria-roledescription="carousel"
     >
       <div className="campaign-stage" key={current}>
+        {slide.image ? <a className="campaign-image-link" href={slide.link} aria-label={slide.alt || slide.title}>
+          <picture>
+            {slide.mobile && <source media="(max-width: 650px)" srcSet={slide.mobile} />}
+            <img className="campaign-custom-photo" src={slide.image} alt={slide.alt || slide.title} width="1920" height="800" fetchPriority="high" />
+          </picture>
+        </a> : <>
         {slide.mobile && <img className="campaign-mobile-photo" src={slide.mobile} alt={slide.alt || slide.title} fetchPriority="high" />}
         {slide.left && (
           <img
@@ -130,6 +136,7 @@ function CampaignCarousel() {
             fetchPriority="high"
           />
         )}
+        </>}
       </div>
       {slides.length > 1 && (
         <>

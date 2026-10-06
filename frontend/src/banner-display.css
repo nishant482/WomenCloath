@@ -1,0 +1,6 @@
+.campaign-carousel.campaign-custom .campaign-stage{height:auto;min-height:0;display:block;background:#ffecd1}
+.campaign-image-link,.campaign-image-link picture{display:block;width:100%}
+.campaign-carousel.campaign-custom .campaign-image-link .campaign-custom-photo{display:block!important;position:static;width:100%;height:auto;max-height:none;object-fit:contain;aspect-ratio:12/5}
+.campaign-carousel.campaign-custom .campaign-pagination{position:relative;inset:auto;transform:none;display:flex;justify-content:center;width:100%;box-sizing:border-box;border-radius:0;background:#fff7e9;padding:10px 50px}
+.campaign-carousel.campaign-custom .campaign-arrow{top:50%;transform:translateY(-50%)}
+@media(max-width:650px){.campaign-carousel.campaign-custom .campaign-arrow{width:28px;height:28px}.campaign-carousel.campaign-custom .campaign-arrow.previous{left:5px}.campaign-carousel.campaign-custom .campaign-arrow.next{right:5px}}

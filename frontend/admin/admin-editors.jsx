@@ -108,7 +108,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
           status: "draft",
         }
       : {}),
-    ...(kind ? { kind, status: "draft", sortOrder: 0, slug: kind + "-" + crypto.randomUUID() } : {}),
+    ...(kind ? { kind, status: page === 'banners' ? 'published' : 'draft', sortOrder: 0, slug: kind + "-" + crypto.randomUUID() } : {}),
     ...(page === "reviews" ? { rating: 5, status: "draft" } : {}),
     ...(page === "coupons"
       ? { active: true, type: "percentage", minimum: 0 }
@@ -196,6 +196,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
         </button>
       </div>
       {page === "products" && <p className="studio-note editor-help">Add your product details below. Choose Active to show it in the store, or Draft to save it for later. Enter Small, Medium or any sizes available for this product. Leave sizes empty for a free-size product; Kurta sets require at least one size.</p>}
+      {page === 'banners' && <p className="studio-note editor-help">Published banners appear in the homepage slider after saving. Draft banners stay hidden. Your title is used to identify the banner; it will not cover your image.</p>}
       {page === "reviews" && (
         <p className="studio-note">
           Admin-created reviews are always labelled “Demo review” and excluded
@@ -300,7 +301,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
             Cancel
           </button>
           <button className="primary" disabled={busy || imageBusy}>
-            {busy ? "Saving…" : "Save changes"}
+            {busy ? "Saving…" : page === 'banners' ? values.status === 'published' ? 'Save & publish banner' : 'Save draft banner' : "Save changes"}
           </button>
         </div>
       </form>
