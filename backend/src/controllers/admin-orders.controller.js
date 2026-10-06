@@ -5,7 +5,7 @@ import { fail, objectId } from '../services/auth.service.js';
 export const getAdminOrders = async (req, res) =>
   res.json({
     items: await req.models.orders
-      .find(req.query.view === 'payments' ? {} : { deletedAt: { $exists: false } })
+      .find({ deletedAt: { $exists: false } })
       .sort({ createdAt: -1 })
       .limit(500)
       .toArray(),

@@ -27,7 +27,7 @@ const { hash } = await import("../src/services/auth.service.js");
 const { config } = await import("../src/config/env.js");
 let repl, client, db, app, owner, customer, other;
 const codes = new Map();
-test('admin order deletion hides orders without losing payments, customer history or stock', async () => {
+test('admin order deletion hides both order and payment entries while preserving history and stock', async () => {
  const p=await product(10);
  const response=await mutation(customer,'post','/api/orders',{items:[{productId:p.id,qty:1,size:''}],address:shipping}).set('Idempotency-Key',randomUUID()).expect(201);
  const id=response.body._id;
@@ -36,7 +36,7 @@ test('admin order deletion hides orders without losing payments, customer histor
  const before=await db.collection('orders').findOne({number:response.body.number});
  await mutation(owner,'delete','/api/admin/orders/'+id).expect(200);
  assert.ok(!(await owner.get('/api/admin/orders')).body.items.some(o=>o._id===id));
- assert.ok((await owner.get('/api/admin/orders?view=payments')).body.items.some(o=>o._id===id));
+ assert.ok(!(await owner.get('/api/admin/orders?view=payments')).body.items.some(o=>o._id===id));
  assert.ok((await customer.get('/api/orders')).body.items.some(o=>o._id===id));
  const deleted=await db.collection('orders').findOne({_id:before._id});
  assert.ok(deleted.deletedAt);assert.ok(deleted.deletedBy);

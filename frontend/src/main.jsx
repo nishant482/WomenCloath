@@ -310,6 +310,7 @@ function App() {
             ["Kurta sets", "/collections/kurta-sets"],
             ["Our story", "/about"],
             ["Customer stories", "/rajo-family"],
+            ["Contact us", "/contact"],
           ].map(([label, path]) => (
             <a
               key={path}
