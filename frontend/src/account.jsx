@@ -268,6 +268,11 @@ export function CheckoutPage() {
   useEffect(() => {
     if (!order) load();
   }, [store.user?.id, size, directId]);
+  useEffect(() => {
+    const refresh = () => { if (!order) load(); };
+    window.addEventListener('focus', refresh);
+    return () => window.removeEventListener('focus', refresh);
+  }, [store.user?.id, size, directId, order, JSON.stringify(items)]);
   if (directId && !direct) return <section className="checkout-page page-width"><h1>Product unavailable</h1><a className="primary" href="/collections/all">Continue shopping</a></section>;
   if (order)
     return (
@@ -323,9 +328,7 @@ export function CheckoutPage() {
           {store.user?.addresses?.length > 0 && <label>Saved address<select aria-label="Saved address" value={selectedAddress} onChange={e => setSelectedAddress(Number(e.target.value))}>{store.user.addresses.map((a, i) => <option key={i} value={i}>{a.line1}, {a.city} – {a.postalCode}</option>)}<option value={-1}>Use a new address</option></select></label>}
           <AddressFields key={selectedAddress} initial={{ name: store.user?.name, phone: store.user?.phone, ...store.user?.addresses?.[selectedAddress] }} />
           {guest && <label>Email address (optional)<input name="email" type="email" autoComplete="email" /></label>}
-          <p>
-            Payment: <strong>{quote?.codEnabled ? 'Cash on delivery' : 'Cash on delivery unavailable'}</strong>. Online payments are not enabled.
-          </p>
+          {quote?.codEnabled && <p>Payment: <strong>Cash on delivery</strong>.</p>}
           <p>
             <a href="/shipping">Shipping & return policy</a>
           </p>
@@ -356,7 +359,7 @@ export function CheckoutPage() {
               {[
                 ["Subtotal", quote.subtotal],
                 ["Shipping", quote.shipping],
-                ["COD charge", quote.codFee || 0],
+                ...(quote.codEnabled ? [["COD charge", quote.codFee || 0]] : []),
                 ["Total", quote.total],
               ].map(([label, value]) => (
                 <div key={label}>
