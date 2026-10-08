@@ -15,6 +15,8 @@ export const productSchema = z
     price: z.number().min(1).max(1000000),
     old: z.number().min(0).max(1000000).default(0),
     imageUrl,
+    imageUrls: z.array(imageUrl.refine(value => Boolean(value), 'Choose a valid image.')).max(8)
+      .refine(values => new Set(values).size === values.length, 'Images must be unique.').optional(),
     colour: text(40).default(""),
     color: z
       .string()
@@ -37,4 +39,4 @@ export const productSchema = z
   .refine(
     (v) => v.category !== "Kurta sets" || v.sizes.length > 0,
     "Select at least one size.",
-  );
+  ).transform(product => product.imageUrls === undefined ? product : {...product, imageUrl: product.imageUrls[0] || ''});

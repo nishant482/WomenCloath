@@ -27,6 +27,21 @@ const { hash } = await import("../src/services/auth.service.js");
 const { config } = await import("../src/config/env.js");
 let repl, client, db, app, owner, customer, other;
 const codes = new Map();
+test('product image galleries persist, validate limits and preserve legacy edits',async()=>{
+ const p=await product();const photos=['https://example.com/front.jpg','https://example.com/back.jpg'];
+ await mutation(owner,'put','/api/admin/products/'+p.id,{...p,imageUrls:photos}).expect(200);
+ let saved=(await request(app).get('/api/products/'+p.id)).body;
+ assert.deepEqual(saved.imageUrls,photos);assert.equal(saved.imageUrl,photos[0]);
+ const {imageUrls,...legacy}=saved;
+ await mutation(owner,'put','/api/admin/products/'+p.id,{...legacy,name:'Updated legacy product'}).expect(200);
+ assert.deepEqual((await request(app).get('/api/products/'+p.id)).body.imageUrls,photos);
+ for(const bad of [[...photos,photos[0]],['javascript:alert(1)'],[''],Array.from({length:9},(_,i)=>'https://example.com/'+i+'.jpg')]) await mutation(owner,'put','/api/admin/products/'+p.id,{...p,imageUrls:bad}).expect(400);
+ await mutation(owner,'put','/api/admin/products/'+p.id,{...p,imageUrls:[photos[1],photos[0]]}).expect(200);
+ assert.equal((await request(app).get('/api/products/'+p.id)).body.imageUrl,photos[1]);
+ await mutation(owner,'put','/api/admin/products/'+p.id,{...p,imageUrls:[]}).expect(200);
+ saved=(await request(app).get('/api/products/'+p.id)).body;assert.deepEqual(saved.imageUrls,[]);assert.equal(saved.imageUrl,'');
+ await db.collection('products').deleteOne({id:p.id});
+});
 test('admin order deletion hides both order and payment entries while preserving history and stock', async () => {
  const p=await product(10);
  const response=await mutation(customer,'post','/api/orders',{items:[{productId:p.id,qty:1,size:''}],address:shipping}).set('Idempotency-Key',randomUUID()).expect(201);

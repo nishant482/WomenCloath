@@ -1,4 +1,5 @@
 import { CONTACT_EMAIL } from "./brand-config.js";
+import {ProductGallery} from './product-gallery.jsx';
 import { api, productImage } from "./api.js";
 import { ProductReviews } from "./account.jsx";
 import { useStore } from "./store-context.jsx";
@@ -168,10 +169,7 @@ function ProductPage({
         <span>{p.name}</span>
       </div>
       <section className="product-page page-width">
-        <div className="product-gallery">
-          <img src={productImage(p)} alt={p.name} />
-          <span>{p.tag}</span>
-        </div>
+        <ProductGallery key={p.id} product={p}/>
         <div className="product-information">
           <div className="eyebrow">THE RAJO THREADS COLLECTION</div>
           <h1>{p.name}</h1>

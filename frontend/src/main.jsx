@@ -46,6 +46,7 @@ import { FashionHome } from "./fashion-home.jsx";
 import "./brand-palette.css";
 import "./inner-pages.css";
 import "./banner-display.css";
+import "./product-gallery.css";
 
 import {categorySlug} from "./catalogue-options.js";
 const money = (n) => `₹${n.toLocaleString("en-IN")}`;

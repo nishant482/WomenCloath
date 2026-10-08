@@ -8,7 +8,7 @@ export const postAdminUploads = async (req, res) => {
       503,
       "Image uploads are not configured. You can use an image URL instead.",
     );
-  await rateLimit(req.db, "uploads:" + req.user._id, 30, 3600);
+  await rateLimit(req.db, "uploads:" + req.user._id, 120, 3600);
   const b = req.body;
   if (!Buffer.isBuffer(b) || b.length < 12 || b.length > 3 * 1024 * 1024)
     throw fail(400, "Choose a JPEG, PNG or WebP image under 3 MB.");
