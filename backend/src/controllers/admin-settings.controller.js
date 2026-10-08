@@ -16,3 +16,10 @@ export const putAdminSettings = async (req, res) => {
   );
   res.json(data);
 };
+
+export const patchAdminSettings = async (req,res) => {
+  const parsed = settingsSchema.partial().strict().parse(req.body);
+  const data = Object.fromEntries(Object.entries(parsed).filter(([key])=>Object.hasOwn(req.body,key)));
+  await req.models.settings.updateOne({_id:'store'},{$set:data},{upsert:true});
+  res.json({ok:true});
+};

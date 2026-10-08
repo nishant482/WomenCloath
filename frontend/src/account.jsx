@@ -324,8 +324,7 @@ export function CheckoutPage() {
           <AddressFields key={selectedAddress} initial={{ name: store.user?.name, phone: store.user?.phone, ...store.user?.addresses?.[selectedAddress] }} />
           {guest && <label>Email address (optional)<input name="email" type="email" autoComplete="email" /></label>}
           <p>
-            Payment: <strong>Cash on delivery</strong>. Online payments are not
-            enabled.
+            Payment: <strong>{quote?.codEnabled ? 'Cash on delivery' : 'Cash on delivery unavailable'}</strong>. Online payments are not enabled.
           </p>
           <p>
             <a href="/shipping">Shipping & return policy</a>

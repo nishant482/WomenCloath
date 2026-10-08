@@ -146,7 +146,13 @@ test('shipping modes and COD surcharge apply server-side to quotes and orders',a
   }
   const order=await request(app).post('/api/checkout/guest/orders').set('Origin','http://localhost:5173').set('X-Requested-With','RajoStore').set('Idempotency-Key',randomUUID()).send({items,address:shipping,codFee:0,total:1}).expect(201);
   assert.equal(order.body.codFee,39.5);assert.equal(order.body.total,1039.5);
-  await mutation(owner,'put','/api/admin/settings',{...settings,codEnabled:false}).expect(200);
+  await mutation(customer,'patch','/api/admin/settings',{codEnabled:false}).expect(403);
+  await mutation(owner,'patch','/api/admin/settings',{codEnabled:false}).expect(200);
+  let current=(await owner.get('/api/admin/settings')).body;
+  assert.equal(current.shippingFee,75);assert.equal(current.codFee,39.5);assert.equal(current.shippingMode,'threshold');
+  await mutation(owner,'patch','/api/admin/settings',{shippingMode:'paid',shippingFee:80}).expect(200);
+  current=(await owner.get('/api/admin/settings')).body;assert.equal(current.codEnabled,false);assert.equal(current.codFee,39.5);
+  const disabledQuote=await mutation(request(app),'post','/api/checkout/guest/quote',{items}).expect(200);assert.equal(disabledQuote.body.codEnabled,false);
   await request(app).post('/api/checkout/guest/orders').set('Origin','http://localhost:5173').set('X-Requested-With','RajoStore').set('Idempotency-Key',randomUUID()).send({items,address:shipping}).expect(400);
  } finally {await mutation(owner,'put','/api/admin/settings',settings).expect(200);}
 });

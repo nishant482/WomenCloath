@@ -1,3 +1,4 @@
+import {StoreSettings} from './store-settings.jsx';
 import React, { useEffect, useRef, useState } from 'react';
 import { LayoutDashboard, Package, ShoppingBag, Users, Star, Image, FileText, TicketPercent, Settings, Mail, LogOut, Plus, Menu, X, ArrowUpRight, RefreshCw, Boxes, Layers, RotateCcw, Wallet, BarChart3, Download, Eye, Pencil, Trash2 } from 'lucide-react';
 import { api, productImage } from '../src/api.js';
@@ -17,12 +18,14 @@ const navigation = [
  ['coupons', 'Discount codes', TicketPercent, 'MANAGEMENT'],
  ['enquiries', 'Customer enquiries', Mail, 'MANAGEMENT'],
  ['email-queue', 'Email notifications', Mail],
- ['settings', 'Store & shipping', Settings],
+ ['cod', 'Cash on Delivery', Wallet],
+ ['shipping', 'Shipping', Package],
+ ['settings', 'Store settings', Settings],
  ['access', 'Admin access', Users],
 ];
 const kinds = { banners: 'banner', family: 'family', blogs: 'blog' };
 const resourceFor = page => ({ inventory: 'products', categories: 'products', returns: 'orders', payments: 'orders', carts: 'users', wishlists: 'users' }[page] || (kinds[page] ? 'content' : page));
-const moduleFor = page => ({reports:'overview',inventory:'products',categories:'products',returns:'orders',payments:'orders',carts:'users',wishlists:'users'}[page] || page);
+const moduleFor = page => ({cod:'settings',shipping:'settings',reports:'overview',inventory:'products',categories:'products',returns:'orders',payments:'orders',carts:'users',wishlists:'users'}[page] || page);
 const route = () => location.hash === '#inventory' ? 'products' : navigation.some(n => n[0] === location.hash.slice(1)) ? location.hash.slice(1) : 'overview';
 const recordName = r => r.name || r.title || r.number || r.code || r.email || 'Record';
 export default function ClassicAdminApp() {
@@ -49,7 +52,7 @@ export default function ClassicAdminApp() {
   setLoading(true); setError('');
   try {
    if(!allowed(page)) {setResult({page,data:[]});return;}
-   const [summary, response] = await Promise.all([dashboard && allowed('overview') ? api('/admin/overview', { signal: abort.signal }) : Promise.resolve(overview), dashboard || ['access','email-queue','media','categories'].includes(page) ? Promise.resolve({items:[]}) : api('/admin/' + resource + (page === 'payments' ? '?view=payments' : ''), { signal: abort.signal })]);
+   const [summary, response] = await Promise.all([dashboard && allowed('overview') ? api('/admin/overview', { signal: abort.signal }) : Promise.resolve(overview), dashboard || ['access','email-queue','media','categories','cod','shipping','settings'].includes(page) ? Promise.resolve({items:[]}) : api('/admin/' + resource + (page === 'payments' ? '?view=payments' : ''), { signal: abort.signal })]);
    if (id !== request.current || abort.signal.aborted) return;
    setOverview(summary); setResult({ page, data: page === 'settings' ? response : response.items || [] });
   } catch (e) {
@@ -119,7 +122,7 @@ export default function ClassicAdminApp() {
   {mobile && <button className="studio-shade" aria-label="Close navigation overlay" onClick={() => setMobile(false)} />}
   <main className="studio-main"><header className="studio-header"><button className="studio-menu icon-button" aria-label="Open navigation" onClick={() => setMobile(true)}><Menu size={19} /></button><div><span className="eyebrow">ADMINISTRATION / {label}</span><h1>{label}</h1></div><div className="admin-header-right"><a href="/" target="_blank" rel="noreferrer">View store <ArrowUpRight size={13} /></a><span className="admin-avatar" title={user.email}>{user.name?.[0] || 'A'}</span></div></header>
    {error && <p className="commerce-error" role="alert">{error} <button onClick={load}>Retry</button></p>}{notice && <p className="commerce-success" role="status">{notice}</p>}
-   {!allowed(page) ? <section className="classic-panel settings-panel"><h2>No access assigned</h2><p>Ask Nishant to enable the required admin sections.</p></section> : page === 'categories' ? <Categories /> : page === 'access' ? <AdminAccess /> : page === 'email-queue' ? <EmailQueue /> : dashboard ? ready ? <ClassicDashboard overview={overview} reports={page === 'reports'} /> : <p className="table-empty" role="status">Loading dashboard…</p> : <>
+   {!allowed(page) ? <section className="classic-panel settings-panel"><h2>No access assigned</h2><p>Ask Nishant to enable the required admin sections.</p></section> : ['cod','shipping','settings'].includes(page) ? <StoreSettings key={page} page={page}/> : page === 'categories' ? <Categories /> : page === 'access' ? <AdminAccess /> : page === 'email-queue' ? <EmailQueue /> : dashboard ? ready ? <ClassicDashboard overview={overview} reports={page === 'reports'} /> : <p className="table-empty" role="status">Loading dashboard…</p> : <>
     <div className="studio-toolbar">{page !== 'settings' && <><input aria-label="Search records" placeholder={`Search ${label.toLowerCase()}…`} value={query} onChange={e => setQuery(e.target.value)} />{page !== 'categories' && <select aria-label="Filter by status" value={status} onChange={e => setStatus(e.target.value)}><option value="all">All statuses</option>{statuses.map(s => <option key={s}>{s}</option>)}</select>}<select aria-label="Sort records" value={sort} onChange={e => setSort(e.target.value)}><option value="newest">Newest first</option><option value="name">Name A–Z</option>{(isProduct || resource === 'orders') && <option value="price">Amount: low to high</option>}{isProduct && <option value="stock">Stock: low to high</option>}</select></>}
      <button className="secondary" onClick={load} disabled={loading} aria-label="Refresh records"><RefreshCw size={14} /></button>
      {canEdit && <button className="primary" disabled={!ready} onClick={() => setEditor(page === 'settings' ? data : {})}><Plus size={14} />{page === 'settings' ? 'Edit settings' : resource === 'products' ? 'Add product' : page === 'reviews' ? 'Add demo review' : 'Add new'}</button>}
