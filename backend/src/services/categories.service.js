@@ -3,7 +3,8 @@ export const categorySlug=name=>name.toLowerCase().replace(/[^a-z0-9]+/g,'-').re
 export const defaultCategories=['Sarees','Lehengas','Kurta sets'];
 export async function listCategories(db){
  const [stored,legacy]=await Promise.all([db.collection('categories').find({}).sort({name:1}).toArray(),db.collection('products').distinct('category',{status:{$ne:'deleted'}})]);
- return [...new Map([...defaultCategories,...legacy,...stored.map(c=>c.name)].filter(Boolean).map(name=>[categorySlug(name),{name,slug:categorySlug(name)}])).values()];
+ const deleted=new Set(stored.filter(c=>c.deletedAt).map(c=>c._id));
+ return [...new Map([...defaultCategories,...legacy,...stored.filter(c=>!c.deletedAt).map(c=>c.name)].filter(name=>name&&!deleted.has(categorySlug(name))).map(name=>[categorySlug(name),{name,slug:categorySlug(name)}])).values()];
 }
 export async function validateCategory(db,name){
  if(!(await listCategories(db)).some(c=>c.name===name))throw fail(400,'Add this category in Categories before selecting it.');

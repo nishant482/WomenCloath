@@ -31,6 +31,7 @@ export const productSchema = z
     stock: z.number().int().min(0).max(100000),
     status: z.enum(["active", "draft", "archived"]).default("draft"),
     tag: text(30).default(""),
+    isNewArrival: z.boolean().optional(),
   })
   .refine(
     (v) => !v.old || v.old >= v.price,

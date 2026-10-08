@@ -27,6 +27,23 @@ const { hash } = await import("../src/services/auth.service.js");
 const { config } = await import("../src/config/env.js");
 let repl, client, db, app, owner, customer, other;
 const codes = new Map();
+test('category deletion protects products and new arrival selection persists',async()=>{
+ const name='Test Delete Category',slug='test-delete-category';
+ await mutation(owner,'post','/api/admin/categories',{name}).expect(201);
+ await mutation(customer,'delete','/api/admin/categories/'+slug).expect(403);
+ const p=await product();
+ await mutation(owner,'put','/api/admin/products/'+p.id,{...p,category:name,isNewArrival:true}).expect(200);
+ assert.equal((await request(app).get('/api/products/'+p.id)).body.isNewArrival,true);
+ await mutation(owner,'delete','/api/admin/categories/'+slug).expect(409);
+ await mutation(owner,'put','/api/admin/products/'+p.id,{...p,isNewArrival:false}).expect(200);
+ assert.equal((await request(app).get('/api/products/'+p.id)).body.isNewArrival,false);
+ await mutation(owner,'delete','/api/admin/categories/'+slug).expect(200);
+ assert.ok(!(await owner.get('/api/admin/categories')).body.items.some(c=>c.slug===slug));
+ await mutation(owner,'put','/api/admin/products/'+p.id,{...p,category:name}).expect(400);
+ await mutation(owner,'post','/api/admin/categories',{name}).expect(201);
+ assert.ok((await owner.get('/api/admin/categories')).body.items.some(c=>c.slug===slug));
+ await db.collection('products').deleteOne({id:p.id});await db.collection('categories').deleteOne({_id:slug});
+});
 test('product image galleries persist, validate limits and preserve legacy edits',async()=>{
  const p=await product();const photos=['https://example.com/front.jpg','https://example.com/back.jpg'];
  await mutation(owner,'put','/api/admin/products/'+p.id,{...p,imageUrls:photos}).expect(200);

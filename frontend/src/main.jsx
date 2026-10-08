@@ -234,7 +234,7 @@ function App() {
       (category === "All styles" ||
         category === "New arrivals" ||
         p.category === category) &&
-      (category !== "New arrivals" || p.tag === "NEW ARRIVAL") &&
+      (category !== "New arrivals" || (p.isNewArrival ?? (p.tag === "NEW ARRIVAL"))) &&
       (isHome ||
         (`${p.name} ${p.fabric} ${p.category}`
           .toLowerCase()

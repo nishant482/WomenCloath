@@ -49,6 +49,7 @@ const fields = {
     ["color", "Swatch colour", "color"],
     ["sizes", "Sizes (comma separated: Small, Medium, Large)"],
     ["tag", "Product label (optional)"],
+    ["isNewArrival", "Show in New arrivals", "checkbox"],
     ["description", "Description", "textarea"],
     ["status", "Status", ["draft", "active", "archived"]],
   ],
@@ -90,7 +91,7 @@ const fields = {
 };
 export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) {
   const [categories,setCategories] = useState([]);
-  useEffect(()=>{if(page === "products") api("/admin/categories").then(r=>setCategories(r.items.map(c=>c.name))).catch(()=>{});},[page]);
+  useEffect(()=>{if(page === "products") api("/admin/categories").then(r=>{setCategories(r.items.map(c=>c.name));if(!record)setValues(v=>({...v,category:r.items[0]?.name||""}));}).catch(()=>{});},[page]);
   const kind = contentKinds[page];
   const resource = kind ? "content" : page;
   const simpleContent = page === 'banners' || page === 'family';
@@ -105,7 +106,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
           old: 0,
           stock: 0,
           color: "#173b69",
-          category: "Sarees",
+          category: "",
           sizes: [],
           status: "draft",
         }
@@ -116,6 +117,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
       ? { active: true, type: "percentage", minimum: 0 }
       : {}),
     ...record,
+    ...(page === "products" ? {isNewArrival:record?.isNewArrival ?? (record?.tag === "NEW ARRIVAL")} : {}),
   };
   const [values, setValues] = useState(initial),
     [error, setError] = useState(""),
@@ -217,12 +219,14 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
             {Array.isArray(type) ? (
               <select
                 aria-label={label}
-                value={values[key] || type[0]}
+                required={key === "category"}
+                value={key === "category" ? values[key] || "" : values[key] || type[0]}
                 onChange={(e) =>
                   setValues({ ...values, [key]: e.target.value })
                 }
               >
-                {(key === "category" ? [...new Set([...categories,...type,values.category].filter(Boolean))] : type).map((o) => (
+                {key === "category" && <option value="">Select category</option>}
+                {(key === "category" ? [...new Set([...categories,values.category].filter(Boolean))] : type).map((o) => (
                   <option key={o}>{o}</option>
                 ))}
               </select>

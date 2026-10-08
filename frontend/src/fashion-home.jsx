@@ -311,7 +311,7 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
         title="Fresh arrivals"
         eyebrow="JUST ADDED TO YOUR WARDROBE"
         text="New colours, new details, a little more you."
-        items={products.filter((p) => p.tag === "NEW ARRIVAL")}
+        items={products.filter((p) => (p.isNewArrival ?? (p.tag === "NEW ARRIVAL")))}
         link="/collections/new-arrivals"
         {...shared}
       />
