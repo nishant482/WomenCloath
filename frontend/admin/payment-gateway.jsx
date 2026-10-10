@@ -1,0 +1,8 @@
+import React,{useState,useEffect} from 'react';
+import {api} from '../src/api.js';
+export function PaymentGateway(){
+ const [value,setValue]=useState(null),[secret,setSecret]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
+ useEffect(()=>{api('/admin/payment-gateway').then(setValue).catch(e=>setError(e.message));},[]);
+ async function save(e){e.preventDefault();setBusy(true);setError('');setNotice('');try{await api('/admin/payment-gateway',{method:'PUT',body:{enabled:value.enabled,keyId:value.keyId,...(secret?{secret}:{})}});setSecret('');setValue(await api('/admin/payment-gateway'));setNotice('Razorpay test settings saved.');}catch(e){setError(e.message);}finally{setBusy(false);}}
+ return <section className="classic-panel settings-panel"><h2>Razorpay · Test mode</h2><p>Test payments only. No real money is collected. COD is controlled separately.</p>{error&&<p role="alert">{error}</p>}{notice&&<p role="status">{notice}</p>}{value&&<form className="commerce-form" onSubmit={save}><label><input type="checkbox" checked={value.enabled} disabled={busy} onChange={e=>setValue({...value,enabled:e.target.checked})}/>Enable test online payments</label><label>Test key ID<input required pattern="rzp_test_[A-Za-z0-9]+" value={value.keyId} disabled={busy} onChange={e=>setValue({...value,keyId:e.target.value})}/></label><label>Key secret<input type="password" autoComplete="new-password" value={secret} required={!value.hasSecret} disabled={busy} placeholder={value.hasSecret?'Saved securely — leave blank to keep':''} onChange={e=>setSecret(e.target.value)}/></label><button className="primary" disabled={busy}>{busy?'Checking keys...':'Save payment settings'}</button></form>}</section>;
+}

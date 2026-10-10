@@ -387,7 +387,7 @@ export function OrderDetails({ order, onUpdate, busy }) {
             Record payment / refund
             <select name="paymentStatus" defaultValue="">
               <option value="">Keep {order.paymentStatus}</option>
-              <option value="paid">COD payment collected</option>
+              {order.paymentMethod !== "razorpay" && <option value="paid">COD payment collected</option>}
               <option value="refunded">Refund issued externally</option>
             </select>
           </label>
@@ -409,7 +409,7 @@ export function OrderDetails({ order, onUpdate, busy }) {
             </>
           )}
           <small>
-            Payments, refunds and courier bookings must be completed externally;
+            Online payments are verified by Razorpay. Refunds and courier bookings must be completed externally;
             these controls record their status.
           </small>
           <button className="primary" disabled={busy}>

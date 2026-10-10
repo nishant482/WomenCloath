@@ -1,4 +1,5 @@
 import express from "express";
+import razorpayRoutes from './routes/razorpay.routes.js';
 import seoRoutes from './routes/seo.routes.js';
 import categoriesRoutes from "./routes/categories.routes.js";
 import { requireAdminAccess } from "./middleware/admin-access.js";
@@ -38,6 +39,7 @@ export function createApp({
   getConnection = connect,
   deliverCode = sendCode,
   postalLookup = lookupPostalCode,
+  razorpayRequest,
 } = {}) {
   const app = express();
   // Vercel forwards the original public URL to the rewritten function.
@@ -73,7 +75,7 @@ export function createApp({
       req.db = connection.db;
       req.mongo = connection.client;
       req.models = createModels(req.db);
-      req.services = { deliverCode };
+      req.services = { deliverCode, razorpayRequest };
       next();
     } catch {
       next(
@@ -100,6 +102,7 @@ export function createApp({
   app.use("/api", cartRoutes);
   app.use("/api", wishlistRoutes);
   app.use("/api", checkoutRoutes);
+  app.use('/api',razorpayRoutes);
   app.use("/api", ordersRoutes);
   app.use("/api", reviewsRoutes);
   app.use("/api", enquiriesRoutes);

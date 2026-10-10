@@ -1,4 +1,5 @@
 import { z } from "zod";
+import {paymentOptions} from '../services/razorpay-config.service.js';
 import { priceCart } from "../services/order.service.js";
 import { checkoutSchema, createOrder } from "../services/order.service.js";
 import { fail, hash, rateLimit } from "../services/auth.service.js";
@@ -8,7 +9,7 @@ const guestSchema = checkoutSchema.extend({ items: checkoutSchema.shape.items.un
 export const postGuestQuote = async (req, res) => {
   await rateLimit(req.db, "guest-quote:" + req.ip, 120, 600);
   const input = guestSchema.pick({ items: true, coupon: true }).parse(req.body);
-  res.json(await priceCart(req.db, input.items, input.coupon));
+  res.json({...await priceCart(req.db, input.items, input.coupon),...await paymentOptions(req.db)});
 };
 export const postGuestOrder = async (req, res) => {
   const input = guestSchema.parse(req.body);
@@ -24,5 +25,5 @@ export const postCheckoutQuote = async (req, res) => {
   const { coupon, items } = z
     .object({ coupon: z.string().trim().toUpperCase().max(30).default(""), items: checkoutSchema.shape.items })
     .parse(req.body);
-  res.json(await priceCart(req.db, items || req.user.cart, coupon));
+  res.json({...await priceCart(req.db, items || req.user.cart, coupon),...await paymentOptions(req.db)});
 };

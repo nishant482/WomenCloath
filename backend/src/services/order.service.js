@@ -80,6 +80,7 @@ export async function priceCart(db, cart, couponCode = "", session) {
   };
 }
 export async function createOrder(client, db, user, payload, idempotencyKey) {
+  if (String(idempotencyKey||'').startsWith('rzp_')) throw fail(400,'Invalid checkout request identifier.');
   if (!/^[a-zA-Z0-9_-]{16,80}$/.test(idempotencyKey || ""))
     throw fail(400, "A checkout request identifier is required.");
   const session = client.startSession();
@@ -199,7 +200,7 @@ export async function transitionOrder(
         );
       if (
         updates.paymentStatus === "paid" &&
-        !["shipped", "delivered"].includes(status)
+        (order.paymentMethod === "razorpay" || !["shipped", "delivered"].includes(status))
       )
         throw fail(
           400,

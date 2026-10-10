@@ -239,11 +239,26 @@ export function CheckoutPage() {
   const needsSize = direct?.sizes?.length > 0 && !size;
   const guest = !store.user;
   const [selectedAddress, setSelectedAddress] = useState(0);
+  const [paymentChoice,setPaymentChoice]=useState('online');
+  const [pendingPayment,setPendingPayment]=useState(()=>{try{return JSON.parse(sessionStorage.getItem('rajoPendingPayment')||'null');}catch{return null;}});
+  const paying=useRef(false);
   const [quote, setQuote] = useState(null),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
     [order, setOrder] = useState(null);
   const key = useRef(crypto.randomUUID());
+  const paymentMethod=quote?.onlineEnabled && (paymentChoice==='online'||!quote.codEnabled)?'online':'cod';
+  const canPay=Boolean(quote&&(paymentMethod==='online'?quote.onlineEnabled:quote.codEnabled));
+  const paymentApi=guest?'/checkout/guest/razorpay/':'/checkout/razorpay/';
+  const finish=async result=>{
+    setOrder(result);sessionStorage.removeItem('rajoPendingPayment');setPendingPayment(null);
+    if(result.status!=='cancelled'){if(guest&&!direct)await store.setBag([]);await store.refreshBag();}
+  };
+  const checkPayment=async()=>{
+    if(!pendingPayment)return;
+    setBusy(true);setError('');
+    try{const result=await api((pendingPayment.guest?'/checkout/guest/razorpay/':'/checkout/razorpay/')+'status',{method:'POST',headers:{'Idempotency-Key':pendingPayment.key},body:{attemptId:pendingPayment.attemptId}});if(result.order)await finish(result.order);else setError('Payment is not confirmed yet. You can retry this checkout or check again.');}catch(e){setError(e.message);}finally{setBusy(false);}
+  };
   const quoteRequest = useRef(0);
   const load = async () => {
     const requestId = ++quoteRequest.current;
@@ -269,7 +284,7 @@ export function CheckoutPage() {
     if (!order) load();
   }, [store.user?.id, size, directId]);
   useEffect(() => {
-    const refresh = () => { if (!order) load(); };
+    const refresh = () => { if (!order&&!paying.current) load(); };
     window.addEventListener('focus', refresh);
     return () => window.removeEventListener('focus', refresh);
   }, [store.user?.id, size, directId, order, JSON.stringify(items)]);
@@ -278,11 +293,11 @@ export function CheckoutPage() {
     return (
       <section className="checkout-success page-width">
         <CheckCircle size={48} />
-        <h1>Thank you, {order.customer}.</h1>
+        <h1>{order.status==='cancelled'?'Payment needs attention':`Thank you, ${order.customer}.`}</h1>
         <p>
-          Your order <strong>{order.number}</strong> has been placed.
+          Order reference: <strong>{order.number}</strong>.
         </p>
-        <p>Pay {money(order.total)} on delivery.</p>
+        {order.paymentMethod==='razorpay'?<p>{order.paymentStatus==='refund_pending'?'Payment received, but the item is no longer available. Please contact us for your refund.':`Online payment of ${money(order.total)} verified.`}{order.paymentMode==='test'?' Test mode — no real money collected.':''}</p>:<p>Pay {money(order.total)} on delivery.</p>}
         {guest && <p>Save your order number for updates. Contact us on WhatsApp for help with your order.</p>}
         <a className="primary" href={guest ? '/collections/all' : '/account'}>
           {guest ? 'Continue shopping' : 'View your orders'} <ArrowRight size={18} />
@@ -300,26 +315,40 @@ export function CheckoutPage() {
           {error}
         </p>
       )}
+      {pendingPayment&&<div><p>A previous online payment attempt is saved. Check its status before paying again.</p><button className="secondary" type="button" disabled={busy} onClick={checkPayment}>Check payment status</button></div>}
       <div className="checkout-layout">
         <form
           className="commerce-form"
           onSubmit={async (e) => {
             e.preventDefault();
             setBusy(true);
+            paying.current=true;
             setError("");
             try {
               const a = Object.fromEntries(new FormData(e.currentTarget));
+              const body={ address: { ...a, country: "India" }, ...((guest || direct) ? { items } : {}), ...(guest && a.email ? { email: a.email } : {}) };
+              if(paymentMethod==='online'){
+                const paymentKey=pendingPayment?.guest===guest?pendingPayment.key:key.current;
+                const payment=await api(paymentApi+'create',{method:'POST',headers:{'Idempotency-Key':paymentKey},body});
+                const pending={attemptId:payment.attemptId,key:paymentKey,guest};sessionStorage.setItem('rajoPendingPayment',JSON.stringify(pending));setPendingPayment(pending);
+                const {openRazorpay}=await import('./razorpay-checkout.js');
+                const response=await openRazorpay(payment,{name:a.name,email:a.email||store.user?.email||'',contact:a.phone});
+                const verified=await api(paymentApi+'verify',{method:'POST',headers:{'Idempotency-Key':paymentKey},body:{attemptId:payment.attemptId,...response}});
+                await finish(verified.order);
+              }else{
               const result = await api(guest ? "/checkout/guest/orders" : "/orders", {
                 method: "POST",
                 headers: { "Idempotency-Key": key.current },
-                body: { address: { ...a, country: "India" }, ...((guest || direct) ? { items } : {}), ...(guest && a.email ? { email: a.email } : {}) },
+                body,
               });
               setOrder(result);
               if (guest && !direct) await store.setBag([]);
               await store.refreshBag();
+              }
             } catch (e) {
               setError(e.message);
             } finally {
+              paying.current=false;
               setBusy(false);
             }
           }}
@@ -328,15 +357,16 @@ export function CheckoutPage() {
           {store.user?.addresses?.length > 0 && <label>Saved address<select aria-label="Saved address" value={selectedAddress} onChange={e => setSelectedAddress(Number(e.target.value))}>{store.user.addresses.map((a, i) => <option key={i} value={i}>{a.line1}, {a.city} – {a.postalCode}</option>)}<option value={-1}>Use a new address</option></select></label>}
           <AddressFields key={selectedAddress} initial={{ name: store.user?.name, phone: store.user?.phone, ...store.user?.addresses?.[selectedAddress] }} />
           {guest && <label>Email address (optional)<input name="email" type="email" autoComplete="email" /></label>}
-          {quote?.codEnabled && <p>Payment: <strong>Cash on delivery</strong>.</p>}
+          {quote?.onlineEnabled&&<label><input type="radio" name="paymentChoice" value="online" checked={paymentMethod==='online'} disabled={busy} onChange={()=>setPaymentChoice('online')}/>Online payment (Test mode — no real money)</label>}
+          {quote?.codEnabled&&<label><input type="radio" name="paymentChoice" value="cod" checked={paymentMethod==='cod'} disabled={busy} onChange={()=>setPaymentChoice('cod')}/>Cash on delivery</label>}
           <p>
             <a href="/shipping">Shipping & return policy</a>
           </p>
-          <button className="primary" disabled={busy || needsSize || !quote?.codEnabled}>
-            {busy ? "Please wait…" : "Place order"}
+          <button className="primary" disabled={busy || needsSize || !canPay}>
+            {busy ? "Please wait…" : paymentMethod==='online'?'Pay online (Test)':'Place order'}
             <ArrowRight size={18} />
           </button>
-          {quote && !quote.codEnabled && (
+          {quote && !canPay && (
             <p>Checkout is temporarily unavailable.</p>
           )}
         </form>
@@ -359,8 +389,8 @@ export function CheckoutPage() {
               {[
                 ["Subtotal", quote.subtotal],
                 ["Shipping", quote.shipping],
-                ...(quote.codEnabled ? [["COD charge", quote.codFee || 0]] : []),
-                ["Total", quote.total],
+                ...(quote.codEnabled&&paymentMethod==='cod' ? [["COD charge", quote.codFee || 0]] : []),
+                ["Total", paymentMethod==='online'?Math.round((quote.total-(quote.codFee||0))*100)/100:quote.total],
               ].map(([label, value]) => (
                 <div key={label}>
                   <dt>{label}</dt>

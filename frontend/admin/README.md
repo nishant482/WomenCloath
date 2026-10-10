@@ -46,3 +46,8 @@ Current simplified admin navigation hides Reports and Returns and combines stock
 
 
 Image editing now uses one direct device upload and preview, with a Replace image action. Gallery/URL inputs and separate Image library navigation are removed. Banner forms show image, title, optional destination and visibility; identifiers and image descriptions are generated automatically. Family forms show image, name, optional caption and visibility. Saving waits for uploads; a failed replacement preserves the image. Publishing a banner requires an image. The owner controls Image uploads permission for restricted admins.
+
+
+Razorpay testing: the owner-only Payment gateway tab accepts test keys only. Secrets are AES-256-GCM encrypted in the separate paymentConfig collection using a key derived from JWT_SECRET; do not rotate JWT_SECRET without re-entering gateway keys. Public store settings never contain payment credentials. The checkout uses server-calculated INR amounts, excludes COD fees for online payment, verifies the HMAC and fetches/captures the payment before creating a paid order. Transactions and idempotency prevent duplicate stock deductions.
+
+An interrupted callback can be recovered through Checkout > Check payment status (saved in the same browser tab) or Admin > Payments > Sync online payments. Sync checks up to five pending attempts per click; repeat as needed. No Razorpay webhook is configured in this test integration. Stock is checked again after payment; if unavailable, the payment is recorded as refund_pending and the order is cancelled without deducting stock. Refunds must be issued in Razorpay and then recorded in admin. Test orders are labelled Test and no real money is collected.
