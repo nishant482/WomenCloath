@@ -14,17 +14,20 @@ export const patchAdminProfile = async (req,res)=>{
  }catch(e){if(e.code===11000)throw fail(409,'This mobile number is already used by another account.');throw e;}
 };
 
-export const getAdminUsers = async (req, res) =>
+export const getAdminUsers = async (req, res) => {
+  const role = req.query.role === 'admin' ? 'admin' : 'customer';
+  if(role === 'admin' && !isOwner(req.user)) throw fail(403,'Only the owner can view administrator access.');
   res.json({
     items: await req.models.users
       .aggregate([
-        { $match: { status: { $ne: 'deleted' } } },
+        { $match: { role, status: { $ne: 'deleted' } } },
         { $sort: { createdAt: -1 } }, { $limit: 500 },
         { $addFields: { cartCount: { $sum: '$cart.qty' }, wishlistCount: { $size: { $ifNull: ['$wishlist', []] } } } },
         { $project: { password: 0, cart: 0, wishlist: 0 } },
       ])
       .toArray(),
   });
+};
 
 export const getAdminUserShopping = async (req, res) => {
   const user = await req.models.users.findOne({ _id: objectId(req.params.id), status: { $ne: 'deleted' } });

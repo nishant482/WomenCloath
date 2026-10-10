@@ -131,6 +131,7 @@ test('restricted administrators cannot bypass modules, change other admins or es
  const {passwordHash}=await import('../src/services/auth.service.js');
  const result=await db.collection('users').insertOne({email:'restricted@example.com',name:'Restricted',password:await passwordHash(pass),role:'admin',status:'active',emailVerified:true,adminPermissions:['banners','users']});
  await mutation(agent,'post','/api/auth/login',{email:'restricted@example.com',password:pass}).expect(200);
+ await agent.get('/api/admin/users?role=admin').expect(403);
  await agent.get('/api/admin/settings').expect(403);
  await agent.get('/api/admin/products').expect(403);
  await agent.get('/api/admin/overview').expect(403);
@@ -447,6 +448,11 @@ test("account and admin endpoints enforce sessions and roles", async () => {
   await request(app).get("/api/cart").expect(401);
   await customer.get("/api/admin/users").expect(403);
   const r = await owner.get("/api/admin/users").expect(200);
+  assert.ok(r.body.items.length > 0);
+  assert.ok(r.body.items.every(u=>u.role === 'customer'));
+  const admins=await owner.get('/api/admin/users?role=admin').expect(200);
+  assert.ok(admins.body.items.length>0);
+  assert.ok(admins.body.items.every(u=>u.role==='admin'&&!u.password));
   assert.ok(r.body.items.every((u) => !u.password));
   await mutation(customer, "patch", "/api/account", {
     name: "Customer",
