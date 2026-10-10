@@ -1,6 +1,7 @@
 import { imageStorageProvider } from "../services/image-storage.js";
 
 export const getAdminOverview = async (req, res) => {
+  const visible = { deletedAt: null, deletedBy: null, status: { $ne: 'deleted' } };
   const [
     products,
     users,
@@ -12,26 +13,28 @@ export const getAdminOverview = async (req, res) => {
     recentOrders,
     featuredProducts,
   ] = await Promise.all([
-    req.models.products.countDocuments({ status: { $nin: ["archived", "deleted"] } }),
-    req.models.users.countDocuments({ status: { $ne: "deleted" } }),
-    req.models.orders.countDocuments(),
-    req.models.reviews.countDocuments({ status: "pending" }),
+    req.models.products.countDocuments({ ...visible, status: { $nin: ["archived", "deleted"] } }),
+    req.models.users.countDocuments({ ...visible, role: "customer" }),
+    req.models.orders.countDocuments(visible),
+    req.models.reviews.countDocuments({ ...visible, status: "pending" }),
     req.models.products.countDocuments({
+      ...visible,
       status: "active",
       stock: { $lte: 5 },
     }),
     req.models.orders
       .aggregate([
-        { $match: { paymentStatus: "paid" } },
+        { $match: { ...visible, paymentStatus: "paid" } },
         { $group: { _id: null, total: { $sum: "$total" } } },
       ])
       .toArray(),
     req.models.orders.countDocuments({
+      ...visible,
       status: { $in: ["placed", "confirmed", "packed"] },
     }),
     req.models.orders
       .find(
-        {},
+        visible,
         {
           projection: {
             number: 1,
@@ -47,7 +50,7 @@ export const getAdminOverview = async (req, res) => {
       .toArray(),
     req.models.products
       .find(
-        { status: { $nin: ["archived", "deleted"] } },
+        { ...visible, status: { $nin: ["archived", "deleted"] } },
         {
           projection: {
             _id: 0,
@@ -69,12 +72,12 @@ export const getAdminOverview = async (req, res) => {
   start.setUTCDate(start.getUTCDate() - 29);
   const [daily, orderStatuses, categories] = await Promise.all([
     req.models.orders.aggregate([
-      { $match: { createdAt: { $gte: start } } },
+      { $match: { ...visible, createdAt: { $gte: start } } },
       { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'Asia/Kolkata' } }, orders: { $sum: 1 }, revenue: { $sum: { $cond: [{ $eq: ['$paymentStatus', 'paid'] }, '$total', 0] } } } },
     ]).toArray(),
-    req.models.orders.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]).toArray(),
+    req.models.orders.aggregate([{ $match: visible }, { $group: { _id: '$status', count: { $sum: 1 } } }]).toArray(),
     req.models.products.aggregate([
-      { $match: { status: { $nin: ['deleted', 'archived'] } } },
+      { $match: { ...visible, status: { $nin: ['deleted', 'archived'] } } },
       { $group: { _id: '$category', products: { $sum: 1 }, stock: { $sum: '$stock' } } },
       { $sort: { _id: 1 } },
     ]).toArray(),

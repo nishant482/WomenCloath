@@ -27,6 +27,21 @@ const { hash } = await import("../src/services/auth.service.js");
 const { config } = await import("../src/config/env.js");
 let repl, client, db, app, owner, customer, other;
 const codes = new Map();
+test('dashboard excludes deleted records from counts totals lists and charts',async()=>{
+ const baseline=(await owner.get('/api/admin/overview').expect(200)).body;
+ const inserted=[];
+ try{
+  for(const marker of [{deletedAt:new Date()},{deletedBy:'test-admin'},{status:'deleted'}]){
+   for(const [collection,record] of [
+    ['orders',{number:randomUUID(),idempotencyKey:randomUUID(),status:'placed',paymentStatus:'paid',total:99999,createdAt:new Date()}],
+    ['products',{id:Math.floor(Math.random()*1000000000)+1000000,sku:randomUUID(),name:'Deleted dashboard product',status:'active',stock:1,category:'Deleted category'}],
+    ['users',{email:randomUUID()+'@example.com',role:'customer',status:'active'}],
+    ['reviews',{status:'pending',productId:randomUUID(),userId:randomUUID()}]
+   ]){const result=await db.collection(collection).insertOne({...record,...marker});inserted.push([collection,result.insertedId]);}
+  }
+  assert.deepEqual((await owner.get('/api/admin/overview').expect(200)).body,baseline);
+ }finally{for(const [collection,_id] of inserted)await db.collection(collection).deleteOne({_id});}
+});
 test('admin can edit own profile without changing access or another account',async()=>{
  const {passwordHash}=await import('../src/services/auth.service.js');
  const pass='ProfileTest123!';const inserted=await db.collection('users').insertOne({name:'Profile admin',email:'profile-admin@example.com',password:await passwordHash(pass),role:'admin',status:'active',emailVerified:true,adminPermissions:[]});
