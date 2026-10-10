@@ -1,9 +1,18 @@
 import { isOwner, adminModules } from "../services/admin-access.service.js";
 import { z } from "zod";
 import { config } from "../config/env.js";
-import { email, password } from "../validators/schemas.js";
+import { email, password, phone } from "../validators/schemas.js";
 
-import { fail, objectId } from "../services/auth.service.js";
+import { fail, objectId, publicUser } from "../services/auth.service.js";
+
+export const getAdminProfile = async (req,res)=>res.json({user:publicUser(req.user)});
+export const patchAdminProfile = async (req,res)=>{
+ const data=z.object({name:z.string().trim().min(2).max(100),phone:z.union([phone,z.literal('')])}).strict().parse(req.body);
+ try{
+  const user=await req.models.users.findOneAndUpdate({_id:req.user._id},{$set:{...data,updatedAt:new Date(),...(data.phone?{loginPhone:data.phone}:{})},...(!data.phone?{$unset:{loginPhone:''}}:{})},{returnDocument:'after'});
+  res.json({user:publicUser(user)});
+ }catch(e){if(e.code===11000)throw fail(409,'This mobile number is already used by another account.');throw e;}
+};
 
 export const getAdminUsers = async (req, res) =>
   res.json({

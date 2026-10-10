@@ -1,3 +1,4 @@
+import {ColourPicker} from './colour-picker.jsx';
 import React, { useEffect, useRef, useState } from "react";
 import {
   LayoutDashboard,
@@ -105,7 +106,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
           sku: "RANG-" + crypto.randomUUID().slice(0, 8).toUpperCase(),
           old: 0,
           stock: 0,
-          color: "#173b69",
+          color: "#FAF9F6",
           category: "",
           sizes: [],
           status: "draft",
@@ -213,7 +214,7 @@ export function RecordEditor({ page, record, onClose, onSave, uploadsEnabled }) 
         {page === 'banners' && <p className="span-all">Upload your banner, add a title and choose when to show it. The page link is optional.</p>}
         {resource === 'products' && <div className="span-all"><ProductImages value={productImages(values)} onChange={urls=>setValues(current=>({...current,imageUrls:urls,imageUrl:urls[0]||''}))} enabled={uploadsEnabled&&!busy} onBusyChange={value=>{uploadPending.current=value;setImageBusy(value);}}/></div>}
         {resource === 'content' && <div className="span-all"><ImageUpload value={values.imageUrl} onChange={url=>setValues(current=>({...current,imageUrl:url}))} enabled={uploadsEnabled && !busy} banner={page === 'banners'} onBusyChange={value=>{uploadPending.current=value;setImageBusy(value);}} /></div>}
-        {editorFields.map(([key, label, type]) => (
+        {editorFields.map(([key, label, type]) => type === "color" ? <ColourPicker key={key} value={values[key]} onChange={value=>setValues(current=>({...current,[key]:value}))}/> : (
           <label key={key} className={type === "textarea" ? "span-all" : ""}>
             {label}
             {Array.isArray(type) ? (

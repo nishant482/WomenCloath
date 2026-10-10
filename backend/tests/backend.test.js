@@ -27,6 +27,20 @@ const { hash } = await import("../src/services/auth.service.js");
 const { config } = await import("../src/config/env.js");
 let repl, client, db, app, owner, customer, other;
 const codes = new Map();
+test('admin can edit own profile without changing access or another account',async()=>{
+ const {passwordHash}=await import('../src/services/auth.service.js');
+ const pass='ProfileTest123!';const inserted=await db.collection('users').insertOne({name:'Profile admin',email:'profile-admin@example.com',password:await passwordHash(pass),role:'admin',status:'active',emailVerified:true,adminPermissions:[]});
+ const agent=request.agent(app).set('X-Session-Scope','admin');
+ try{
+  await mutation(agent,'post','/api/auth/login',{email:'profile-admin@example.com',password:pass,scope:'admin'}).expect(200);
+  await agent.get('/api/admin/profile').expect(200);
+  await mutation(agent,'patch','/api/admin/profile',{name:'Updated admin',phone:'9876501234'}).expect(200);
+  const saved=await db.collection('users').findOne({_id:inserted.insertedId});assert.equal(saved.name,'Updated admin');assert.equal(saved.loginPhone,'9876501234');assert.deepEqual(saved.adminPermissions,[]);
+  await mutation(agent,'patch','/api/admin/profile',{name:'Other',phone:'',role:'admin',adminPermissions:['users']}).expect(400);
+  await mutation(customer,'patch','/api/admin/profile',{name:'No access',phone:''}).expect(403);
+  await agent.get('/api/admin/users').expect(403);
+ }finally{await db.collection('sessions').deleteMany({userId:inserted.insertedId});await db.collection('users').deleteOne({_id:inserted.insertedId});}
+});
 test('category deletion protects products and new arrival selection persists',async()=>{
  const name='Test Delete Category',slug='test-delete-category';
  await mutation(owner,'post','/api/admin/categories',{name}).expect(201);

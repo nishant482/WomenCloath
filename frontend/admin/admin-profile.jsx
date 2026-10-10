@@ -1,0 +1,8 @@
+import React,{useEffect,useState} from 'react';
+import {api} from '../src/api.js';
+export function AdminProfile({onUpdate}){
+ const [profile,setProfile]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
+ useEffect(()=>{let active=true;api('/admin/profile').then(r=>{if(active)setProfile(r.user);}).catch(e=>{if(active)setError(e.message);});return()=>{active=false;};},[]);
+ async function save(e){e.preventDefault();setBusy(true);setError('');setNotice('');try{const r=await api('/admin/profile',{method:'PATCH',body:{name:profile.name,phone:profile.phone||''}});setProfile(r.user);onUpdate(r.user);setNotice('Profile updated.');}catch(e){setError(e.message);}finally{setBusy(false);}}
+ return <section className="classic-panel settings-panel"><h2>My profile</h2>{error&&<p role="alert" className="commerce-error">{error}</p>}{notice&&<p role="status">{notice}</p>}{profile?<form className="commerce-form" onSubmit={save}><label>Full name<input required minLength={2} maxLength={100} value={profile.name} disabled={busy} onChange={e=>setProfile({...profile,name:e.target.value})}/></label><label>Login email<input type="email" value={profile.email} readOnly/><small>Your login email stays unchanged.</small></label><label>Mobile number (optional)<input type="tel" maxLength={10} pattern="[6-9][0-9]{9}" value={profile.phone||''} disabled={busy} onChange={e=>setProfile({...profile,phone:e.target.value})}/></label><button className="primary" disabled={busy}>{busy?'Saving...':'Save profile'}</button></form>:<p>Loading profile...</p>}</section>;
+}

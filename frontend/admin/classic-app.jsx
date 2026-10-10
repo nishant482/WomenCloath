@@ -1,3 +1,4 @@
+import {AdminProfile} from './admin-profile.jsx';
 import {StoreSettings} from './store-settings.jsx';
 import React, { useEffect, useRef, useState } from 'react';
 import { LayoutDashboard, Package, ShoppingBag, Users, Star, Image, FileText, TicketPercent, Settings, Mail, LogOut, Plus, Menu, X, ArrowUpRight, RefreshCw, Boxes, Layers, RotateCcw, Wallet, BarChart3, Download, Eye, Pencil, Trash2 } from 'lucide-react';
@@ -22,6 +23,7 @@ const navigation = [
  ['shipping', 'Shipping', Package],
  ['settings', 'Store settings', Settings],
  ['access', 'Admin access', Users],
+ ['profile','My profile',Users],
 ];
 const kinds = { banners: 'banner', family: 'family', blogs: 'blog' };
 const resourceFor = page => ({ inventory: 'products', categories: 'products', returns: 'orders', payments: 'orders', carts: 'users', wishlists: 'users' }[page] || (kinds[page] ? 'content' : page));
@@ -34,7 +36,7 @@ export default function ClassicAdminApp() {
  const [busy, setBusy] = useState(false), [error, setError] = useState(''), [notice, setNotice] = useState('');
  const [query, setQuery] = useState(''), [status, setStatus] = useState('all'), [sort, setSort] = useState('newest'), [current, setCurrent] = useState(1);
  const [editor, setEditor] = useState(null), [view, setView] = useState(null), [mobile, setMobile] = useState(false);
- const allowed = key => user?.isOwner || (key !== 'access' && user?.adminPermissions?.includes(moduleFor(key)));
+ const allowed = key => key === 'profile' || user?.isOwner || (key !== 'access' && user?.adminPermissions?.includes(moduleFor(key)));
  const allowedNavigation = navigation.filter(([key])=>allowed(key));
  const request = useRef(0), controller = useRef(null);
  const resource = resourceFor(page), dashboard = ['overview', 'reports'].includes(page);
@@ -52,7 +54,7 @@ export default function ClassicAdminApp() {
   setLoading(true); setError('');
   try {
    if(!allowed(page)) {setResult({page,data:[]});return;}
-   const [summary, response] = await Promise.all([dashboard && allowed('overview') ? api('/admin/overview', { signal: abort.signal }) : Promise.resolve(overview), dashboard || ['access','email-queue','media','categories','cod','shipping','settings'].includes(page) ? Promise.resolve({items:[]}) : api('/admin/' + resource + (page === 'payments' ? '?view=payments' : ''), { signal: abort.signal })]);
+   const [summary, response] = await Promise.all([dashboard && allowed('overview') ? api('/admin/overview', { signal: abort.signal }) : Promise.resolve(overview), dashboard || ['access','email-queue','media','categories','cod','shipping','settings','profile'].includes(page) ? Promise.resolve({items:[]}) : api('/admin/' + resource + (page === 'payments' ? '?view=payments' : ''), { signal: abort.signal })]);
    if (id !== request.current || abort.signal.aborted) return;
    setOverview(summary); setResult({ page, data: page === 'settings' ? response : response.items || [] });
   } catch (e) {
@@ -122,7 +124,7 @@ export default function ClassicAdminApp() {
   {mobile && <button className="studio-shade" aria-label="Close navigation overlay" onClick={() => setMobile(false)} />}
   <main className="studio-main"><header className="studio-header"><button className="studio-menu icon-button" aria-label="Open navigation" onClick={() => setMobile(true)}><Menu size={19} /></button><div><span className="eyebrow">ADMINISTRATION / {label}</span><h1>{label}</h1></div><div className="admin-header-right"><a href="/" target="_blank" rel="noreferrer">View store <ArrowUpRight size={13} /></a><span className="admin-avatar" title={user.email}>{user.name?.[0] || 'A'}</span></div></header>
    {error && <p className="commerce-error" role="alert">{error} <button onClick={load}>Retry</button></p>}{notice && <p className="commerce-success" role="status">{notice}</p>}
-   {!allowed(page) ? <section className="classic-panel settings-panel"><h2>No access assigned</h2><p>Ask Nishant to enable the required admin sections.</p></section> : ['cod','shipping','settings'].includes(page) ? <StoreSettings key={page} page={page}/> : page === 'categories' ? <Categories /> : page === 'access' ? <AdminAccess /> : page === 'email-queue' ? <EmailQueue /> : dashboard ? ready ? <ClassicDashboard overview={overview} reports={page === 'reports'} /> : <p className="table-empty" role="status">Loading dashboard…</p> : <>
+   {!allowed(page) ? <section className="classic-panel settings-panel"><h2>No access assigned</h2><p>Ask Nishant to enable the required admin sections.</p></section> : page === 'profile' ? <AdminProfile onUpdate={setUser}/> : ['cod','shipping','settings'].includes(page) ? <StoreSettings key={page} page={page}/> : page === 'categories' ? <Categories /> : page === 'access' ? <AdminAccess /> : page === 'email-queue' ? <EmailQueue /> : dashboard ? ready ? <ClassicDashboard overview={overview} reports={page === 'reports'} /> : <p className="table-empty" role="status">Loading dashboard…</p> : <>
     <div className="studio-toolbar">{page !== 'settings' && <><input aria-label="Search records" placeholder={`Search ${label.toLowerCase()}…`} value={query} onChange={e => setQuery(e.target.value)} />{page !== 'categories' && <select aria-label="Filter by status" value={status} onChange={e => setStatus(e.target.value)}><option value="all">All statuses</option>{statuses.map(s => <option key={s}>{s}</option>)}</select>}<select aria-label="Sort records" value={sort} onChange={e => setSort(e.target.value)}><option value="newest">Newest first</option><option value="name">Name A–Z</option>{(isProduct || resource === 'orders') && <option value="price">Amount: low to high</option>}{isProduct && <option value="stock">Stock: low to high</option>}</select></>}
      <button className="secondary" onClick={load} disabled={loading} aria-label="Refresh records"><RefreshCw size={14} /></button>
      {canEdit && <button className="primary" disabled={!ready} onClick={() => setEditor(page === 'settings' ? data : {})}><Plus size={14} />{page === 'settings' ? 'Edit settings' : resource === 'products' ? 'Add product' : page === 'reviews' ? 'Add demo review' : 'Add new'}</button>}

@@ -72,7 +72,7 @@ function CampaignCarousel() {
   const current = index % Math.max(slides.length, 1);
   useEffect(() => {
     if (paused || slides.length < 2) return;
-    const timer = setInterval(() => { if (!document.hidden) setIndex(i => (i + 1) % slides.length); }, 5000);
+    const timer = setInterval(() => { if (!document.hidden) setIndex(i => (i + 1) % slides.length); }, 8000);
     return () => clearInterval(timer);
   }, [paused, slides.length]);
   const slide = slides[current];
