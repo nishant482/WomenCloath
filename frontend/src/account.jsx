@@ -328,9 +328,10 @@ export function CheckoutPage() {
               const a = Object.fromEntries(new FormData(e.currentTarget));
               const body={ address: { ...a, country: "India" }, ...((guest || direct) ? { items } : {}), ...(guest && a.email ? { email: a.email } : {}) };
               if(paymentMethod==='online'){
-                const paymentKey=pendingPayment?.guest===guest?pendingPayment.key:key.current;
+                if(pendingPayment&&(pendingPayment.mode||'test')!==quote.onlineMode&&key.current===pendingPayment.key)key.current=crypto.randomUUID();
+                const paymentKey=pendingPayment?.guest===guest&&(pendingPayment.mode||'test')===quote.onlineMode?pendingPayment.key:key.current;
                 const payment=await api(paymentApi+'create',{method:'POST',headers:{'Idempotency-Key':paymentKey},body});
-                const pending={attemptId:payment.attemptId,key:paymentKey,guest};sessionStorage.setItem('rajoPendingPayment',JSON.stringify(pending));setPendingPayment(pending);
+                const pending={attemptId:payment.attemptId,key:paymentKey,guest,mode:payment.mode};sessionStorage.setItem('rajoPendingPayment',JSON.stringify(pending));setPendingPayment(pending);
                 const {openRazorpay}=await import('./razorpay-checkout.js');
                 const response=await openRazorpay(payment,{name:a.name,email:a.email||store.user?.email||'',contact:a.phone});
                 const verified=await api(paymentApi+'verify',{method:'POST',headers:{'Idempotency-Key':paymentKey},body:{attemptId:payment.attemptId,...response}});
@@ -357,13 +358,13 @@ export function CheckoutPage() {
           {store.user?.addresses?.length > 0 && <label>Saved address<select aria-label="Saved address" value={selectedAddress} onChange={e => setSelectedAddress(Number(e.target.value))}>{store.user.addresses.map((a, i) => <option key={i} value={i}>{a.line1}, {a.city} – {a.postalCode}</option>)}<option value={-1}>Use a new address</option></select></label>}
           <AddressFields key={selectedAddress} initial={{ name: store.user?.name, phone: store.user?.phone, ...store.user?.addresses?.[selectedAddress] }} />
           {guest && <label>Email address (optional)<input name="email" type="email" autoComplete="email" /></label>}
-          {quote?.onlineEnabled&&<label><input type="radio" name="paymentChoice" value="online" checked={paymentMethod==='online'} disabled={busy} onChange={()=>setPaymentChoice('online')}/>Online payment (Test mode — no real money)</label>}
+          {quote?.onlineEnabled&&<label><input type="radio" name="paymentChoice" value="online" checked={paymentMethod==='online'} disabled={busy} onChange={()=>setPaymentChoice('online')}/>Online payment{quote.onlineMode==='test'?' (Test mode - no real money)':''}</label>}
           {quote?.codEnabled&&<label><input type="radio" name="paymentChoice" value="cod" checked={paymentMethod==='cod'} disabled={busy} onChange={()=>setPaymentChoice('cod')}/>Cash on delivery</label>}
           <p>
             <a href="/shipping">Shipping & return policy</a>
           </p>
           <button className="primary" disabled={busy || needsSize || !canPay}>
-            {busy ? "Please wait…" : paymentMethod==='online'?'Pay online (Test)':'Place order'}
+            {busy ? "Please wait…" : paymentMethod==='online'?(quote.onlineMode==='test'?'Pay online (Test)':'Pay online'):'Place order'}
             <ArrowRight size={18} />
           </button>
           {quote && !canPay && (

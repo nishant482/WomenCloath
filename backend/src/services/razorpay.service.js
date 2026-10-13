@@ -1,13 +1,13 @@
 import {createHmac,timingSafeEqual,randomUUID} from 'node:crypto';
 import {fail,hash} from './auth.service.js';
 import {priceCart} from './order.service.js';
-import {gatewayConfig,decryptPaymentSecret,razorpayRequest} from './razorpay-config.service.js';
+import {gatewayMode,gatewayConfig,decryptPaymentSecret,razorpayRequest} from './razorpay-config.service.js';
 const validKey=key=>{if(!/^[a-zA-Z0-9_-]{32,64}$/.test(key||''))throw fail(400,'A checkout request identifier is required.');};
 export function paymentActor(user,key,input){validKey(key);return user||{_id:'guest:'+hash(key),guest:true,name:input?.address?.name,email:input?.email||''};}
-export const checkoutPaymentData=attempt=>({attemptId:attempt._id,keyId:attempt.keyId,razorpayOrderId:attempt.gatewayOrderId,amount:Math.round(attempt.quote.total*100),currency:'INR',mode:'test'});
+export const checkoutPaymentData=attempt=>({attemptId:attempt._id,keyId:attempt.keyId,razorpayOrderId:attempt.gatewayOrderId,amount:Math.round(attempt.quote.total*100),currency:'INR',mode:gatewayMode(attempt.keyId)});
 export async function beginPayment(db,user,input,key,call=razorpayRequest){
  validKey(key);const credentials=await gatewayConfig(db);
- if(!credentials?.enabled||!credentials?.keyId?.startsWith('rzp_test_')||!credentials.encryptedSecret)throw fail(400,'Online payments are unavailable.');
+ if(!credentials?.enabled||!gatewayMode(credentials?.keyId)||!credentials.encryptedSecret)throw fail(400,'Online payments are unavailable.');
  const actor=paymentActor(user,key,input),id=hash(String(actor._id)+':'+key),fingerprint=hash(JSON.stringify(input));
  let attempt=await db.collection('paymentAttempts').findOne({_id:id});
  if(!attempt){
@@ -18,6 +18,7 @@ export async function beginPayment(db,user,input,key,call=razorpayRequest){
   try{await db.collection('paymentAttempts').insertOne(attempt);}catch(e){if(e.code!==11000)throw e;attempt=await db.collection('paymentAttempts').findOne({_id:id});}
  }
  if(attempt.fingerprint!==fingerprint)throw fail(409,'Checkout details changed. Start a new payment attempt.');
+ if(attempt.keyId!==credentials.keyId)throw fail(409,'Payment settings changed. Check the saved payment status, then start a new checkout.');
  if(attempt.gatewayOrderId)return checkoutPaymentData(attempt);
  const lock=await db.collection('paymentAttempts').findOneAndUpdate({_id:id,gatewayOrderId:{$exists:false},$or:[{lockUntil:{$exists:false}},{lockUntil:{$lt:new Date()}}]},{$set:{lockUntil:new Date(Date.now()+45000)}},{returnDocument:'after'});
  if(!lock)throw fail(409,'Payment is being prepared. Please retry in a moment.');
@@ -45,7 +46,7 @@ export async function settlePayment(client,db,attempt,payment){
   for(const [id,qty] of quantities){const product=await db.collection('products').findOne({id,status:'active',stock:{$gte:qty}},{session});if(!product)available=false;}
   if(available)for(const [id,qty] of quantities)await db.collection('products').updateOne({id},{$inc:{stock:-qty},$set:{updatedAt:new Date()}},{session});
   const {codEnabled,...quote}=attempt.quote;
-  const order={...quote,number:'RAJO-'+randomUUID().slice(0,8).toUpperCase(),userId:attempt.actor._id,email:attempt.actor.email,customer:attempt.actor.name,guest:attempt.actor.guest,address:attempt.input.address,paymentMethod:'razorpay',paymentMode:'test',paymentStatus:available?'paid':'refund_pending',status:available?'placed':'cancelled',stockDeducted:available,razorpayOrderId:attempt.gatewayOrderId,razorpayPaymentId:payment.id,idempotencyKey:'rzp_'+attempt._id,createdAt:new Date(),updatedAt:new Date(),history:[{status:available?'placed':'cancelled',at:new Date()}],...(!available?{paymentNote:'Payment captured but stock unavailable. Refund required in Razorpay.'}:{})};
+  const order={...quote,number:'RAJO-'+randomUUID().slice(0,8).toUpperCase(),userId:attempt.actor._id,email:attempt.actor.email,customer:attempt.actor.name,guest:attempt.actor.guest,address:attempt.input.address,paymentMethod:'razorpay',paymentMode:gatewayMode(attempt.keyId),paymentStatus:available?'paid':'refund_pending',status:available?'placed':'cancelled',stockDeducted:available,razorpayOrderId:attempt.gatewayOrderId,razorpayPaymentId:payment.id,idempotencyKey:'rzp_'+attempt._id,createdAt:new Date(),updatedAt:new Date(),history:[{status:available?'placed':'cancelled',at:new Date()}],...(!available?{paymentNote:'Payment captured but stock unavailable. Refund required in Razorpay.'}:{})};
   const result=await db.collection('orders').insertOne(order,{session});
   await db.collection('paymentAttempts').updateOne({_id:attempt._id},{$set:{state:'completed',orderId:result.insertedId,completedAt:new Date()}},{session});
   if(!attempt.actor.guest&&!attempt.input.items&&attempt.cartSnapshot)await db.collection('users').updateOne({_id:attempt.actor._id,cart:attempt.cartSnapshot},{$set:{cart:[],updatedAt:new Date()}},{session});

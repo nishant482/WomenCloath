@@ -5,7 +5,7 @@ export async function openRazorpay(payment,prefill){
   await loading;
  }
  return new Promise((resolve,reject)=>{
-  const checkout=new window.Razorpay({key:payment.keyId,order_id:payment.razorpayOrderId,amount:payment.amount,currency:payment.currency,name:'RAJO Threads',description:'Test payment',prefill,theme:{color:'#c32643'},handler:resolve,modal:{ondismiss:()=>reject(Error('Payment window closed. No order is confirmed. You can retry or check payment status.'))}});
+  const checkout=new window.Razorpay({key:payment.keyId,order_id:payment.razorpayOrderId,amount:payment.amount,currency:payment.currency,name:'RAJO Threads',description:payment.mode==='test'?'Test payment':'RAJO Threads order',prefill,theme:{color:'#c32643'},handler:resolve,modal:{ondismiss:()=>reject(Error('Payment window closed. No order is confirmed. You can retry or check payment status.'))}});
   checkout.open();
  });
 }

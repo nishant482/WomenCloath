@@ -3,18 +3,18 @@ import {checkoutSchema} from '../services/order.service.js';
 import {email} from '../validators/schemas.js';
 import {fail,rateLimit} from '../services/auth.service.js';
 import {isOwner} from '../services/admin-access.service.js';
-import {gatewayConfig,encryptPaymentSecret,razorpayRequest} from '../services/razorpay-config.service.js';
+import {gatewayMode,gatewayConfig,encryptPaymentSecret,razorpayRequest} from '../services/razorpay-config.service.js';
 import {beginPayment,ownedAttempt,verifyPaymentSignature,confirmPayment,recoverPayment} from '../services/razorpay.service.js';
 export async function getGatewaySettings(req,res){
  if(!isOwner(req.user))throw fail(403,'Only the owner can manage payment keys.');
- const c=await gatewayConfig(req.db);res.json({enabled:Boolean(c?.enabled),keyId:c?.keyId||'',hasSecret:Boolean(c?.encryptedSecret),mode:'test'});
+ const c=await gatewayConfig(req.db);res.json({enabled:Boolean(c?.enabled),keyId:c?.keyId||'',hasSecret:Boolean(c?.encryptedSecret),mode:gatewayMode(c?.keyId)});
 }
 export async function saveGatewaySettings(req,res){
  if(!isOwner(req.user))throw fail(403,'Only the owner can manage payment keys.');
- const data=z.object({enabled:z.boolean(),keyId:z.string().regex(/^rzp_test_[a-zA-Z0-9]+$/,'Use a Razorpay test key.'),secret:z.string().trim().max(200).optional()}).strict().parse(req.body);
+ const data=z.object({enabled:z.boolean(),keyId:z.string().regex(/^rzp_(test|live)_[a-zA-Z0-9]+$/,'Use a valid Razorpay test or live key.'),secret:z.string().trim().max(200).optional()}).strict().parse(req.body);
  const old=await gatewayConfig(req.db);
  const encryptedSecret=data.secret?encryptPaymentSecret(data.secret):old?.keyId===data.keyId?old.encryptedSecret:null;
- if(!encryptedSecret)throw fail(400,'Enter the secret for this test key.');
+ if(!encryptedSecret)throw fail(400,'Enter the secret for this key.');
  const credentials={keyId:data.keyId,encryptedSecret};
  await (req.services.razorpayRequest||razorpayRequest)(credentials,'/orders?count=1');
  await req.db.collection('paymentConfig').updateOne({_id:'razorpay'},{$set:{...credentials,enabled:data.enabled,updatedAt:new Date(),updatedBy:String(req.user._id)}},{upsert:true});

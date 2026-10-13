@@ -15,10 +15,11 @@ export function decryptPaymentSecret(encrypted){
  const decipher=createDecipheriv('aes-256-gcm',encryptionKey(),iv);decipher.setAuthTag(tag);
  return Buffer.concat([decipher.update(data),decipher.final()]).toString('utf8');
 }
+export const gatewayMode=keyId=>/^rzp_(test|live)_[a-zA-Z0-9]+$/.exec(keyId||'')?.[1]||null;
 export async function gatewayConfig(db){return db.collection('paymentConfig').findOne({_id:'razorpay'});}
 export async function paymentOptions(db){
  const c=await gatewayConfig(db);
- return {onlineEnabled:Boolean(c?.enabled&&c?.keyId?.startsWith('rzp_test_')&&c?.encryptedSecret),onlineMode:'test'};
+ return {onlineEnabled:Boolean(c?.enabled&&gatewayMode(c?.keyId)&&c?.encryptedSecret),onlineMode:gatewayMode(c?.keyId)};
 }
 export async function razorpayRequest(credentials,path,method='GET',body){
  let response;

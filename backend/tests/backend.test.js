@@ -34,7 +34,7 @@ test('Razorpay test checkout verifies amounts signatures ownership and duplicate
  await db.collection('settings').updateOne({_id:'store'},{$set:{codEnabled:false,codFee:35,shippingMode:'paid',shippingFee:50}});
  const remotes=new Map(),payments=new Map();let counter=0;
  const gatewayApp=createApp({getConnection:async()=>({client,db}),razorpayRequest:async(c,path,method,body)=>{
-  assert.equal(c.keyId,'rzp_test_isolated');
+  assert.match(c.keyId,/^rzp_(test|live)_isolated$/);
   if(path==='/orders'&&method==='POST'){const r={...body,id:'order_test'+(++counter)};remotes.set(r.id,r);return r;}
   if(path.startsWith('/orders/')&&path.endsWith('/payments'))return {items:[...payments.values()].filter(p=>path.includes(p.order_id))};
   if(path.endsWith('/capture')){const p=payments.get(path.split('/')[2]);p.status='captured';return p;}
@@ -61,7 +61,15 @@ test('Razorpay test checkout verifies amounts signatures ownership and duplicate
   const confirmed=await call('verify',key,verification(data,id)).expect(200);assert.equal(confirmed.body.order.paymentStatus,'paid');assert.equal(confirmed.body.order.paymentMethod,'razorpay');assert.equal(confirmed.body.order.codFee,0);
   await call('verify',key,verification(data,id)).expect(200);assert.equal((await db.collection('products').findOne({id:p.id})).stock,4);
   const recovery=await make();payments.set('pay_recovery',{id:'pay_recovery',order_id:recovery.data.razorpayOrderId,amount:105000,currency:'INR',status:'captured'});
-  assert.equal((await call('status',recovery.key,{attemptId:recovery.data.attemptId}).expect(200)).body.order.paymentStatus,'paid');
+  await db.collection('paymentConfig').updateOne({_id:'razorpay'},{$set:{keyId:'rzp_live_isolated'}});
+  await call('create',recovery.key,{items,address:shipping,total:1}).expect(409);
+  const recovered=(await call('status',recovery.key,{attemptId:recovery.data.attemptId}).expect(200)).body.order;
+  assert.equal(recovered.paymentStatus,'paid');assert.equal(recovered.paymentMode,'test');
+  const liveQuote=await mutation(request(gatewayApp),'post','/api/checkout/guest/quote',{items}).expect(200);assert.equal(liveQuote.body.onlineEnabled,true);assert.equal(liveQuote.body.onlineMode,'live');
+  assert.equal((await owner.get('/api/admin/payment-gateway').expect(200)).body.mode,'live');
+  const live=await make();assert.equal(live.data.mode,'live');
+  payments.set('pay_live',{id:'pay_live',order_id:live.data.razorpayOrderId,amount:105000,currency:'INR',status:'captured'});
+  const liveResult=(await call('verify',live.key,verification(live.data,'pay_live')).expect(200)).body.order;assert.equal(liveResult.paymentMode,'live');assert.equal(liveResult.paymentStatus,'paid');
   const missing=await make();await db.collection('products').updateOne({id:p.id},{$set:{stock:0}});payments.set('pay_missing',{id:'pay_missing',order_id:missing.data.razorpayOrderId,amount:105000,currency:'INR',status:'captured'});
   const review=await call('verify',missing.key,verification(missing.data,'pay_missing')).expect(200);assert.equal(review.body.order.paymentStatus,'refund_pending');assert.equal(review.body.order.status,'cancelled');assert.equal((await db.collection('products').findOne({id:p.id})).stock,0);
   await db.collection('products').updateOne({id:p.id},{$set:{stock:2}});
@@ -71,8 +79,8 @@ test('Razorpay test checkout verifies amounts signatures ownership and duplicate
   payments.set('pay_signed',{id:'pay_signed',order_id:start.body.razorpayOrderId,amount:105000,currency:'INR',status:'captured'});
   const signedResult=await mutation(signed,'post','/api/checkout/razorpay/verify',verification(start.body,'pay_signed')).set('Idempotency-Key',signedKey).expect(200);assert.equal(signedResult.body.order.guest,false);
  }finally{
-  const attempts=await db.collection('paymentAttempts').find({keyId:'rzp_test_isolated'}).toArray();
-  await db.collection('orders').deleteMany({idempotencyKey:{$in:attempts.map(a=>'rzp_'+a._id)}});await db.collection('paymentAttempts').deleteMany({keyId:'rzp_test_isolated'});await db.collection('paymentConfig').deleteOne({_id:'razorpay'});await db.collection('settings').replaceOne({_id:'store'},settings);await db.collection('products').deleteOne({id:p.id});
+  const attempts=await db.collection('paymentAttempts').find({keyId:{$in:['rzp_test_isolated','rzp_live_isolated']}}).toArray();
+  await db.collection('orders').deleteMany({idempotencyKey:{$in:attempts.map(a=>'rzp_'+a._id)}});await db.collection('paymentAttempts').deleteMany({keyId:{$in:['rzp_test_isolated','rzp_live_isolated']}});await db.collection('paymentConfig').deleteOne({_id:'razorpay'});await db.collection('settings').replaceOne({_id:'store'},settings);await db.collection('products').deleteOne({id:p.id});
  }
 });
 test('dashboard excludes deleted records from counts totals lists and charts',async()=>{
