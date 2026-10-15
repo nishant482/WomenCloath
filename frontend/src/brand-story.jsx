@@ -27,10 +27,10 @@ export function FounderStoryPreview() {
     >
       <div className="founder-preview-photo">
         <img
-          src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/123dcdfd-23c5-41e9-9e79-ce122d7fdae4.jpg"
-          alt="Pinki Yadav, founder of RAJO Threads, wearing a soft lavender saree"
-          width="1024"
-          height="1536"
+          src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/8db36884-4129-4ced-8989-cad331c9bf6c.webp"
+          alt="Pinki Yadav, founder of RAJO Threads, wearing an ivory saree"
+          width="1400"
+          height="1750"
           loading="lazy"
         />
         <span>Meet the heart behind the threads</span>
@@ -187,10 +187,10 @@ export function BrandStoryPage() {
         <figure className="founder-portrait">
           <div>
             <img
-              src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/123dcdfd-23c5-41e9-9e79-ce122d7fdae4.jpg"
-              alt="Pinki Yadav, founder of RAJO Threads, smiling in a lavender saree"
-              width="1024"
-              height="1536"
+              src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/8db36884-4129-4ced-8989-cad331c9bf6c.webp"
+              alt="Pinki Yadav, founder of RAJO Threads, smiling in an ivory saree"
+              width="1400"
+              height="1750"
               loading="lazy"
             />
           </div>
