@@ -333,8 +333,8 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
       />
       <section className="fashion-wide-banner">
         <img
-          src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/3ed4fd22-002d-4a12-a9b2-ecb1b82cc1de.jpg"
-          alt="Floral lehenga from the RAJO collection"
+          src={shadeImages.pink}
+          alt="Pink embroidered celebration lehenga"
           loading="lazy"
         />
         <div>
@@ -351,8 +351,8 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
           </a>
         </div>
         <img
-          src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/3ed4fd22-002d-4a12-a9b2-ecb1b82cc1de.jpg"
-          alt="Floral details from the celebration collection"
+          src={shadeImages.red}
+          alt="Red wedding lehenga"
           loading="lazy"
         />
       </section>
@@ -369,10 +369,6 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
           eyebrow="FIND YOUR COLOUR STORY"
           title="A shade for every you"
         />
-        <div className="shade-photo-pair">
-          <a href="/collections/lehengas" aria-label="Explore pink celebration lehengas"><img src={shadeImages.pink} alt="Pink embroidered lehenga" width="832" height="1248" loading="lazy" /></a>
-          <a href="/collections/lehengas" aria-label="Explore red wedding lehengas"><img src={shadeImages.red} alt="Red wedding lehenga" width="851" height="1280" loading="lazy" /></a>
-        </div>
         <div>
           {[
             ["Yellow", "#d5a72e"],
