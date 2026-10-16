@@ -11,3 +11,8 @@ export const occasionImages = {
   "festive": "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/da608ca9-2fa9-4eb3-bfbb-ced9df939848.jpg",
   "wedding": "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/12cb97ce-8bd4-4140-9d90-1c184bb503a8.jpg"
 };
+
+export const shadeImages = {
+  "pink": "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/0a8b30da-fdcd-4a5a-99cd-fe676f3ecd1c.jpg",
+  "red": "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/76c620e6-3c0b-47e8-b658-088fd68c79e1.jpg"
+};

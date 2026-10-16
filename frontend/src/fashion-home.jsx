@@ -1,4 +1,4 @@
-import {catalogueImages, occasionImages} from "./catalogue-images.js";
+import {catalogueImages, occasionImages, shadeImages} from "./catalogue-images.js";
 import React, { useState, useEffect } from "react";
 import {
   ArrowRight,
@@ -15,39 +15,6 @@ import { ProductCard } from "./product-card.jsx";
 import { HomeExtras } from "./home-extras.jsx";
 import { HomeReviews } from './home-reviews.jsx';
 import { FounderStoryPreview } from "./brand-story.jsx";
-
-const edits = [
-  {
-    title: "Beautiful sarees for\nevery celebration.",
-    eyebrow: "THE SAREE EDIT",
-    text: "Six yards of colour. A lifetime of beautiful moments.",
-    left: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/cd1a4075-bd99-44b6-b11f-eb722eda8588.jpg",
-    right: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/cd1a4075-bd99-44b6-b11f-eb722eda8588.jpg",
-    link: "/collections/sarees",
-    action: "Explore sarees",
-    tone: "gold",
-  },
-  {
-    title: "Wedding & festive\nlehengas.",
-    eyebrow: "THE OCCASION EDIT",
-    text: "Lehengas that make every entrance a little more memorable.",
-    left: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/3ed4fd22-002d-4a12-a9b2-ecb1b82cc1de.jpg",
-    right: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/3ed4fd22-002d-4a12-a9b2-ecb1b82cc1de.jpg",
-    link: "/collections/lehengas",
-    action: "Explore lehengas",
-    tone: "navy",
-  },
-  {
-    title: "Elegant kurta sets\nfor every day.",
-    eyebrow: "THE KURTA EDIT",
-    text: "Easy silhouettes. Beautiful details. Entirely you.",
-    left: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/edd25784-f44b-42c5-84c8-678a777bbc6b.jpg",
-    right: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/15cdac55-0011-43ed-b67f-99b16675acda.jpg",
-    link: "/collections/kurta-sets",
-    action: "Explore kurta sets",
-    tone: "rose",
-  },
-];
 
 function CampaignCarousel() {
   const { content, loading } = useStore();
@@ -67,7 +34,7 @@ function CampaignCarousel() {
         action: item.buttonText || "Shop the edit",
         tone: item.layout === 'split' ? 'gold' : 'custom',
       }))
-    : loading ? edits : [];
+    : [];
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const current = index % Math.max(slides.length, 1);
@@ -79,6 +46,7 @@ function CampaignCarousel() {
   const slide = slides[current];
   const move = (direction) =>
     setIndex((current + direction + slides.length) % slides.length);
+  if (!slide && loading) return <section className="campaign-carousel campaign-loading" aria-label="Loading featured collections" aria-busy="true"><div className="campaign-stage" /></section>;
   if (!slide) return null;
   return (
     <section
@@ -401,6 +369,10 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
           eyebrow="FIND YOUR COLOUR STORY"
           title="A shade for every you"
         />
+        <div className="shade-photo-pair">
+          <a href="/collections/lehengas" aria-label="Explore pink celebration lehengas"><img src={shadeImages.pink} alt="Pink embroidered lehenga" width="832" height="1248" loading="lazy" /></a>
+          <a href="/collections/lehengas" aria-label="Explore red wedding lehengas"><img src={shadeImages.red} alt="Red wedding lehenga" width="851" height="1280" loading="lazy" /></a>
+        </div>
         <div>
           {[
             ["Yellow", "#d5a72e"],
