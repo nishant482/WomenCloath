@@ -471,12 +471,12 @@ function App() {
             eyebrow="FIND A LITTLE MORE YOU"
             image={
               category === "Lehengas"
-                ? "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/14b7f90d-57b4-4eb1-ad32-29392da2be19.jpg"
+                ? "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/3ed4fd22-002d-4a12-a9b2-ecb1b82cc1de.jpg"
                 : category === "Kurta sets"
-                  ? "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/4e440f9a-207b-4460-bef6-71ea20cc7814.jpg"
+                  ? "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/edd25784-f44b-42c5-84c8-678a777bbc6b.jpg"
                   : category === "New arrivals"
-                    ? "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/ac00204e-234e-464f-b7b3-507e63e714ec.jpg"
-                    : "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/891a7c10-6620-4c62-be2b-01b77e7b3f81.jpg"
+                    ? "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/cd1a4075-bd99-44b6-b11f-eb722eda8588.jpg"
+                    : "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/cd1a4075-bd99-44b6-b11f-eb722eda8588.jpg"
             }
             title={
               category === "All styles"

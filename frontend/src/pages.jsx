@@ -1,3 +1,4 @@
+import {catalogueImages} from "./catalogue-images.js";
 import { CONTACT_EMAIL } from "./brand-config.js";
 import {ProductGallery} from './product-gallery.jsx';
 import { api, productImage } from "./api.js";
@@ -24,7 +25,7 @@ export function PageBanner({
   eyebrow,
   title,
   text,
-  image = "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/891a7c10-6620-4c62-be2b-01b77e7b3f81.jpg",
+  image = "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/cd1a4075-bd99-44b6-b11f-eb722eda8588.jpg",
 }) {
   return (
     <section className="page-banner">
@@ -63,16 +64,16 @@ export function CategoryStories({ shop }) {
       </div>
       <div className="category-grid">
         {[
-          ["Sarees", "Six yards. Endless stories.", "pink"],
-          ["Lehengas", "Made for your main moment.", "charcoal"],
-          ["Kurta sets", "A little effortless elegance.", "emerald"],
+          ["Sarees", "Six yards. Endless stories.", "saree"],
+          ["Lehengas", "Made for your main moment.", "lehenga"],
+          ["Kurta sets", "A little effortless elegance.", "suit"],
         ].map(([name, text, img]) => (
           <a
             className="category-card"
             key={name}
             href={"/collections/" + name.toLowerCase().replaceAll(" ", "-")}
           >
-            <img src={assetUrl(`/images/${img}.jpg`)} alt={name} loading="lazy" />
+            <img src={catalogueImages[img]} alt={name} loading="lazy" />
             <div>
               <small>{text}</small>
               <h3>
@@ -111,8 +112,8 @@ export function OccasionEdit({ shop }) {
         <div className="occasion-grid">
           <a href="/collections/lehengas">
             <img
-              src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/14b7f90d-57b4-4eb1-ad32-29392da2be19.jpg"
-              alt="Floral lehenga for a wedding celebration"
+              src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/3ed4fd22-002d-4a12-a9b2-ecb1b82cc1de.jpg"
+              alt="Orange and gold lehenga for a wedding celebration"
               loading="lazy"
             />
             <div>
@@ -125,7 +126,7 @@ export function OccasionEdit({ shop }) {
           </a>
           <a href="/collections/kurta-sets">
             <img
-              src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/4e440f9a-207b-4460-bef6-71ea20cc7814.jpg"
+              src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/edd25784-f44b-42c5-84c8-678a777bbc6b.jpg"
               alt="Printed kurta for beautiful everyday moments"
               loading="lazy"
             />

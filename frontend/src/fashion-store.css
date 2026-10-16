@@ -1263,3 +1263,9 @@
     transition: none;
   }
 }
+
+/* Catalogue portraits retain their complete framing. */
+.fashion-category-grid > a > div { aspect-ratio: 2 / 3; }
+.fashion-category-grid > a > div > img { object-fit: contain; }
+.fashion-category-grid > a:hover img { transform: none; }
+.occasion-shopping-grid > a > img { object-fit: contain; background: #f7f0e5; }

@@ -1,3 +1,4 @@
+import {catalogueImages} from "./catalogue-images.js";
 import React, { useState, useEffect } from "react";
 import {
   ArrowRight,
@@ -20,8 +21,8 @@ const edits = [
     title: "Beautiful sarees for\nevery celebration.",
     eyebrow: "THE SAREE EDIT",
     text: "Six yards of colour. A lifetime of beautiful moments.",
-    left: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/891a7c10-6620-4c62-be2b-01b77e7b3f81.jpg",
-    right: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/de847675-bab8-49d1-ba7e-38df2ac1fd04.jpg",
+    left: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/cd1a4075-bd99-44b6-b11f-eb722eda8588.jpg",
+    right: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/cd1a4075-bd99-44b6-b11f-eb722eda8588.jpg",
     link: "/collections/sarees",
     action: "Explore sarees",
     tone: "gold",
@@ -30,8 +31,8 @@ const edits = [
     title: "Wedding & festive\nlehengas.",
     eyebrow: "THE OCCASION EDIT",
     text: "Lehengas that make every entrance a little more memorable.",
-    left: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/14b7f90d-57b4-4eb1-ad32-29392da2be19.jpg",
-    right: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/15588026-4635-408c-949d-e65245730e55.jpg",
+    left: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/3ed4fd22-002d-4a12-a9b2-ecb1b82cc1de.jpg",
+    right: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/3ed4fd22-002d-4a12-a9b2-ecb1b82cc1de.jpg",
     link: "/collections/lehengas",
     action: "Explore lehengas",
     tone: "navy",
@@ -40,8 +41,8 @@ const edits = [
     title: "Elegant kurta sets\nfor every day.",
     eyebrow: "THE KURTA EDIT",
     text: "Easy silhouettes. Beautiful details. Entirely you.",
-    left: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/4e440f9a-207b-4460-bef6-71ea20cc7814.jpg",
-    right: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/4b528390-424a-4d7d-b86a-ce035786d70c.jpg",
+    left: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/edd25784-f44b-42c5-84c8-678a777bbc6b.jpg",
+    right: "https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/15cdac55-0011-43ed-b67f-99b16675acda.jpg",
     link: "/collections/kurta-sets",
     action: "Explore kurta sets",
     tone: "rose",
@@ -239,10 +240,10 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
   const { settings } = useStore();
   const shared = { wish, toggleWish, add };
   const categories = [
-    ["Sarees", "sarees", "pink", "Six yards of elegance"],
-    ["Lehengas", "lehengas", "floral", "Made for the moment"],
-    ["Kurta sets", "kurta-sets", "emerald", "Everyday, elevated"],
-    ["New arrivals", "new-arrivals", "magenta", "A fresh point of view"],
+    ["Sarees", "sarees", "saree", "Six yards of elegance"],
+    ["Lehengas", "lehengas", "lehenga", "Made for the moment"],
+    ["Suits", "kurta-sets", "suit", "Everyday, elevated"],
+    ["Kurtis", "kurta-sets", "kurti", "A fresh point of view"],
   ];
   return (
     <div className="fashion-home">
@@ -290,10 +291,10 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
         />
         <div className="fashion-category-grid">
           {categories.map(([name, slug, image, caption]) => (
-            <a href={"/collections/" + slug} key={slug}>
+            <a href={"/collections/" + slug} key={name}>
               <div>
                 <img
-                  src={assetUrl("/images/" + image + ".jpg")}
+                  src={catalogueImages[image]}
                   alt={name}
                   loading="lazy"
                 />
@@ -325,24 +326,24 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
             [
               "Wedding celebrations",
               "For the moments you’ll remember.",
-              "floral",
+              "lehenga",
               "lehengas",
             ],
             [
               "Festive gatherings",
               "A little colour. A lot of celebration.",
-              "yellow",
+              "saree",
               "sarees",
             ],
             [
               "Everyday favourites",
               "Beautifully dressed, effortlessly you.",
-              "kurta",
+              "kurti",
               "kurta-sets",
             ],
           ].map(([name, text, img, category]) => (
             <a key={name} href={"/collections/" + category}>
-              <img src={assetUrl("/images/" + img + ".jpg")} alt={name} loading="lazy" />
+              <img src={catalogueImages[img]} alt={name} loading="lazy" />
               <div>
                 <h3>{name}</h3>
                 <p>{text}</p>
@@ -364,7 +365,7 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
       />
       <section className="fashion-wide-banner">
         <img
-          src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/14b7f90d-57b4-4eb1-ad32-29392da2be19.jpg"
+          src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/3ed4fd22-002d-4a12-a9b2-ecb1b82cc1de.jpg"
           alt="Floral lehenga from the RAJO collection"
           loading="lazy"
         />
@@ -382,7 +383,7 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
           </a>
         </div>
         <img
-          src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/14b7f90d-57b4-4eb1-ad32-29392da2be19.jpg"
+          src="https://rajo-images.rang-ethnic-storefront.workers.dev/rajo/3ed4fd22-002d-4a12-a9b2-ecb1b82cc1de.jpg"
           alt="Floral details from the celebration collection"
           loading="lazy"
         />
