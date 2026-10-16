@@ -1,4 +1,4 @@
-import {catalogueImages} from "./catalogue-images.js";
+import {catalogueImages, occasionImages} from "./catalogue-images.js";
 import React, { useState, useEffect } from "react";
 import {
   ArrowRight,
@@ -326,24 +326,24 @@ export function FashionHome({ products, wish, toggleWish, add, onSearch }) {
             [
               "Wedding celebrations",
               "For the moments you’ll remember.",
-              "lehenga",
+              "wedding",
               "lehengas",
             ],
             [
               "Festive gatherings",
               "A little colour. A lot of celebration.",
-              "saree",
+              "festive",
               "sarees",
             ],
             [
               "Everyday favourites",
               "Beautifully dressed, effortlessly you.",
-              "kurti",
+              "everyday",
               "kurta-sets",
             ],
           ].map(([name, text, img, category]) => (
             <a key={name} href={"/collections/" + category}>
-              <img src={catalogueImages[img]} alt={name} loading="lazy" />
+              <img src={occasionImages[img]} alt={name} loading="lazy" />
               <div>
                 <h3>{name}</h3>
                 <p>{text}</p>
